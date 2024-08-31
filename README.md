@@ -29,14 +29,14 @@ Depedencies
 - Mihomo
   - ` php8 `
   - ` php8-cgi `
-  - ` php8-mod-curl`
+  - `php8-mod-curl`
   - ` firewall `
   - ` iptables `
    
 - Sing-box
   - ` php8 `
   - ` php8-cgi `
-  - ` php8-mod-curl`
+  - `php8-mod-curl`
   - ` firewall4 `
   - ` kmod-tun `
   - ` xtables-nft `
