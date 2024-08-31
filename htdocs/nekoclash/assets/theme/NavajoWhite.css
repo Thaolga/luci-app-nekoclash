@@ -1,0 +1,89 @@
+[data-bs-theme=NavajoWhite] {
+  color-scheme: dark;
+  --bs-body-color: #000;
+  --bs-body-color-rgb: 0, 0, 0;
+  --bs-body-bg: #FFDEAD;
+  --bs-body-bg-rgb: 255, 222, 173;
+  --bs-emphasis-color: #000;
+  --bs-emphasis-color-rgb: 0, 0, 0;
+  --bs-secondary-color: rgba(0, 0, 0, 0.75);
+  --bs-secondary-color-rgb: 0, 0, 0;
+  --bs-secondary-bg: #FFDEAD;
+  --bs-secondary-bg-rgb: 255, 222, 173;
+  --bs-tertiary-color: rgba(0, 0, 0, 0.5);
+  --bs-tertiary-color-rgb: 0, 0, 0;
+  --bs-tertiary-bg: #FFDEAD;
+  --bs-tertiary-bg-rgb: 255, 222, 173;
+  --bs-primary-text-emphasis: #000;
+  --bs-secondary-text-emphasis: #000;
+  --bs-success-text-emphasis: #000;
+  --bs-info-text-emphasis: #000;
+  --bs-warning-text-emphasis: #000;
+  --bs-danger-text-emphasis: #000;
+  --bs-light-text-emphasis: #000;
+  --bs-dark-text-emphasis: #000;
+  --bs-primary-bg-subtle: #FFDEAD;
+  --bs-secondary-bg-subtle: #FFDEAD;
+  --bs-success-bg-subtle: #1b0516;
+  --bs-info-bg-subtle: #300328;
+  --bs-warning-bg-subtle: #332701;
+  --bs-danger-bg-subtle: #FFDEAD;
+  --bs-light-bg-subtle: #FFDEAD;
+  --bs-dark-bg-subtle: #FFDEAD;
+  --bs-primary-border-subtle: #084298;
+  --bs-secondary-border-subtle: #41464b;
+  --bs-success-border-subtle: #0f5132;
+  --bs-info-border-subtle: #087990;
+  --bs-warning-border-subtle: #997404;
+  --bs-danger-border-subtle: #FFDEAD;
+  --bs-light-border-subtle: #495057;
+  --bs-dark-border-subtle: #b34187;
+  --bs-heading-color: #000;
+  --bs-body-font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  --bs-body-font-weight: 700;
+
+  .table {
+    --bs-table-bg: var(--bs-dark-bg-subtle);
+  }
+
+  .h1 {
+    font-weight: var(--bs-body-font-family);
+  }
+
+  .h2 {
+    font-weight: var(--bs-body-font-family);
+  }
+
+  .container-bg {
+    background: var(--bs-dark-bg-subtle);
+  }
+
+  .form-control {
+    font-family: Andale Mono, monospace;
+    background-color: var(--bs-light-bg-subtle);
+    border-color: black;
+    color: #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .form-control:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+}
