@@ -484,13 +484,13 @@ reboot_router() {
 
 while true; do
     echo -e "${YELLOW}===================================${NC}"
-    echo -e "${YELLOW}|   1. Install NeKoClash         |${NC}"
-    echo -e "${YELLOW}|   2. Install Mihomo Core       |${NC}"
-    echo -e "${YELLOW}|   3. Install Sing-box Core     |${NC}"
-    echo -e "${YELLOW}|   4. Install UI Control Panel  |${NC}"
-    echo -e "${YELLOW}|   5. Install PHP8 and PHP8-CGI |${NC}"
-    echo -e "${YELLOW}|   6. Reboot Router             |${NC}"
-    echo -e "${YELLOW}|   0. Exit                      |${NC}"
+    echo -e "${YELLOW}|   1. Install NeKoClash          |${NC}"
+    echo -e "${YELLOW}|   2. Install Mihomo Core        |${NC}"
+    echo -e "${YELLOW}|   3. Install Sing-box Core      |${NC}"
+    echo -e "${YELLOW}|   4. Install UI Control Panel   |${NC}"
+    echo -e "${YELLOW}|   5. Install PHP8 and PHP8-CGI  |${NC}"
+    echo -e "${YELLOW}|   6. Reboot Router              |${NC}"
+    echo -e "${YELLOW}|   0. Exit                       |${NC}"
     echo -e "${YELLOW}===================================${NC}"
 
     read -p "Please enter an option and press Enter: " choice
