@@ -10,7 +10,7 @@ $curl_command = "curl -H 'User-Agent: PHP' -s " . escapeshellarg($api_url) . " -
 exec($curl_command . " 2>&1", $output, $return_var);
 
 if (!file_exists($local_api_response)) {
-    die("无法访问 GitHub API。请检查 URL 或网络连接。输出信息: " . implode("\n", $output));
+    die("无法访问GitHub API。请检查URL或网络连接。输出: " . implode("\n", $output));
 }
 
 $response = file_get_contents($local_api_response);
@@ -23,15 +23,19 @@ if (empty($new_version)) {
     die("未找到最新版本或版本信息为空。");
 }
 
-$lang = 'en';
-if (strpos($new_version, '-cn') !== false) {
-    $lang = 'cn';
+$installed_package_info = shell_exec("opkg status " . escapeshellarg($package_name));
+$installed_lang = 'en'; 
+
+if (strpos($installed_package_info, '-cn') !== false) {
+    $installed_lang = 'cn'; 
+} elseif (strpos($installed_package_info, '-en') !== false) {
+    $installed_lang = 'en';
 }
 
-$download_url = "https://github.com/Thaolga/luci-app-nekoclash/releases/download/$new_version/{$package_name}_{$new_version}-{$lang}_all.ipk";
+$download_url = "https://github.com/$repo_owner/$repo_name/releases/download/$new_version/{$package_name}_{$new_version}-{$installed_lang}_all.ipk";
 
 echo "<pre>最新版本: $new_version</pre>";
-echo "<pre>下载 URL: $download_url</pre>";
+echo "<pre>下载URL: $download_url</pre>";
 echo "<pre id='logOutput'></pre>";
 
 echo "<script>
@@ -42,13 +46,13 @@ echo "<script>
 
 echo "<script>appendLog('开始下载更新...');</script>";
 
-$local_file = "/tmp/{$package_name}_{$new_version}-{$lang}_all.ipk";
+$local_file = "/tmp/{$package_name}_{$new_version}-{$installed_lang}_all.ipk";
 $curl_command = "curl -sL " . escapeshellarg($download_url) . " -o " . escapeshellarg($local_file);
 exec($curl_command . " 2>&1", $output, $return_var);
 
 if ($return_var !== 0 || !file_exists($local_file)) {
     echo "<pre>下载失败。命令输出: " . implode("\n", $output) . "</pre>";
-    die("下载失败。无法找到下载的文件。");
+    die("下载失败。未找到下载的文件。");
 }
 
 echo "<script>appendLog('下载完成。');</script>";
