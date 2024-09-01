@@ -481,14 +481,14 @@ reboot_router() {
 
 while true; do
     echo -e "${YELLOW}===================================${NC}"
-    echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版       |${NC}"
-    echo -e "${YELLOW}|   2. 安装 NeKoClash 英文版       |${NC}"
-    echo -e "${YELLOW}|   3. 安装 Mihomo 核心            |${NC}"
-    echo -e "${YELLOW}|   4. 安装 Sing-box 核心          |${NC}"
-    echo -e "${YELLOW}|   5. 安装 UI 控制面板             |${NC}"
-    echo -e "${YELLOW}|   6. 安装 PHP8 和 PHP8-CGI        |${NC}"
-    echo -e "${YELLOW}|   7. 重启路由器                  |${NC}"
-    echo -e "${YELLOW}|   0. 退出                        |${NC}"
+    echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版      |${NC}"
+    echo -e "${YELLOW}|   2. 安装 NeKoClash 英文版      |${NC}"
+    echo -e "${YELLOW}|   3. 安装 Mihomo 核心           |${NC}"
+    echo -e "${YELLOW}|   4. 安装 Sing-box 核心         |${NC}"
+    echo -e "${YELLOW}|   5. 安装 UI 控制面板           |${NC}"
+    echo -e "${YELLOW}|   6. 安装 PHP8 和 PHP8-CGI      |${NC}"
+    echo -e "${YELLOW}|   7. 重启路由器                 |${NC}"
+    echo -e "${YELLOW}|   0. 退出                       |${NC}"
     echo -e "${YELLOW}===================================${NC}"
 
     read -p "请输入选项并按回车: " choice
