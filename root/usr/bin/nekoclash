@@ -7,20 +7,17 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 log_message() {
-    local message=\$1
+    local message="$1"
     local log_file='/var/log/neko_update.log'
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo "[$timestamp] $message" >> "$log_file"
 }
 
-get_router_ip() {
-    ip addr show br-lan | grep "inet\b" | awk '{print \$2}' | cut -d/ -f1
-}
-
 get_version_info() {
-    local component=\$1
+    local component="$1"
     local version_file
     local latest_version
+    local current_version
 
     case $component in
         "neko")
@@ -46,10 +43,9 @@ get_version_info() {
         *)
             echo -e "${RED}未知组件: $component${NC}"
             return 1
-            ;;
     esac
 
-    if [ -e "$version_file" ];then
+    if [ -e "$version_file" ] && [ -s "$version_file" ]; then
         current_version=$(cat "$version_file")
     else
         current_version="未安装"
@@ -57,14 +53,12 @@ get_version_info() {
 
     echo -e "${CYAN}当前版本: $current_version${NC}"
 
-    latest_version=$(curl -s "$releases_url" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    
-    if [ -z "$latest_version" ];then
+    latest_version=$(curl -s "$releases_url" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
+
+    if [ -z "$latest_version" ]; then
         echo -e "${RED}获取最新版本失败。请检查网络连接或 GitHub API 状态。${NC}"
         latest_version="获取失败"
     fi
-
-    echo -e "${CYAN}最新版本: $latest_version${NC}"
 }
 
 install_ipk() {
@@ -78,7 +72,7 @@ install_ipk() {
 
     response=$(wget -qO- "$releases_url")
 
-    if [ -z "$response" ];then
+    if [ -z "$response" ]; then
         log_message "无法访问 GitHub releases 页面。"
         echo -e "${RED}无法访问 GitHub releases 页面。${NC}"
         return 1
@@ -86,7 +80,7 @@ install_ipk() {
 
     echo "$response" > /tmp/releases_response.json
 
-    new_version=$(echo "$response" | awk -F'/tag/' '/\/releases\/tag\// {print \$2}' | awk -F'"' '{print \$1}' | head -n 1)
+    new_version=$(echo "$response" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
 
     if [ -z "$new_version" ];then
         log_message "未找到最新版本。"
@@ -94,7 +88,7 @@ install_ipk() {
         return 1
     fi
 
-    if [ -e "/etc/neko/lang.txt" ];then
+    if [ -e "/etc/neko/lang.txt" ]; then
         language_choice=$(cat /etc/neko/lang.txt)
     else
         set_language
@@ -110,7 +104,7 @@ install_ipk() {
 
     curl -L -f -o "$local_file" "$download_url"
 
-    if [ $? -eq 0 ];then
+    if [ $? -eq 0 ]; then
         log_message "下载完成。"
         echo -e "${GREEN}下载完成。${NC}"
     else
@@ -119,22 +113,18 @@ install_ipk() {
         return 1
     fi
 
-    if [ ! -s "$local_file" ];then
+    if [ ! -s "$local_file" ]; then
         log_message "下载的文件为空或不存在。"
         echo -e "${RED}下载的文件为空或不存在。${NC}"
         return 1
     fi
 
     opkg install --force-reinstall "$local_file"
-    if [ $? -eq 0 ];then
+    if [ $? -eq 0 ]; then
         log_message "NeKoClash安装完成。"
         echo -e "${GREEN}NeKoClash安装完成。${NC}"
 
         echo "$new_version" > /etc/neko/version_neko.txt
-
-        router_ip=$(get_router_ip)
-        echo -e "${GREEN}NeKo 面板已安装，可以通过以下地址访问:${NC}"
-        echo -e "${GREEN}http://$router_ip/nekoclash${NC}"
 
         get_version_info "neko"
     else
@@ -511,14 +501,14 @@ reboot_router() {
 
 while true; do
     echo -e "${YELLOW}===================================${NC}"
-    echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版       |${NC}"
-    echo -e "${YELLOW}|   2. 安装 NeKoClash 英文版       |${NC}"
-    echo -e "${YELLOW}|   3. 安装 Mihomo 核心            |${NC}"
-    echo -e "${YELLOW}|   4. 安装 Sing-box 核心          |${NC}"
-    echo -e "${YELLOW}|   5. 安装 UI 控制面板             |${NC}"
-    echo -e "${YELLOW}|   6. 安装 PHP8 和 PHP8-CGI        |${NC}"
-    echo -e "${YELLOW}|   7. 重启路由器                  |${NC}"
-    echo -e "${YELLOW}|   0. 退出                        |${NC}"
+    echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版      |${NC}"
+    echo -e "${YELLOW}|   2. 安装 NeKoClash 英文版      |${NC}"
+    echo -e "${YELLOW}|   3. 安装 Mihomo 核心           |${NC}"
+    echo -e "${YELLOW}|   4. 安装 Sing-box 核心         |${NC}"
+    echo -e "${YELLOW}|   5. 安装 UI 控制面板           |${NC}"
+    echo -e "${YELLOW}|   6. 安装 PHP8 和 PHP8-CGI      |${NC}"
+    echo -e "${YELLOW}|   7. 重启路由器                 |${NC}"
+    echo -e "${YELLOW}|   0. 退出                       |${NC}"
     echo -e "${YELLOW}===================================${NC}"
 
     read -p "请输入选项并按回车: " choice
