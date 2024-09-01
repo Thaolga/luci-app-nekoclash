@@ -13,30 +13,28 @@
   Mihomo based Proxy
 </p>
 
-# NekoClash is a meticulously designed proxy tool for "Mihomo" and "Sing-box," specifically created for home users. It aims to provide a simple yet powerful proxy solution. Built on PHP and BASH technologies, NekoClash simplifies complex proxy configurations into an intuitive experience, allowing every user to easily enjoy an efficient and secure network environment.
+# Project Update Announcement: Sing-box Support Introduced Starting from Version 1.1.33
 ---
+## We are pleased to announce that starting from version 1.1.33, the project has fully integrated support for Sing-box. Sing-box requires collaboration with firewall management features, specifically firewall4 + nftables. This update significantly enhances the system's flexibility and security, allowing users to exercise more precise control over traffic management policies.
 
-- A user-friendly interface with intelligent configuration features for easy setup and management of "Mihomo" and "Sing-box" proxies.
-- Ensures optimal proxy performance and stability through efficient scripts and automation.
-- Designed for home users, balancing ease of use and functionality, ensuring every family member can conveniently use the proxy service.
-## Support Core
-- Mihomo Support: To address the complexity of configuration, we have introduced a new universal template designed to make using Mihomo simple and straightforward, with no technical barriers.
 - Sing-box Support: Sing-box has been integrated and requires the use of firewall4 + nftables, offering you a smarter and more efficient traffic management solution.
 - Introducing an intelligent conversion template to completely solve the configuration difficulties of Sing-box. Our goal is to enable zero-threshold use of Sing-box.
+
+## It is important to note that although this version greatly enhances system capabilities, the original Mihomo-related features remain unchanged, ensuring that users can continue to enjoy a stable service experience.
 
 Depedencies
 ---
 - Mihomo
   - ` php8 `
   - ` php8-cgi `
-  - `php8-mod-curl`
+  - ` php8-mod-curl`
   - ` firewall `
   - ` iptables `
    
 - Sing-box
   - ` php8 `
   - ` php8-cgi `
-  - `php8-mod-curl`
+  - ` php8-mod-curl`
   - ` firewall4 `
   - ` kmod-tun `
   - ` xtables-nft `
@@ -69,12 +67,20 @@ make package/luci-app-nekoclash/{clean,compile} V=s
 ---
 <details><summary>Home</summary>
  <p>
-
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/ge.png" alt="home" >
  </p>
 </details>
 
  <details><summary>Dasboard</summary>
  <p>
-
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/im.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-56-43.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-54-51.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-38-43.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-44-25.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-43-50.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-43-18.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-42-30.png" >
+ <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/image_2024-08-30_14-45-28.png" >
  </p>
 </details>
