@@ -23,12 +23,16 @@ if (empty($new_version)) {
     die("Latest version not found or version information is empty.");
 }
 
-$lang = 'en'; 
-if (strpos($new_version, '-cn') !== false) {
-    $lang = 'cn'; 
+$installed_package_info = shell_exec("opkg status " . escapeshellarg($package_name));
+$installed_lang = 'en'; 
+
+if (strpos($installed_package_info, '-cn') !== false) {
+    $installed_lang = 'cn'; 
+} elseif (strpos($installed_package_info, '-en') !== false) {
+    $installed_lang = 'en';
 }
 
-$download_url = "https://github.com/Thaolga/luci-app-nekoclash/releases/download/$new_version/{$package_name}_{$new_version}-{$lang}_all.ipk";
+$download_url = "https://github.com/$repo_owner/$repo_name/releases/download/$new_version/{$package_name}_{$new_version}-{$installed_lang}_all.ipk";
 
 echo "<pre>Latest version: $new_version</pre>";
 echo "<pre>Download URL: $download_url</pre>";
@@ -42,7 +46,7 @@ echo "<script>
 
 echo "<script>appendLog('Starting update download...');</script>";
 
-$local_file = "/tmp/{$package_name}_{$new_version}-{$lang}_all.ipk";
+$local_file = "/tmp/{$package_name}_{$new_version}-{$installed_lang}_all.ipk";
 $curl_command = "curl -sL " . escapeshellarg($download_url) . " -o " . escapeshellarg($local_file);
 exec($curl_command . " 2>&1", $output, $return_var);
 
