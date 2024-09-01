@@ -7,14 +7,14 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 log_message() {
-    local message="$1"
+    local message="\$1"
     local log_file='/var/log/neko_update.log'
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo "[$timestamp] $message" >> "$log_file"
 }
 
 get_version_info() {
-    local component="$1"
+    local component="\$1"
     local version_file
     local latest_version
     local current_version
@@ -22,26 +22,17 @@ get_version_info() {
     case $component in
         "neko")
             version_file='/etc/neko/version_neko.txt'
-            repo_owner="Thaolga"
-            repo_name="neko"
-            releases_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
             ;;
         "core")
             version_file='/etc/neko/version_mihomo.txt'
-            releases_url="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
             ;;
         "ui")
             version_file='/etc/neko/ui/metacubexd/version.txt'
-            releases_url="https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest"
             ;;
         "singbox")
             version_file='/etc/neko/version_singbox.txt'
-            repo_owner="SagerNet"
-            repo_name="sing-box"
-            releases_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
             ;;
         *)
-            echo -e "${RED}未知组件: $component${NC}"
             return 1
     esac
 
@@ -51,13 +42,43 @@ get_version_info() {
         current_version="未安装"
     fi
 
-    echo -e "${CYAN}当前版本: $current_version${NC}"
+    if [ "$language_choice" = "cn" ]; then
+        echo -e "${CYAN}组件: $component, 当前版本: $current_version${NC}"
+    else
+        echo -e "${CYAN}Component: $component, Current Version: $current_version${NC}"
+    fi
+
+    local releases_url
+    case $component in
+        "neko")
+            releases_url="https://api.github.com/repos/Thaolga/neko/releases/latest"
+            ;;
+        "core")
+            releases_url="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
+            ;;
+        "ui")
+            releases_url="https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest"
+            ;;
+        "singbox")
+            releases_url="https://api.github.com/repos/SagerNet/sing-box/releases/latest"
+            ;;
+    esac
 
     latest_version=$(curl -s "$releases_url" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
 
     if [ -z "$latest_version" ]; then
-        echo -e "${RED}获取最新版本失败。请检查网络连接或 GitHub API 状态。${NC}"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}获取最新版本失败。请检查网络连接或 GitHub API 状态。${NC}"
+        else
+            echo -e "${RED}Failed to get the latest version. Please check your internet connection or GitHub API status.${NC}"
+        fi
         latest_version="获取失败"
+    fi
+
+    if [ "$language_choice" = "cn" ]; then
+        echo -e "${CYAN}最新版本: $latest_version${NC}"
+    else
+        echo -e "${CYAN}Latest Version: $latest_version${NC}"
     fi
 }
 
@@ -67,14 +88,18 @@ install_ipk() {
     package_name="luci-app-nekoclash"
     releases_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
 
-    echo -e "${CYAN}更新 opkg 软件包列表...${NC}"
+    if [ "$language_choice" = "cn" ]; then
+        echo -e "${CYAN}更新 opkg 软件包列表...${NC}"
+    else
+        echo -e "${CYAN}Updating opkg package list...${NC}"
+    fi
     opkg update
 
     response=$(wget -qO- "$releases_url")
 
     if [ -z "$response" ]; then
         log_message "无法访问 GitHub releases 页面。"
-        echo -e "${RED}无法访问 GitHub releases 页面。${NC}"
+        echo -e "${RED}无法访问 GitHub releases 页面。${NC}" 
         return 1
     fi
 
@@ -82,17 +107,34 @@ install_ipk() {
 
     new_version=$(echo "$response" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
 
-    if [ -z "$new_version" ];then
+    if [ -z "$new_version" ]; then
         log_message "未找到最新版本。"
-        echo -e "${RED}未找到最新版本。${NC}"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}未找到最新版本。${NC}"
+        else
+            echo -e "${RED}Latest version not found.${NC}"
+        fi
         return 1
     fi
 
     if [ -e "/etc/neko/lang.txt" ]; then
         language_choice=$(cat /etc/neko/lang.txt)
     else
-        set_language
-        language_choice=$(cat /etc/neko/lang.txt)
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${YELLOW}未找到语言文件，默认使用 'en'。${NC}"
+        else
+            echo -e "${YELLOW}Language file not found, defaulting to 'en'.${NC}"
+        fi
+        language_choice="en"
+    fi
+
+    if [ "$language_choice" != "cn" ] && [ "$language_choice" != "en" ]; then
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}无效的语言选择，使用 'en' 作为默认值。${NC}"
+        else
+            echo -e "${RED}Invalid language choice, defaulting to 'en'.${NC}"
+        fi
+        language_choice="en"
     fi
 
     download_url="https://github.com/$repo_owner/$repo_name/releases/download/$new_version/${package_name}_${new_version}-${language_choice}_all.ipk"
@@ -121,21 +163,38 @@ install_ipk() {
 
     opkg install --force-reinstall "$local_file"
     if [ $? -eq 0 ]; then
-        log_message "NeKoClash安装完成。"
-        echo -e "${GREEN}NeKoClash安装完成。${NC}"
+        log_message "NeKoClash安装完成。版本号: $new_version"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${GREEN}NeKoClash安装完成。版本号: $new_version${NC}"
+        else
+            echo -e "${GREEN}NeKoClash installation complete. Version: $new_version${NC}"
+        fi
+
+        echo "$new_version" > /etc/neko/neko_version.txt
+        log_message "写入版本号到 /etc/neko/neko_version.txt: $new_version"
 
         echo "$new_version" > /etc/neko/version_neko.txt
 
         get_version_info "neko"
     else
         log_message "NeKoClash安装失败。"
-        echo -e "${RED}NeKoClash安装失败。${NC}"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}NeKoClash安装失败。${NC}"
+        else
+            echo -e "${RED}NeKoClash installation failed.${NC}"
+        fi
         return 1
     fi
 
     rm -f "$local_file"
     log_message "已删除临时文件: $local_file"
 }
+
+if [ -e "/etc/neko/lang.txt" ]; then
+    language_choice=$(cat /etc/neko/lang.txt)
+else
+    language_choice="en"
+fi
 
 current_script="$(basename "$0")"
 replacement_script="/usr/bin/nekoclash"
@@ -502,7 +561,7 @@ reboot_router() {
 while true; do
     echo -e "${YELLOW}===================================${NC}"
     echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版      |${NC}"
-    echo -e "${YELLOW}|   2. 安装 NeKoClash 英文版      |${NC}"
+    echo -e "${YELLOW}|   2. 安装 NeKoClash (Eng)       |${NC}"
     echo -e "${YELLOW}|   3. 安装 Mihomo 核心           |${NC}"
     echo -e "${YELLOW}|   4. 安装 Sing-box 核心         |${NC}"
     echo -e "${YELLOW}|   5. 安装 UI 控制面板           |${NC}"
