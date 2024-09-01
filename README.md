@@ -45,7 +45,7 @@ Depedencies
 ---
 
 ```bash
-wget -O /root/nekoclash.sh https://cdn.jsdelivr.net/gh/Thaolga/luci-app-nekoclash@main/nekoclash.sh && chmod 0755 /root/nekoclash.sh && /root/nekoclash.sh
+wget -O /root/nekoclash.sh https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/main/nekoclash.sh && chmod 0755 /root/nekoclash.sh && /root/nekoclash.sh
 
 ```
 
