@@ -67,21 +67,47 @@ date_default_timezone_set('Asia/Shanghai');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>语音播报系统</title>
-  <div style="display: flex; align-items: center;">
-        <label for="weather-toggle" style="margin-right: 10px; font-weight: bold; color: #FF5733;">天气播报</label> 
-        <input type="checkbox" id="weather-toggle" style="margin-right: 20px;">
-        <p style="margin: 0; color: #00F;">
-            当前城市：
-            <span id="current-city" style="font-weight: bold; color: #33FF57;">未设置</span> 
-</div>
-
+    <title>GitHub Music Player</title>
+    <style>
+        .controls {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .controls label {
+            margin-right: 10px;
+            font-weight: bold;
+            color: #FF5733;
+        }
+        .controls input {
+            margin-right: 20px;
+        }
+        .controls p {
+            margin: 0;
+            color: #00F;
+        }
+    </style>
 </head>
 <body>
+    <div class="controls">
+        <label for="main-toggle">系统开关</label>
+        <input type="checkbox" id="main-toggle">
+        
+        <label for="weather-toggle">天气播报</label>
+        <input type="checkbox" id="weather-toggle">
+        
+        <p>
+            当前城市：
+            <span id="current-city" style="font-weight: bold; color: #33FF57;">未设置</span>
+        </p>
+    </div>
+    
     <script>
         let city = 'Beijing'; 
         const apiKey = 'fc8bd2637768c286c6f1ed5f1915eb22'; 
-        let weatherEnabled = true; 
+        let systemEnabled = true; 
+        let weatherEnabled = true;
+        let lastHour = -1; 
 
         function speakMessage(message) {
             const utterance = new SpeechSynthesisUtterance(message);
@@ -115,18 +141,21 @@ date_default_timezone_set('Asia/Shanghai');
             speakMessage(`${getGreeting()} 现在是北京时间: ${timeOfDay}${currentTime}`);
         }
 
-        function updateTime() {
+        function updateHourlyTime() {
             const now = new Date();
             const hours = now.getHours();
-            const timeOfDay = (hours >= 5 && hours < 8) ? '清晨'
-                              : (hours >= 8 && hours < 11) ? '早上'
-                              : (hours >= 11 && hours < 13) ? '中午'
-                              : (hours >= 13 && hours < 18) ? '下午'
-                              : (hours >= 18 && hours < 20) ? '傍晚'
-                              : (hours >= 20 && hours < 24) ? '晚上'
-                              : '凌晨';
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
 
-            if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+            if (minutes === 0 && seconds === 0 && hours !== lastHour) {
+                lastHour = hours;
+                const timeOfDay = (hours >= 5 && hours < 8) ? '清晨'
+                                  : (hours >= 8 && hours < 11) ? '早上'
+                                  : (hours >= 11 && hours < 13) ? '中午'
+                                  : (hours >= 13 && hours < 18) ? '下午'
+                                  : (hours >= 18 && hours < 20) ? '傍晚'
+                                  : (hours >= 20 && hours < 24) ? '晚上'
+                                  : '凌晨';
                 speakMessage(`整点播报，现在是北京时间 ${timeOfDay} ${hours}点`);
             }
         }
@@ -214,9 +243,8 @@ date_default_timezone_set('Asia/Shanghai');
                 "clear sky": "晴天", "few clouds": "少量云", "scattered clouds": "多云",
                 "broken clouds": "多云", "shower rain": "阵雨", "rain": "雨", 
                 "light rain": "小雨", "moderate rain": "中雨", "heavy rain": "大雨",
-                "very heavy rain": "特大暴雨", "extreme rain": "极端降雨",
-                "thunderstorm": "雷暴", "thunderstorm with light rain": "雷阵雨", "thunderstorm with heavy rain": "强雷雨",
-                "snow": "雪", "light snow": "小雪", "moderate snow": "中雪", "heavy snow": "大雪",
+                "very heavy rain": "暴雨", "extreme rain": "极端降雨", "snow": "雪",
+                "light snow": "小雪", "moderate snow": "中雪", "heavy snow": "大雪",
                 "very heavy snow": "特大暴雪", "extreme snow": "极端降雪",
                 "sleet": "雨夹雪", "freezing rain": "冻雨", "mist": "薄雾",
                 "fog": "雾", "haze": "霾", "sand": "沙尘", "dust": "扬尘", "squall": "阵风",
@@ -263,7 +291,7 @@ date_default_timezone_set('Asia/Shanghai');
         }
 
         function fetchWeather() {
-            if (!weatherEnabled) return; 
+            if (!weatherEnabled || !systemEnabled) return; 
             
             const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=zh_cn`; 
             fetch(apiUrl)
@@ -287,7 +315,7 @@ date_default_timezone_set('Asia/Shanghai');
             } else if (!startsWithUppercasePattern.test(cityInput)) {
                 speakMessage('城市名称必须以大写英文字母开头。');
             } else if (cityInput) {
-                const city = cityInput;
+                city = cityInput;
                 localStorage.setItem('city', city); 
                 document.getElementById('current-city').textContent = city;
                 speakMessage(`城市已保存为${city}，正在获取最新天气信息...`);
@@ -297,10 +325,23 @@ date_default_timezone_set('Asia/Shanghai');
             }
         }
 
+        document.getElementById('main-toggle').addEventListener('change', (event) => {
+            systemEnabled = event.target.checked;
+            localStorage.setItem('systemEnabled', systemEnabled); 
+            if (systemEnabled) {
+                speakMessage('系统已启用。');
+                speakCurrentTime();
+                speakRandomPoem();
+                if (weatherEnabled) fetchWeather();
+            } else {
+                speakMessage('系统已关闭。');
+            }
+        });
+
         document.getElementById('weather-toggle').addEventListener('change', (event) => {
             weatherEnabled = event.target.checked;
             localStorage.setItem('weatherEnabled', weatherEnabled); 
-            if (weatherEnabled) {
+            if (systemEnabled && weatherEnabled) {
                 speakMessage('天气播报已启用。');
                 fetchWeather();
             } else {
@@ -314,20 +355,36 @@ date_default_timezone_set('Asia/Shanghai');
                 city = savedCity;
                 document.getElementById('current-city').textContent = city;
             }
-            
+
+            const savedSystemEnabled = localStorage.getItem('systemEnabled');
+            if (savedSystemEnabled !== null) {
+                systemEnabled = savedSystemEnabled === 'true';
+                document.getElementById('main-toggle').checked = systemEnabled;
+            } else {
+                systemEnabled = true; 
+                localStorage.setItem('systemEnabled', systemEnabled);
+                document.getElementById('main-toggle').checked = systemEnabled;
+            }
+
             const savedWeatherEnabled = localStorage.getItem('weatherEnabled');
             if (savedWeatherEnabled !== null) {
                 weatherEnabled = savedWeatherEnabled === 'true';
+                document.getElementById('weather-toggle').checked = weatherEnabled;
+            } else {
+                weatherEnabled = true; 
+                localStorage.setItem('weatherEnabled', weatherEnabled);
                 document.getElementById('weather-toggle').checked = weatherEnabled;
             }
 
             speakMessage('欢迎使用语音播报系统！');
             checkWebsiteAccess(websites);
-            speakCurrentTime();
-            if (weatherEnabled) fetchWeather();
-            speakRandomPoem(); 
-            setInterval(updateTime, 1000);
+            if (systemEnabled) {
+                speakCurrentTime();
+                if (weatherEnabled) fetchWeather();
+                speakRandomPoem();
+            }
 
+            setInterval(updateHourlyTime, 1000);
         };
     </script>
 </body>
@@ -492,7 +549,7 @@ date_default_timezone_set('Asia/Shanghai');
             <button id="play" class="rounded-button">⏸️</button>
             <button id="next" class="rounded-button">⏭️</button>
         </div>
-      </div>
+    </div>
     <div id="mobile-controls">
         <button id="togglePlay" class="rounded-button">播放/暂停</button>
         <button id="prevMobile" class="rounded-button">上一首</button>
@@ -786,15 +843,13 @@ date_default_timezone_set('Asia/Shanghai');
                     speakMessage('自定义歌单已加载'); 
                 })
                 .catch(error => {
-                    console.error('加载歌单时出错:', error);
-                    speakMessage('加载歌单时出错'); 
+                    console.error('加载自定义歌单时出错:', error);
+                    speakMessage('加载自定义歌单时出错，加载默认歌单'); 
+                    loadDefaultPlaylist();
                 });
         }
 
-        const customPlaylist = localStorage.getItem('customPlaylist');
-        if (customPlaylist) {
-            loadCustomPlaylist(customPlaylist);
-        } else {
+        function loadDefaultPlaylist() {
             fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
                 .then(response => response.text())
                 .then(data => {
@@ -803,9 +858,16 @@ date_default_timezone_set('Asia/Shanghai');
                     console.log(songs);
                 })
                 .catch(error => {
-                    console.error('Error fetching songs:', error);
+                    console.error('加载默认歌单时出错:', error);
                     speakMessage('加载默认歌单时出错'); 
                 });
+        }
+
+        const customPlaylist = localStorage.getItem('customPlaylist');
+        if (customPlaylist) {
+            loadCustomPlaylist(customPlaylist);
+        } else {
+            loadDefaultPlaylist();
         }
     </script>
 </body>
