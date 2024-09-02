@@ -7,14 +7,14 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 log_message() {
-    local message="$1"
+    local message="\$1"
     local log_file='/var/log/neko_update.log'
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo "[$timestamp] $message" >> "$log_file"
 }
 
 get_version_info() {
-    local component="$1"
+    local component="\$1"
     local version_file
     local latest_version
     local current_version
@@ -22,26 +22,17 @@ get_version_info() {
     case $component in
         "neko")
             version_file='/etc/neko/version_neko.txt'
-            repo_owner="Thaolga"
-            repo_name="neko"
-            releases_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
             ;;
         "core")
             version_file='/etc/neko/version_mihomo.txt'
-            releases_url="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
             ;;
         "ui")
             version_file='/etc/neko/ui/metacubexd/version.txt'
-            releases_url="https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest"
             ;;
         "singbox")
             version_file='/etc/neko/version_singbox.txt'
-            repo_owner="SagerNet"
-            repo_name="sing-box"
-            releases_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
             ;;
         *)
-            echo -e "${RED}未知组件: $component${NC}"
             return 1
     esac
 
@@ -51,13 +42,43 @@ get_version_info() {
         current_version="未安装"
     fi
 
-    echo -e "${CYAN}当前版本: $current_version${NC}"
+    if [ "$language_choice" = "cn" ]; then
+        echo -e "${CYAN}组件: $component, 当前版本: $current_version${NC}"
+    else
+        echo -e "${CYAN}Component: $component, Current Version: $current_version${NC}"
+    fi
+
+    local releases_url
+    case $component in
+        "neko")
+            releases_url="https://api.github.com/repos/Thaolga/neko/releases/latest"
+            ;;
+        "core")
+            releases_url="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
+            ;;
+        "ui")
+            releases_url="https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest"
+            ;;
+        "singbox")
+            releases_url="https://api.github.com/repos/SagerNet/sing-box/releases/latest"
+            ;;
+    esac
 
     latest_version=$(curl -s "$releases_url" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
 
     if [ -z "$latest_version" ]; then
-        echo -e "${RED}获取最新版本失败。请检查网络连接或 GitHub API 状态。${NC}"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}获取最新版本失败。请检查网络连接或 GitHub API 状态。${NC}"
+        else
+            echo -e "${RED}Failed to get the latest version. Please check your internet connection or GitHub API status.${NC}"
+        fi
         latest_version="获取失败"
+    fi
+
+    if [ "$language_choice" = "cn" ]; then
+        echo -e "${CYAN}最新版本: $latest_version${NC}"
+    else
+        echo -e "${CYAN}Latest Version: $latest_version${NC}"
     fi
 }
 
@@ -67,14 +88,18 @@ install_ipk() {
     package_name="luci-app-nekoclash"
     releases_url="https://api.github.com/repos/$repo_owner/$repo_name/releases/latest"
 
-    echo -e "${CYAN}更新 opkg 软件包列表...${NC}"
+    if [ "$language_choice" = "cn" ]; then
+        echo -e "${CYAN}更新 opkg 软件包列表...${NC}"
+    else
+        echo -e "${CYAN}Updating opkg package list...${NC}"
+    fi
     opkg update
 
     response=$(wget -qO- "$releases_url")
 
     if [ -z "$response" ]; then
         log_message "无法访问 GitHub releases 页面。"
-        echo -e "${RED}无法访问 GitHub releases 页面。${NC}"
+        echo -e "${RED}无法访问 GitHub releases 页面。${NC}" 
         return 1
     fi
 
@@ -82,17 +107,34 @@ install_ipk() {
 
     new_version=$(echo "$response" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
 
-    if [ -z "$new_version" ];then
+    if [ -z "$new_version" ]; then
         log_message "未找到最新版本。"
-        echo -e "${RED}未找到最新版本。${NC}"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}未找到最新版本。${NC}"
+        else
+            echo -e "${RED}Latest version not found.${NC}"
+        fi
         return 1
     fi
 
     if [ -e "/etc/neko/lang.txt" ]; then
         language_choice=$(cat /etc/neko/lang.txt)
     else
-        set_language
-        language_choice=$(cat /etc/neko/lang.txt)
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${YELLOW}未找到语言文件，默认使用 'en'。${NC}"
+        else
+            echo -e "${YELLOW}Language file not found, defaulting to 'en'.${NC}"
+        fi
+        language_choice="en"
+    fi
+
+    if [ "$language_choice" != "cn" ] && [ "$language_choice" != "en" ]; then
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}无效的语言选择，使用 'en' 作为默认值。${NC}"
+        else
+            echo -e "${RED}Invalid language choice, defaulting to 'en'.${NC}"
+        fi
+        language_choice="en"
     fi
 
     download_url="https://github.com/$repo_owner/$repo_name/releases/download/$new_version/${package_name}_${new_version}-${language_choice}_all.ipk"
@@ -121,21 +163,38 @@ install_ipk() {
 
     opkg install --force-reinstall "$local_file"
     if [ $? -eq 0 ]; then
-        log_message "NeKoClash安装完成。"
-        echo -e "${GREEN}NeKoClash安装完成。${NC}"
+        log_message "NeKoClash安装完成。版本号: $new_version"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${GREEN}NeKoClash安装完成。版本号: $new_version${NC}"
+        else
+            echo -e "${GREEN}NeKoClash installation complete. Version: $new_version${NC}"
+        fi
+
+        echo "$new_version" > /etc/neko/neko_version.txt
+        log_message "写入版本号到 /etc/neko/neko_version.txt: $new_version"
 
         echo "$new_version" > /etc/neko/version_neko.txt
 
         get_version_info "neko"
     else
         log_message "NeKoClash安装失败。"
-        echo -e "${RED}NeKoClash安装失败。${NC}"
+        if [ "$language_choice" = "cn" ]; then
+            echo -e "${RED}NeKoClash安装失败。${NC}"
+        else
+            echo -e "${RED}NeKoClash installation failed.${NC}"
+        fi
         return 1
     fi
 
     rm -f "$local_file"
     log_message "已删除临时文件: $local_file"
 }
+
+if [ -e "/etc/neko/lang.txt" ]; then
+    language_choice=$(cat /etc/neko/lang.txt)
+else
+    language_choice="en"
+fi
 
 current_script="$(basename "$0")"
 replacement_script="/usr/bin/nekoclash"
@@ -158,12 +217,12 @@ if [ "$current_script" != "nekoclash" ]; then
 fi
 
 install_core() {
-    log_message "Fetching the latest core version..."
+    log_message "获取最新核心版本号..."
     latest_version=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-    if [ -z "$latest_version" ]; then
-        log_message "Unable to fetch the latest core version, update aborted."
-        echo -e "${RED}Unable to fetch the latest core version, please check your network connection.${NC}"
+    if [ -z "$latest_version" ];then
+        log_message "无法获取最新核心版本号，更新终止。"
+        echo -e "${RED}无法获取最新核心版本号，请检查网络连接。${NC}"
         return 1
     fi
 
@@ -172,11 +231,11 @@ install_core() {
     temp_file='/tmp/mihomo.gz'
     temp_extract_path='/tmp/mihomo_temp'
 
-    if [ -e "$install_path/version.txt" ]; then
+    if [ -e "$install_path/version.txt" ];then
         current_version=$(cat "$install_path/version.txt" 2>/dev/null)
-        log_message "Current version: $current_version"
+        log_message "当前版本: $current_version"
     else
-        log_message "Current version file not found, considering as not installed."
+        log_message "当前版本文件不存在，将视为未安装。"
     fi
 
     case "$(uname -m)" in
@@ -190,59 +249,59 @@ install_core() {
             download_url="https://github.com/MetaCubeX/mihomo/releases/download/$latest_version/mihomo-linux-amd64-$latest_version.gz"
             ;;
         *)
-            log_message "No suitable download link found for architecture: $(uname -m)"
-            echo -e "${RED}No suitable download link found for architecture: $(uname -m)${NC}"
+            log_message "未找到适合架构的下载链接: $(uname -m)"
+            echo -e "${RED}未找到适合架构的下载链接: $(uname -m)${NC}"
             return 1
             ;;
     esac
 
-    echo -e "${CYAN}Latest version: $latest_version${NC}"
-    echo -e "${CYAN}Download link: $download_url${NC}"
+    echo -e "${CYAN}最新版本: $latest_version${NC}"
+    echo -e "${CYAN}下载链接: $download_url${NC}"
 
-    if [ "$current_version" = "$latest_version" ]; then
-        log_message "The current version is the latest, no update needed."
-        echo -e "${GREEN}The current version is already the latest.${NC}"
+    if [ "$current_version" = "$latest_version" ];then
+        log_message "当前版本已是最新版本，无需更新。"
+        echo -e "${GREEN}当前版本已是最新版本。${NC}"
         return 0
     fi
 
-    log_message "Starting core update download..."
+    log_message "开始下载核心更新..."
     wget -O "$temp_file" "$download_url"
     return_var=$?
 
-    log_message "wget return value: $return_var"
+    log_message "wget 返回值: $return_var"
 
-    if [ $return_var -eq 0 ]; then
+    if [ $return_var -eq 0 ];then
         mkdir -p "$temp_extract_path"
-        log_message "Extract command: gunzip -f -c '$temp_file' > '$temp_extract_path/mihomo'"
+        log_message "解压命令: gunzip -f -c '$temp_file' > '$temp_extract_path/mihomo'"
         gunzip -f -c "$temp_file" > "$temp_extract_path/mihomo"
         return_var=$?
 
-        log_message "Extract return value: $return_var"
+        log_message "解压返回值: $return_var"
 
-        if [ $return_var -eq 0 ]; then
+        if [ $return_var -eq 0 ];then
             mv "$temp_extract_path/mihomo" "$install_path"
             chmod 0755 "$install_path"
             return_var=$?
-            log_message "Set permissions command: chmod 0755 '$install_path'"
-            log_message "Set permissions return value: $return_var"
+            log_message "设置权限命令: chmod 0755 '$install_path'"
+            log_message "设置权限返回值: $return_var"
 
-            if [ $return_var -eq 0 ]; then
+            if [ $return_var -eq 0 ];then
                 echo "$latest_version" > "/etc/neko/version_mihomo.txt"
-                log_message "Core update complete! Current version: $latest_version"
-                echo -e "${GREEN}Core update complete! Current version: $latest_version${NC}"
+                log_message "核心更新完成！当前版本: $latest_version"
+                echo -e "${GREEN}核心更新完成！当前版本: $latest_version${NC}"
             else
-                log_message "Failed to set permissions!"
-                echo -e "${RED}Failed to set permissions!${NC}"
+                log_message "设置权限失败！"
+                echo -e "${RED}设置权限失败！${NC}"
                 return 1
             fi
         else
-            log_message "Extraction failed, return value: $return_var"
-            echo -e "${RED}Extraction failed!${NC}"
+            log_message "解压失败，返回值: $return_var"
+            echo -e "${RED}解压失败！${NC}"
             return 1
         fi
     else
-        log_message "Download failed, return value: $return_var"
-        echo -e "${RED}Download failed!${NC}"
+        log_message "下载失败，返回值: $return_var"
+        echo -e "${RED}下载失败！${NC}"
         return 1
     fi
 
@@ -255,7 +314,7 @@ install_singbox() {
     NC='\033[0m' 
 
     log_message() {
-        local message=$1
+        local message=\$1
         local log_file='/var/log/singbox_update.log'
         local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
         echo "[$timestamp] $message" >> "$log_file"
@@ -277,84 +336,83 @@ install_singbox() {
             download_url="https://github.com/SagerNet/sing-box/releases/download/v$latest_version/sing-box-$latest_version-linux-amd64.tar.gz"
             ;;
         *)
-            log_message "No suitable download link found for architecture: $current_arch"
-            echo "No suitable download link found for architecture: $current_arch"
+            log_message "未找到适合架构的下载链接: $current_arch"
+            echo "未找到适合架构的下载链接: $current_arch"
             exit 1
             ;;
     esac
 
-    log_message "Current architecture: $current_arch"
-    log_message "Download link: $download_url"
+    log_message "当前架构: $current_arch"
+    log_message "下载链接: $download_url"
 
-    log_message "Starting core update download..."
+    log_message "开始下载核心更新..."
     wget -O "$temp_file" "$download_url"
     local return_var=$?
 
-    log_message "wget return value: $return_var"
+    log_message "wget 返回值: $return_var"
 
-    if [ $return_var -eq 0 ]; then
+    if [ $return_var -eq 0 ];then
         mkdir -p "$temp_dir"
-        log_message "Extraction command: tar -xzf '$temp_file' -C '$temp_dir'"
+        log_message "解压命令: tar -xzf '$temp_file' -C '$temp_dir'"
         tar -xzf "$temp_file" -C "$temp_dir"
         return_var=$?
 
-        log_message "Extraction return value: $return_var"
-        log_message "List of extracted files:"
+        log_message "解压返回值: $return_var"
+        log_message "解压后的文件列表:"
         ls -lR "$temp_dir"
 
-        if [ $return_var -eq 0 ]; then
-            if [ "$current_arch" = "x86_64" ]; then
+        if [ $return_var -eq 0 ];then
+            if [ "$current_arch" = "x86_64" ];then
                 extracted_file="$temp_dir/sing-box-$latest_version-linux-amd64/sing-box"
-            elif [ "$current_arch" = "aarch64" ]; then
+            elif [ "$current_arch" = "aarch64" ];then
                 extracted_file="$temp_dir/sing-box-$latest_version-linux-arm64/sing-box"
             fi
 
-            if [ -e "$extracted_file" ]; then
-                log_message "Move file command: mv '$extracted_file' '$install_path'"
+            if [ -e "$extracted_file" ];then
+                log_message "移动文件命令: mv '$extracted_file' '$install_path'"
                 mv "$extracted_file" "$install_path"
                 chmod 0755 "$install_path"
                 return_var=$?
-                log_message "Set permissions command: chmod 0755 '$install_path'"
-                log_message "Set permissions return value: $return_var"
+                log_message "设置权限命令: chmod 0755 '$install_path'"
+                log_message "设置权限返回值: $return_var"
 
-                if [ $return_var -eq 0 ]; then
-                    log_message "Update/installation complete! Version: ${GREEN}$latest_version${NC}"
-                    echo -e "Update/installation complete! Version: ${GREEN}$latest_version${NC}"
+                if [ $return_var -eq 0 ];then
+                    log_message "更新/安装完成！版本: ${GREEN}$latest_version${NC}"
+                    echo -e "更新/安装完成！版本: ${GREEN}$latest_version${NC}"
                 else
-                    log_message "Failed to set permissions!"
-                    echo "Failed to set permissions!"
+                    log_message "设置权限失败！"
+                    echo "设置权限失败！"
                 fi
             else
-                log_message "The extracted file 'sing-box' does not exist."
-                echo "The extracted file 'sing-box' does not exist."
+                log_message "解压后的文件 'sing-box' 不存在。"
+                echo "解压后的文件 'sing-box' 不存在。"
             fi
         else
-            log_message "Extraction failed, return value: $return_var"
-            echo "Extraction failed!"
+            log_message "解压失败，返回值: $return_var"
+            echo "解压失败！"
         fi
     else
-        log_message "Download failed, return value: $return_var"
-        echo "Download failed!"
+        log_message "下载失败，返回值: $return_var"
+        echo "下载失败！"
     fi
 
     if [ -e "$temp_file" ];then
         rm "$temp_file"
-        log_message "Cleaning up temporary file: $temp_file"
+        log_message "清理临时文件: $temp_file"
     fi
     if [ -d "$temp_dir" ];then
         rm -r "$temp_dir"
-        log_message "Cleaning up temporary extraction directory: $temp_dir"
+        log_message "清理临时解压目录: $temp_dir"
     fi
 }
 
-
 install_ui() {
-    log_message "Fetching the latest UI version..."
+    log_message "获取最新 UI 版本号..."
     latest_version=$(curl -s https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-    if [ -z "$latest_version" ]; then
-        log_message "Unable to fetch the latest UI version, update aborted."
-        echo -e "${RED}Unable to fetch the latest UI version, please check your network connection.${NC}"
+    if [ -z "$latest_version" ];then
+        log_message "无法获取最新 UI 版本号，更新终止。"
+        echo -e "${RED}无法获取最新 UI 版本号，请检查网络连接。${NC}"
         return 1
     fi
 
@@ -363,75 +421,75 @@ install_ui() {
     temp_file='/tmp/metacubexd.tgz'
     temp_extract_path='/tmp/metacubexd_temp'
 
-    if [ -e "$install_path/version.txt" ]; then
+    if [ -e "$install_path/version.txt" ];then
         current_version=$(cat "$install_path/version.txt" 2>/dev/null)
-        log_message "Current version: $current_version"
+        log_message "当前版本: $current_version"
     else
-        log_message "Current version file not found, considering as not installed."
+        log_message "当前版本文件不存在，将视为未安装。"
     fi
 
     download_url="https://github.com/MetaCubeX/metacubexd/releases/download/$latest_version/compressed-dist.tgz"
 
-    echo -e "${CYAN}Latest version: $latest_version${NC}"
-    echo -e "${CYAN}Download link: $download_url${NC}"
+    echo -e "${CYAN}最新版本: $latest_version${NC}"
+    echo -e "${CYAN}下载链接: $download_url${NC}"
 
-    if [ "$current_version" = "$latest_version" ]; then
-        log_message "The current version is the latest version, no update needed."
-        echo -e "${GREEN}The current version is already the latest.${NC}"
+    if [ "$current_version" = "$latest_version" ];then
+        log_message "当前版本已是最新版本，无需更新。"
+        echo -e "${GREEN}当前版本已是最新版本。${NC}"
         return 0
     fi
 
-    log_message "Starting to download the UI update..."
+    log_message "开始下载 UI 更新..."
     wget -O "$temp_file" "$download_url"
     return_var=$?
 
-    log_message "wget return value: $return_var"
+    log_message "wget 返回值: $return_var"
 
-    if [ $return_var -eq 0 ]; then
+    if [ $return_var -eq 0 ];then
         mkdir -p "$temp_extract_path"
-        log_message "Extract command: tar -xzf '$temp_file' -C '$temp_extract_path'"
+        log_message "解压命令: tar -xzf '$temp_file' -C '$temp_extract_path'"
         tar -xzf "$temp_file" -C "$temp_extract_path"
         return_var=$?
 
-        log_message "Extract return value: $return_var"
+        log_message "解压返回值: $return_var"
 
-        if [ $return_var -eq 0 ]; then
+        if [ $return_var -eq 0 ];then
             mkdir -p "$install_path"
             cp -r "$temp_extract_path/"* "$install_path/"
             return_var=$?
-            log_message "Copy files return value: $return_var"
+            log_message "拷贝文件返回值: $return_var"
 
-            if [ $return_var -eq 0 ]; then
+            if [ $return_var -eq 0 ];then
                 echo "$latest_version" > "$install_path/version.txt"
-                log_message "UI update complete! Current version: $latest_version"
-                echo -e "${GREEN}UI update complete! Current version: $latest_version${NC}"
+                log_message "UI 更新完成！当前版本: $latest_version"
+                echo -e "${GREEN}UI 更新完成！当前版本: $latest_version${NC}"
             else
-                log_message "Failed to copy files!"
-                echo -e "${RED}Failed to copy files!${NC}"
+                log_message "拷贝文件失败！"
+                echo -e "${RED}拷贝文件失败！${NC}"
                 return 1
             fi
         else
-            log_message "Extraction failed, return value: $return_var"
-            echo -e "${RED}Extraction failed!${NC}"
+            log_message "解压失败，返回值: $return_var"
+            echo -e "${RED}解压失败！${NC}"
             return 1
         fi
     else
-        log_message "Download failed, return value: $return_var"
-        echo -e "${RED}Download failed!${NC}"
+        log_message "下载失败，返回值: $return_var"
+        echo -e "${RED}下载失败！${NC}"
         return 1
     fi
 
-    if [ -e "$temp_file" ]; then
+    if [ -e "$temp_file" ];then
         rm "$temp_file"
-        log_message "Cleaning up temp file: $temp_file"
+        log_message "清理临时文件: $temp_file"
     fi
 
-    if [ -e "$temp_extract_path" ]; then
+    if [ -e "$temp_extract_path" ];then
         rm -rf "$temp_extract_path"
-        log_message "Cleaning up temp directory: $temp_extract_path"
+        log_message "清理临时文件夹: $temp_extract_path"
     fi
 
-    log_message "Operation completed, returning to the main menu..."
+    log_message "操作完成，返回主菜单..."
 }
 
 install_php() {
@@ -481,28 +539,28 @@ install_php() {
 
     rm -f /tmp/php8-cgi.ipk /tmp/php8.ipk /tmp/php8-mod-curl.ipk
 
-    echo -e "${GREEN}Installation completed.${RESET}"
-    echo -e "${YELLOW}Please reboot the server to apply the changes.${RESET}"
+    echo -e "${GREEN}安装完成。${RESET}"
+    echo -e "${YELLOW}请重启服务器以应用更改。${RESET}"
 }
 
 reboot_router() {
-    echo -e "${CYAN}Rebooting the router...${NC}"
+    echo -e "${CYAN}正在重启路由器...${NC}"
     reboot
 }
 
 while true; do
     echo -e "${YELLOW}===================================${NC}"
-    echo -e "${YELLOW}|   1. Install NeKoClash (Chinese) |${NC}"
-    echo -e "${YELLOW}|   2. Install NeKoClash (English) |${NC}"
-    echo -e "${YELLOW}|   3. Install Mihomo Core         |${NC}"
-    echo -e "${YELLOW}|   4. Install Sing-box Core       |${NC}"
-    echo -e "${YELLOW}|   5. Install UI Control Panel    |${NC}"
-    echo -e "${YELLOW}|   6. Install PHP8 and PHP8-CGI   |${NC}"
-    echo -e "${YELLOW}|   7. Reboot Router               |${NC}"
-    echo -e "${YELLOW}|   0. Exit                        |${NC}"
+    echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版      |${NC}"
+    echo -e "${YELLOW}|   2. 安装 NeKoClash (Eng)       |${NC}"
+    echo -e "${YELLOW}|   3. 安装 Mihomo 核心           |${NC}"
+    echo -e "${YELLOW}|   4. 安装 Sing-box 核心         |${NC}"
+    echo -e "${YELLOW}|   5. 安装 UI 控制面板           |${NC}"
+    echo -e "${YELLOW}|   6. 安装 PHP8 和 PHP8-CGI      |${NC}"
+    echo -e "${YELLOW}|   7. 重启路由器                 |${NC}"
+    echo -e "${YELLOW}|   0. 退出                       |${NC}"
     echo -e "${YELLOW}===================================${NC}"
 
-    read -p "Please enter an option and press Enter: " choice
+    read -p "请输入选项并按回车: " choice
 
     case $choice in
         1)
@@ -529,11 +587,11 @@ while true; do
             reboot_router
             ;;
         0)
-            echo -e "${GREEN}Exiting the program.${NC}"
+            echo -e "${GREEN}退出程序。${NC}"
             exit 0
             ;;
         *)
-            echo -e "${RED}Invalid option, please try again.${NC}"
+            echo -e "${RED}无效的选项，请重试。${NC}"
             ;;
     esac
 done
