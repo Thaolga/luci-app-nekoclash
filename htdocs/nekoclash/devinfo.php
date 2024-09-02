@@ -63,25 +63,51 @@ date_default_timezone_set('Asia/Shanghai');
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Broadcasting System</title>
-  <div style="display: flex; align-items: center;">
-        <label for="weather-toggle" style="margin-right: 10px; font-weight: bold; color: #FF5733;">Weather Broadcasting</label> 
-        <input type="checkbox" id="weather-toggle" style="margin-right: 20px;">
-        <p style="margin: 0; color: #00F;">
-            Current City：
-            <span id="current-city" style="font-weight: bold; color: #33FF57;">Not Set</span> 
-</div>
-
+    <title>GitHub Music Player</title>
+    <style>
+        .controls {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .controls label {
+            margin-right: 10px;
+            font-weight: bold;
+            color: #FF5733;
+        }
+        .controls input {
+            margin-right: 20px;
+        }
+        .controls p {
+            margin: 0;
+            color: #00F;
+        }
+    </style>
 </head>
 <body>
+<div class="controls">
+    <label for="main-toggle">System Switch</label>
+    <input type="checkbox" id="main-toggle">
+    
+    <label for="weather-toggle">Weather Report</label>
+    <input type="checkbox" id="weather-toggle">
+    
+    <p>
+        Current City:
+        <span id="current-city" style="font-weight: bold; color: #33FF57;">Not Set</span>
+    </p>
+</div>
+    
     <script>
         let city = 'Beijing'; 
         const apiKey = 'fc8bd2637768c286c6f1ed5f1915eb22'; 
-        let weatherEnabled = true; 
+        let systemEnabled = true; 
+        let weatherEnabled = true;
+        let lastHour = -1; 
 
         function speakMessage(message) {
             const utterance = new SpeechSynthesisUtterance(message);
@@ -115,18 +141,21 @@ date_default_timezone_set('Asia/Shanghai');
             speakMessage(`${getGreeting()} 现在是北京时间: ${timeOfDay}${currentTime}`);
         }
 
-        function updateTime() {
+        function updateHourlyTime() {
             const now = new Date();
             const hours = now.getHours();
-            const timeOfDay = (hours >= 5 && hours < 8) ? '清晨'
-                              : (hours >= 8 && hours < 11) ? '早上'
-                              : (hours >= 11 && hours < 13) ? '中午'
-                              : (hours >= 13 && hours < 18) ? '下午'
-                              : (hours >= 18 && hours < 20) ? '傍晚'
-                              : (hours >= 20 && hours < 24) ? '晚上'
-                              : '凌晨';
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
 
-            if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+            if (minutes === 0 && seconds === 0 && hours !== lastHour) {
+                lastHour = hours;
+                const timeOfDay = (hours >= 5 && hours < 8) ? '清晨'
+                                  : (hours >= 8 && hours < 11) ? '早上'
+                                  : (hours >= 11 && hours < 13) ? '中午'
+                                  : (hours >= 13 && hours < 18) ? '下午'
+                                  : (hours >= 18 && hours < 20) ? '傍晚'
+                                  : (hours >= 20 && hours < 24) ? '晚上'
+                                  : '凌晨';
                 speakMessage(`整点播报，现在是北京时间 ${timeOfDay} ${hours}点`);
             }
         }
@@ -139,7 +168,7 @@ date_default_timezone_set('Asia/Shanghai');
             'https://www.github.com/'
         ];
 
-        function getWebsiteStatusMessage(url, status) {
+    function getWebsiteStatusMessage(url, status) {
             const statusMessages = {
                 'https://www.youtube.com/': status ? 'YouTube 网站访问正常。' : '无法访问 YouTube 网站，请检查网络连接。',
                 'https://www.google.com/': status ? 'Google 网站访问正常。' : '无法访问 Google 网站，请检查网络连接。',
@@ -214,9 +243,8 @@ date_default_timezone_set('Asia/Shanghai');
                 "clear sky": "晴天", "few clouds": "少量云", "scattered clouds": "多云",
                 "broken clouds": "多云", "shower rain": "阵雨", "rain": "雨", 
                 "light rain": "小雨", "moderate rain": "中雨", "heavy rain": "大雨",
-                "very heavy rain": "特大暴雨", "extreme rain": "极端降雨",
-                "thunderstorm": "雷暴", "thunderstorm with light rain": "雷阵雨", "thunderstorm with heavy rain": "强雷雨",
-                "snow": "雪", "light snow": "小雪", "moderate snow": "中雪", "heavy snow": "大雪",
+                "very heavy rain": "暴雨", "extreme rain": "极端降雨", "snow": "雪",
+                "light snow": "小雪", "moderate snow": "中雪", "heavy snow": "大雪",
                 "very heavy snow": "特大暴雪", "extreme snow": "极端降雪",
                 "sleet": "雨夹雪", "freezing rain": "冻雨", "mist": "薄雾",
                 "fog": "雾", "haze": "霾", "sand": "沙尘", "dust": "扬尘", "squall": "阵风",
@@ -226,7 +254,7 @@ date_default_timezone_set('Asia/Shanghai');
                 "hot": "炎热", "windy": "大风", "breezy": "微风", "blizzard": "暴风雪"
             };
 
-           const weatherDescription = descriptions[weather.weather[0].description.toLowerCase()] || weather.weather[0].description;
+            const weatherDescription = descriptions[weather.weather[0].description.toLowerCase()] || weather.weather[0].description;
             const temperature = weather.main.temp;
             const tempMax = weather.main.temp_max;
             const tempMin = weather.main.temp_min;
@@ -263,7 +291,7 @@ date_default_timezone_set('Asia/Shanghai');
         }
 
         function fetchWeather() {
-            if (!weatherEnabled) return; 
+            if (!weatherEnabled || !systemEnabled) return; 
             
             const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=zh_cn`; 
             fetch(apiUrl)
@@ -287,7 +315,7 @@ date_default_timezone_set('Asia/Shanghai');
             } else if (!startsWithUppercasePattern.test(cityInput)) {
                 speakMessage('城市名称必须以大写英文字母开头。');
             } else if (cityInput) {
-                const city = cityInput;
+                city = cityInput;
                 localStorage.setItem('city', city); 
                 document.getElementById('current-city').textContent = city;
                 speakMessage(`城市已保存为${city}，正在获取最新天气信息...`);
@@ -297,10 +325,23 @@ date_default_timezone_set('Asia/Shanghai');
             }
         }
 
+        document.getElementById('main-toggle').addEventListener('change', (event) => {
+            systemEnabled = event.target.checked;
+            localStorage.setItem('systemEnabled', systemEnabled); 
+            if (systemEnabled) {
+                speakMessage('系统已启用。');
+                speakCurrentTime();
+                speakRandomPoem();
+                if (weatherEnabled) fetchWeather();
+            } else {
+                speakMessage('系统已关闭。');
+            }
+        });
+
         document.getElementById('weather-toggle').addEventListener('change', (event) => {
             weatherEnabled = event.target.checked;
             localStorage.setItem('weatherEnabled', weatherEnabled); 
-            if (weatherEnabled) {
+            if (systemEnabled && weatherEnabled) {
                 speakMessage('天气播报已启用。');
                 fetchWeather();
             } else {
@@ -314,20 +355,36 @@ date_default_timezone_set('Asia/Shanghai');
                 city = savedCity;
                 document.getElementById('current-city').textContent = city;
             }
-            
+
+            const savedSystemEnabled = localStorage.getItem('systemEnabled');
+            if (savedSystemEnabled !== null) {
+                systemEnabled = savedSystemEnabled === 'true';
+                document.getElementById('main-toggle').checked = systemEnabled;
+            } else {
+                systemEnabled = true; 
+                localStorage.setItem('systemEnabled', systemEnabled);
+                document.getElementById('main-toggle').checked = systemEnabled;
+            }
+
             const savedWeatherEnabled = localStorage.getItem('weatherEnabled');
             if (savedWeatherEnabled !== null) {
                 weatherEnabled = savedWeatherEnabled === 'true';
+                document.getElementById('weather-toggle').checked = weatherEnabled;
+            } else {
+                weatherEnabled = true; 
+                localStorage.setItem('weatherEnabled', weatherEnabled);
                 document.getElementById('weather-toggle').checked = weatherEnabled;
             }
 
             speakMessage('欢迎使用语音播报系统！');
             checkWebsiteAccess(websites);
-            speakCurrentTime();
-            if (weatherEnabled) fetchWeather();
-            speakRandomPoem(); 
-            setInterval(updateTime, 1000);
+            if (systemEnabled) {
+                speakCurrentTime();
+                if (weatherEnabled) fetchWeather();
+                speakRandomPoem();
+            }
 
+            setInterval(updateHourlyTime, 1000);
         };
     </script>
 </body>
@@ -483,6 +540,7 @@ date_default_timezone_set('Asia/Shanghai');
         <p id="timeDisplay">00:00</p>
         <audio id="audioPlayer" controls>
             <source src="" type="audio/mpeg">
+            您的浏览器不支持音频播放。
         </audio>
         <br>
         <div id="controls">
@@ -490,323 +548,327 @@ date_default_timezone_set('Asia/Shanghai');
             <button id="orderLoop" class="rounded-button">🔁</button>
             <button id="play" class="rounded-button">⏸️</button>
             <button id="next" class="rounded-button">⏭️</button>
-        </div>
-      </div>
-    <div id="mobile-controls">
-        <button id="togglePlay" class="rounded-button">Play/Pause</button>
-        <button id="prevMobile" class="rounded-button">Previous Track</button>
-        <button id="nextMobile" class="rounded-button">Next Track</button>
-        <button id="toggleEnable" class="rounded-button">Enable/Disable</button>
-    </div>
-    <div id="tooltip"></div>
+     </div>
+</div>
+<div id="mobile-controls">
+    <button id="togglePlay" class="rounded-button">播放/暂停</button>
+    <button id="prevMobile" class="rounded-button">上一首</button>
+    <button id="nextMobile" class="rounded-button">下一首</button>
+    <button id="toggleEnable" class="rounded-button">启用/禁用</button>
+</div>
+<div id="tooltip"></div>
 
-    <script>
-        let colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
-        let isPlayingAllowed = false;
-        let isLooping = false;
-        let isOrdered = false;
-        let currentSongIndex = 0;
-        let songs = [];
-        const audioPlayer = document.getElementById('audioPlayer');
+<script>
+    let colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+    let isPlayingAllowed = false;
+    let isLooping = false;
+    let isOrdered = false;
+    let currentSongIndex = 0;
+    let songs = [];
+    const audioPlayer = document.getElementById('audioPlayer');
 
-        function speakMessage(message) {
-            const utterance = new SpeechSynthesisUtterance(message);
-            utterance.lang = 'zh-CN'; 
-            speechSynthesis.speak(utterance);
-        }
-
-        function toggleAnimation() {
-            const player = document.getElementById('player');
-            if (player.style.animationPlayState === 'paused') {
-                player.style.animationPlayState = 'running';
-            } else {
-                player.style.animationPlayState = 'paused';
-            }
-        }
-
-        var hidePlayerButton = document.getElementById('hidePlayer');
-        hidePlayerButton.addEventListener('click', function() {
-            var player = document.getElementById('player');
-            if (player.style.display === 'none') {
-                player.style.display = 'flex';
-            } else {
-                player.style.display = 'none';
-            }
-        });
-
-        function applyGradient(text, elementId) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = '';
-            for (let i = 0; i < text.length; i++) {
-                const span = document.createElement('span');
-                span.textContent = text[i];
-                span.style.color = colors[i % colors.length];
-                element.appendChild(span);
-            }
-            const firstColor = colors.shift();
-            colors.push(firstColor);
-        }
-
-        function updateTime() {
-            const now = new Date();
-            const hours = now.getHours();
-            const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
-            let ancientTime;
-
-            if (hours >= 23 || hours < 1) {
-                ancientTime = '子時';
-            } else if (hours >= 1 && hours < 3) {
-                ancientTime = '丑時';
-            } else if (hours >= 3 && hours < 5) {
-                ancientTime = '寅時';
-            } else if (hours >= 5 && hours < 7) {
-                ancientTime = '卯時';
-            } else if (hours >= 7 && hours < 9) {
-                ancientTime = '辰時';
-            } else if (hours >= 9 && hours < 11) {
-                ancientTime = '巳時';
-            } else if (hours >= 11 && hours < 13) {
-                ancientTime = '午時';
-            } else if (hours >= 13 && hours < 15) {
-                ancientTime = '未時';
-            } else if (hours >= 15 && hours < 17) {
-                ancientTime = '申時';
-            } else if (hours >= 17 && hours < 19) {
-                ancientTime = '酉時';
-            } else if (hours >= 19 && hours < 21) {
-                ancientTime = '戌時';
-            } else {
-                ancientTime = '亥時';
-            }
-
-            const displayString = `${timeString} (${ancientTime})`;
-            applyGradient(displayString, 'timeDisplay');
-        }
-
-        applyGradient('Mihomo', 'hidePlayer');
-        updateTime();
-        setInterval(updateTime, 1000);
-
-        function showTooltip(text) {
-            const tooltip = document.getElementById('tooltip');
-            tooltip.textContent = text;
-            tooltip.style.display = 'block';
-            tooltip.style.left = (window.innerWidth - tooltip.offsetWidth - 20) + 'px';
-            tooltip.style.top = '10px';
-            setTimeout(hideTooltip, 5000);
-        }
-
-        function hideTooltip() {
-            const tooltip = document.getElementById('tooltip');
-            tooltip.style.display = 'none';
-        }
-
-      function handlePlayPause() {
-    const playButton = document.getElementById('play');
-    if (isPlayingAllowed) {
-        if (audioPlayer.paused) {
-            showTooltip('Play');
-            audioPlayer.play();
-            playButton.textContent = 'Pause';
-            speakMessage('Playing');
-        } else {
-            showTooltip('Pause');
-            audioPlayer.pause();
-            playButton.textContent = 'Play';
-            speakMessage('Paused');
-        }
-    } else {
-        showTooltip('Play Disabled');
-        audioPlayer.pause();
-        speakMessage('Play Disabled');
+    function speakMessage(message) {
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = 'zh-CN'; 
+        speechSynthesis.speak(utterance);
     }
-}
 
-function handleOrderLoop() {
-    if (isPlayingAllowed) {
-        const orderLoopButton = document.getElementById('orderLoop');
-        if (isOrdered) {
-            isOrdered = false;
-            isLooping = !isLooping;
-            orderLoopButton.textContent = isLooping ? 'Loop' : '';
-            showTooltip(isLooping ? 'Looping' : 'Loop Disabled');
-            speakMessage(isLooping ? 'Looping' : 'Loop Disabled');
+    function toggleAnimation() {
+        const player = document.getElementById('player');
+        if (player.style.animationPlayState === 'paused') {
+            player.style.animationPlayState = 'running';
         } else {
-            isOrdered = true;
-            isLooping = false;
-            orderLoopButton.textContent = 'Order';
-            showTooltip('Ordered Play');
-            speakMessage('Ordered Play');
+            player.style.animationPlayState = 'paused';
         }
-    } else {
-        speakMessage('Play Disabled');
     }
-}
 
-document.addEventListener('keydown', function(event) {
-    switch (event.key) {
-        case 'ArrowLeft':
-            if (isPlayingAllowed) {
-                document.getElementById('prev').click();
+    var hidePlayerButton = document.getElementById('hidePlayer');
+    hidePlayerButton.addEventListener('click', function() {
+        var player = document.getElementById('player');
+        if (player.style.display === 'none') {
+            player.style.display = 'flex';
+        } else {
+            player.style.display = 'none';
+        }
+    });
+
+    function applyGradient(text, elementId) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = '';
+        for (let i = 0; i < text.length; i++) {
+            const span = document.createElement('span');
+            span.textContent = text[i];
+            span.style.color = colors[i % colors.length];
+            element.appendChild(span);
+        }
+        const firstColor = colors.shift();
+        colors.push(firstColor);
+    }
+
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+        let ancientTime;
+
+        if (hours >= 23 || hours < 1) {
+            ancientTime = '子時';
+        } else if (hours >= 1 && hours < 3) {
+            ancientTime = '丑時';
+        } else if (hours >= 3 && hours < 5) {
+            ancientTime = '寅時';
+        } else if (hours >= 5 && hours < 7) {
+            ancientTime = '卯時';
+        } else if (hours >= 7 && hours < 9) {
+            ancientTime = '辰時';
+        } else if (hours >= 9 && hours < 11) {
+            ancientTime = '巳時';
+        } else if (hours >= 11 && hours < 13) {
+            ancientTime = '午時';
+        } else if (hours >= 13 && hours < 15) {
+            ancientTime = '未時';
+        } else if (hours >= 15 && hours < 17) {
+            ancientTime = '申時';
+        } else if (hours >= 17 && hours < 19) {
+            ancientTime = '酉時';
+        } else if (hours >= 19 && hours < 21) {
+            ancientTime = '戌時';
+        } else {
+            ancientTime = '亥時';
+        }
+
+        const displayString = `${timeString} (${ancientTime})`;
+        applyGradient(displayString, 'timeDisplay');
+    }
+
+    applyGradient('Mihomo', 'hidePlayer');
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    function showTooltip(text) {
+        const tooltip = document.getElementById('tooltip');
+        tooltip.textContent = text;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (window.innerWidth - tooltip.offsetWidth - 20) + 'px';
+        tooltip.style.top = '10px';
+        setTimeout(hideTooltip, 5000);
+    }
+
+    function hideTooltip() {
+        const tooltip = document.getElementById('tooltip');
+        tooltip.style.display = 'none';
+    }
+
+    function handlePlayPause() {
+        const playButton = document.getElementById('play');
+        if (isPlayingAllowed) {
+            if (audioPlayer.paused) {
+                showTooltip('Play');
+                audioPlayer.play();
+                playButton.textContent = 'Pause';
+                speakMessage('Play');
             } else {
-                showTooltip('Play Disabled');
-                speakMessage('Play Disabled');
-            }
-            break;
-        case 'ArrowRight':
-            if (isPlayingAllowed) {
-                document.getElementById('next').click();
-            } else {
-                showTooltip('Play Disabled');
-                speakMessage('Play Disabled');
-            }
-            break;
-        case ' ':
-            handlePlayPause();
-            break;
-        case 'ArrowUp':
-            handleOrderLoop();
-            break;
-        case 'Escape':
-            isPlayingAllowed = !isPlayingAllowed;
-            if (!isPlayingAllowed) {
+                showTooltip('Pause');
                 audioPlayer.pause();
-                audioPlayer.src = '';
-                showTooltip('Play Disabled');
-                speakMessage('Your music playback has been paused. Press the ESC key to resume.');
-            } else {
-                showTooltip('Play Enabled');
-                speakMessage('Your music playback has resumed.');
-                if (songs.length > 0) {
-                    loadSong(currentSongIndex);
-                }
+                playButton.textContent = 'Play';
+                speakMessage('Pause');
             }
-            break;
+        } else {
+            showTooltip('Playing is prohibited');
+            audioPlayer.pause();
+            speakMessage('Playing is disabled');
+        }
     }
-});
 
-document.getElementById('play').addEventListener('click', handlePlayPause);
-document.getElementById('next').addEventListener('click', function() {
-    if (isPlayingAllowed) {
-        currentSongIndex = (currentSongIndex + 1) % songs.length;
-        loadSong(currentSongIndex);
-        showTooltip('Next');
-        speakMessage('Next');
-    } else {
-        showTooltip('Play Disabled');
-        speakMessage('Play Disabled.');
+    function handleOrderLoop() {
+        if (isPlayingAllowed) {
+            const orderLoopButton = document.getElementById('orderLoop');
+            if (isOrdered) {
+                isOrdered = false;
+                isLooping = !isLooping;
+                orderLoopButton.textContent = isLooping ? 'Loop' : '';
+                showTooltip(isLooping ? 'Looping' : 'Loop paused');
+                speakMessage(isLooping ? 'Looping' : 'Loop paused');
+            } else {
+                isOrdered = true;
+                isLooping = false;
+                orderLoopButton.textContent = 'Order';
+                showTooltip('Sequential play');
+                speakMessage('Sequential play');
+            }
+        } else {
+            speakMessage('Playing is disabled');
+        }
     }
-});
-document.getElementById('prev').addEventListener('click', function() {
-    if (isPlayingAllowed) {
-        currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-        loadSong(currentSongIndex);
-        showTooltip('Previous');
-        speakMessage('Previous');
-    } else {
-        showTooltip('Play Disabled');
-        speakMessage('Play Disabled.');
-    }
-});
-document.getElementById('orderLoop').addEventListener('click', handleOrderLoop);
 
-document.getElementById('togglePlay').addEventListener('click', handlePlayPause);
-document.getElementById('prevMobile').addEventListener('click', function() {
-    if (isPlayingAllowed) {
-        currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-        loadSong(currentSongIndex);
-        showTooltip('Previous');
-        speakMessage('Previous');
-    } else {
-        showTooltip('Play Disabled');
-        speakMessage('Play Disabled. Press the ESC key to enable playback.');
+    document.addEventListener('keydown', function(event) {
+        switch (event.key) {
+            case 'ArrowLeft':
+                if (isPlayingAllowed) {
+                    document.getElementById('prev').click();
+                } else {
+                    showTooltip('Playing is prohibited');
+                    speakMessage('Playing is disabled');
+                }
+                break;
+            case 'ArrowRight':
+                if (isPlayingAllowed) {
+                    document.getElementById('next').click();
+                } else {
+                    showTooltip('Playing is prohibited');
+                    speakMessage('Playing is disabled');
+                }
+                break;
+            case ' ':
+                handlePlayPause();
+                break;
+            case 'ArrowUp':
+                handleOrderLoop();
+                break;
+            case 'Escape':
+                isPlayingAllowed = !isPlayingAllowed;
+                if (!isPlayingAllowed) {
+                    audioPlayer.pause();
+                    audioPlayer.src = '';
+                    showTooltip('Playing is disabled');
+                    speakMessage('Your music playback has been paused. Press the ESC key to resume.');
+                } else {
+                    showTooltip('Playing is enabled');
+                    speakMessage('Your music playback has resumed.');
+                    if (songs.length > 0) {
+                        loadSong(currentSongIndex);
+                    }
+                }
+                break;
+        }
+    });
+
+    document.getElementById('play').addEventListener('click', handlePlayPause);
+    document.getElementById('next').addEventListener('click', function() {
+        if (isPlayingAllowed) {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            showTooltip('Next song');
+            speakMessage('Next song');
+        } else {
+            showTooltip('Playing is prohibited');
+            speakMessage('Playing is disabled.');
+        }
+    });
+    document.getElementById('prev').addEventListener('click', function() {
+        if (isPlayingAllowed) {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            showTooltip('Previous song');
+            speakMessage('Previous song');
+        } else {
+            showTooltip('Playing is prohibited');
+            speakMessage('Playing is disabled.');
+        }
+    });
+    document.getElementById('orderLoop').addEventListener('click', handleOrderLoop);
+
+    document.getElementById('togglePlay').addEventListener('click', handlePlayPause);
+    document.getElementById('prevMobile').addEventListener('click', function() {
+        if (isPlayingAllowed) {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            showTooltip('Previous song');
+            speakMessage('Previous song');
+        } else {
+            showTooltip('Playing is prohibited');
+            speakMessage('Playing is disabled. Press the ESC key to enable playback.');
+        }
+    });
+    document.getElementById('nextMobile').addEventListener('click', function() {
+        if (isPlayingAllowed) {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            showTooltip('Next song');
+            speakMessage('Next song');
+        } else {
+            showTooltip('Playing is prohibited');
+            speakMessage('Playing is disabled. Press the ESC key to enable playback.');
+        }
+    });
+    document.getElementById('toggleEnable').addEventListener('click', function() {
+        isPlayingAllowed = !isPlayingAllowed;
+        if (!isPlayingAllowed) {
+            audioPlayer.pause();
+            audioPlayer.src = '';
+            showTooltip('Playing is disabled');
+            speakMessage('Your music playback has been paused. Press the ESC key to resume.');
+        } else {
+            showTooltip('Playing is enabled');
+            speakMessage('Your music playback has resumed.');
+            if (songs.length > 0) {
+                loadSong(currentSongIndex);
+            }
+        }
+    });
+
+    function loadSong(index) {
+        if (isPlayingAllowed && index >= 0 && index < songs.length) {
+            audioPlayer.src = songs[index];
+            audioPlayer.play();
+        } else {
+            audioPlayer.pause();
+        }
     }
-});
-document.getElementById('nextMobile').addEventListener('click', function() {
-    if (isPlayingAllowed) {
-        currentSongIndex = (currentSongIndex + 1) % songs.length;
-        loadSong(currentSongIndex);
-        showTooltip('Next');
-        speakMessage('Next');
-    } else {
-        showTooltip('Play Disabled');
-        speakMessage('Play Disabled. Press the ESC key to enable playback.');
-    }
-});
-document.getElementById('toggleEnable').addEventListener('click', function() {
-    isPlayingAllowed = !isPlayingAllowed;
-    if (!isPlayingAllowed) {
-        audioPlayer.pause();
-        audioPlayer.src = '';
-        showTooltip('Play Disabled');
-        speakMessage('Your music playback has been paused. Press the ESC key to resume.');
-    } else {
-        showTooltip('Play Enabled');
-        speakMessage('Your music playback has resumed.');
+
+    audioPlayer.addEventListener('ended', function() {
+        if (isPlayingAllowed) {
+            if (isLooping) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
+            } else {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+                loadSong(currentSongIndex);
+            }
+        }
+    });
+
+    function initializePlayer() {
         if (songs.length > 0) {
             loadSong(currentSongIndex);
         }
     }
-});
 
-function loadSong(index) {
-    if (isPlayingAllowed && index >= 0 && index < songs.length) {
-        audioPlayer.src = songs[index];
-        audioPlayer.play();
+    function loadCustomPlaylist(link) {
+        fetch(link)
+            .then(response => response.text())
+            .then(data => {
+                songs = data.split('\n').filter(url => url.trim() !== '');
+                initializePlayer();
+                speakMessage('Custom playlist loaded'); 
+            })
+            .catch(error => {
+                console.error('Error loading custom playlist:', error);
+                speakMessage('Error loading custom playlist, loading default playlist'); 
+                loadDefaultPlaylist();
+            });
+    }
+
+    function loadDefaultPlaylist() {
+        fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
+            .then(response => response.text())
+            .then(data => {
+                songs = data.split('\n').filter(url => url.trim() !== '');
+                initializePlayer();
+                console.log(songs);
+            })
+            .catch(error => {
+                console.error('Error loading default playlist:', error);
+                speakMessage('Error loading default playlist'); 
+            });
+    }
+
+    const customPlaylist = localStorage.getItem('customPlaylist');
+    if (customPlaylist) {
+        loadCustomPlaylist(customPlaylist);
     } else {
-        audioPlayer.pause();
+        loadDefaultPlaylist();
     }
-}
-
-audioPlayer.addEventListener('ended', function() {
-    if (isPlayingAllowed) {
-        if (isLooping) {
-            audioPlayer.currentTime = 0;
-            audioPlayer.play();
-        } else {
-            currentSongIndex = (currentSongIndex + 1) % songs.length;
-            loadSong(currentSongIndex);
-        }
-    }
-});
-
-function initializePlayer() {
-    if (songs.length > 0) {
-        loadSong(currentSongIndex);
-    }
-}
-
-function loadCustomPlaylist(link) {
-    fetch(link)
-        .then(response => response.text())
-        .then(data => {
-            songs = data.split('\n').filter(url => url.trim() !== '');
-            initializePlayer();
-            speakMessage('Custom playlist loaded'); 
-        })
-        .catch(error => {
-            console.error('Error loading playlist:', error);
-            speakMessage('Error loading playlist'); 
-        });
-}
-
-const customPlaylist = localStorage.getItem('customPlaylist');
-if (customPlaylist) {
-    loadCustomPlaylist(customPlaylist);
-} else {
-    fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
-        .then(response => response.text())
-        .then(data => {
-            songs = data.split('\n').filter(url => url.trim() !== '');
-            initializePlayer();
-            console.log(songs);
-        })
-        .catch(error => {
-            console.error('Error fetching songs:', error);
-            speakMessage('Error loading default playlist'); 
-        });
-}
-
     </script>
 </body>
 </html>

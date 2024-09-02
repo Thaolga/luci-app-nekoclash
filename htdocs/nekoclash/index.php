@@ -695,12 +695,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        Current City: <span id="current-city">Beijing</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>        
+                    <td>               
                         <button id="resetPlaylistButton" class="btn btn-warning">Restore Default Playlist</button>
                     </td>
                 </tr>
