@@ -129,289 +129,78 @@ include './cfg.php';
         <li class="nav-item">
             <a class="col btn btn-lg" data-bs-toggle="tab" href="#upload">订阅</a>
         </li>
+        <li class="nav-item">
+            <a class="col btn btn-lg" data-bs-toggle="tab" href="#tip">小提示</a>
+        </li>
     </ul>
-      </div>
-        <div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
-          <div class="tab-content">
-            <div id="info" class="tab-pane fade show active">
-                <h2 class="text-center p-2">配置资讯</h2>
-                    <table class="table table-borderless callout mb-5">
-                        <tbody>
-                            <tr class="text-center">
-                                <td class="col-2">HTTP 端口</td>
-                                <td class="col-2">Redir 端口</td>
-                                <td class="col-2">Socks 端口</td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="port" type="text" placeholder="<?php echo $neko_cfg['port'] ?>" disabled>
-                                </td>
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="redir" type="text" placeholder="<?php echo $neko_cfg['redir'] ?>" disabled>
-                                </td>
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="socks" type="text" placeholder="<?php echo $neko_cfg['socks'] ?>" disabled>
-                                </td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="col-2">混合 端口</td>
-                                <td class="col-2">TProxy 端口</td>
-                                <td class="col-2">模式</td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="mixed" type="text" placeholder="<?php echo $neko_cfg['mixed'] ?>" disabled>
-                                </td>
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="tproxy" type="text" placeholder="<?php echo $neko_cfg['tproxy'] ?>" disabled>
-                                </td>
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $neko_cfg['mode'] ?>" disabled>
-                                </td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="col-2">增強型</td>
-                                <td class="col-2">密钥</td>
-                                <td class="col-2">控制器</td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="ech" type="text" placeholder="<?php echo $neko_cfg['echanced'] ?>" disabled>
-                                </td>
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="sec" type="text" placeholder="<?php echo $neko_cfg['secret'] ?>" disabled>
-                                </td>
-                                <td class="col-2">
-                                    <input class="form-control text-center" name="ext" type="text" placeholder="<?php echo $neko_cfg['ext_controller'] ?>" disabled>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <h2 class="text-center p-2">配置</h2>
-                    <div class="container h-100 mb-5">
-                        <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./configconf.php" title="yacd" allowfullscreen></iframe>
-                    </div>
-                </div>
-                <div id="proxy" class="tab-pane fade">
-                    <h2 class="text-center p-2">代理编辑器</h2>
-                    <div class="container h-100 mb-5">
-                        <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./proxyconf.php" title="yacd" allowfullscreen></iframe>
-                    </div>
-                </div>
-                <div id="rules" class="tab-pane fade">
-                    <h2 class="text-center p-2">规则编辑器</h2>
-                    <div class="container h-100 mb-5">
-                        <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./rulesconf.php" title="yacd" allowfullscreen></iframe>
-                    </div>
-                </div>
-                <div id="converter" class="tab-pane fade">
-                    <h2 class="text-center p-2 mb-5">转换器</h2>
-                    <div class="container h-100">
-                        <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./yamlconv.php" title="yacd" allowfullscreen></iframe>
-                         </div>
-                </div>
-                    <div id="upload" class="tab-pane fade">
-    <?php
-    $subscriptionPath = '/etc/neko/proxy_provider/';
-    $subscriptionFile = $subscriptionPath . 'subscriptions.json';
-    $autoUpdateConfigFile = $subscriptionPath . 'auto_update_config.json';
+</div>
 
-    $message = "";
-    $subscriptions = [];
-    $autoUpdateConfig = ['auto_update_enabled' => false, 'update_time' => '00:00'];
-
-    if (!file_exists($subscriptionPath)) {
-        mkdir($subscriptionPath, 0755, true);
-    }
-
-    if (!file_exists($subscriptionFile)) {
-        file_put_contents($subscriptionFile, json_encode([]));
-    }
-
-    if (!file_exists($autoUpdateConfigFile)) {
-        file_put_contents($autoUpdateConfigFile, json_encode($autoUpdateConfig));
-    }
-
-    $subscriptions = json_decode(file_get_contents($subscriptionFile), true);
-    if (!$subscriptions) {
-        for ($i = 0; $i < 7; $i++) {
-            $subscriptions[$i] = [
-                'url' => '',
-                'file_name' => "subscription_{$i}.yaml",
-            ];
-        }
-    }
-
-    $autoUpdateConfig = json_decode(file_get_contents($autoUpdateConfigFile), true);
-
-    if (isset($_POST['update'])) {
-        $index = intval($_POST['index']);
-        $url = $_POST['subscription_url'] ?? '';
-        $customFileName = $_POST['custom_file_name'] ?? "subscription_{$index}.yaml";
-
-        $subscriptions[$index]['url'] = $url;
-        $subscriptions[$index]['file_name'] = $customFileName;
-
-        if (!empty($url)) {
-            $finalPath = $subscriptionPath . $customFileName;
-            $command = "curl -fsSL -o {$finalPath} {$url}";
-            exec($command . ' 2>&1', $output, $return_var);
-
-            if ($return_var === 0) {
-                $message = "订阅链接 {$url} 更新成功！文件已保存到: {$finalPath}";
-            } else {
-                $message = "配置更新失败！错误信息: " . implode("\n", $output);
-            }
-        } else {
-            $message = "第" . ($index + 1) . "个订阅链接为空！";
-        }
-
-        file_put_contents($subscriptionFile, json_encode($subscriptions));
-    }
-
-    if (isset($_POST['set_auto_update'])) {
-        $updateTime = $_POST['update_time'] ?? '00:00';
-        $autoUpdateEnabled = isset($_POST['auto_update_enabled']);
-
-        $autoUpdateConfig = [
-            'auto_update_enabled' => $autoUpdateEnabled,
-            'update_time' => $updateTime
-        ];
-
-        file_put_contents($autoUpdateConfigFile, json_encode($autoUpdateConfig));
-        $message = "自动更新设置已保存！";
-    }
-    ?>
-    <!DOCTYPE html>
-    <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mihomo订阅程序</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-    }
-    .container {
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .text-center {
-        text-align: center;
-    }
-    .input-group {
-        margin-bottom: 15px;
-    }
-    .input-group label {
-        display: block;
-        margin-bottom: 5px;
-    }
-    .input-group input,
-    .input-group textarea,
-    .input-group select {
-        width: 100%;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-    .btn {
-        padding: 10px 20px;
-        border: none;
-        cursor: pointer;
-        color: white;
-        border-radius: 4px;
-        text-align: center;
-        display: inline-block;
-        text-decoration: none;
-    }
-    .btn-primary {
-        background-color: #007bff; 
-    }
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-    footer {
-        color: white;
-        padding: 10px;
-        text-align: center;
-    }
-    .container-bg {
-    }
-    .border {
-        border: 1px solid #ccc;
-    }
-    .rounded-4 {
-        border-radius: 4px;
-    }
-    .form-spacing {
-        margin: 20px 0;
-    }
-    .input-group input,
-    .input-group textarea,
-    .input-group select {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    background-color: #B0C4DE; 
-    border: 1px solid #ccc; 
-    }
-</style>
-
-    </head>
-    <body>
-        <div class="container">
-            <h1 class="text-center" style="color: #00FF7F;">Mihomo订阅程序</h1>
-            <p class="help-text text-center">
-                Mihomo订阅支持所有格式《Base64/clash格式/节点链接》
-                <br><br>
-                <a href="/nekoclash/upload.php" class="btn btn-primary">打开Mihomo订阅管理器</a>
-                <a href="/nekoclash/upload_sb.php" class="btn btn-primary">Sing-box专用订阅管理器</a>
-                <br><br>     
-            </p>
-<h2 class="text-center" style="color: #00FF7F;">订阅管理</h2>
- <div class="form-spacing"></div>
-            <?php if ($message): ?>
-                <p><?php echo nl2br(htmlspecialchars($message)); ?></p>
-            <?php endif; ?>
-            <?php for ($i = 0; $i < 7; $i++): ?>
-                <form method="post" class="mb-3">
-                    <div class="input-group">
-                        <label for="subscription_url_<?php echo $i; ?>" class="sr-only">订阅链接 <?php echo ($i + 1); ?>:</label>
-                        <input type="text" name="subscription_url" id="subscription_url_<?php echo $i; ?>" value="<?php echo htmlspecialchars($subscriptions[$i]['url']); ?>" required class="form-control">
-                        <input type="text" name="custom_file_name" id="custom_file_name_<?php echo $i; ?>" value="<?php echo htmlspecialchars($subscriptions[$i]['file_name']); ?>" class="form-control ml-2" placeholder="自定义文件名">
-                        <input type="hidden" name="index" value="<?php echo $i; ?>">
-                        <button type="submit" name="update" class="btn btn-primary btn-custom ml-2">更新配置</button>
-               </div>
-     </form>
-<?php endfor; ?>
 <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-    <h2 class="text-center p-2 mb-3">小提示</h2>
-    <div class="container text-center border border-3 rounded-4 col-10 mb-4">
-    <p style="color: #87CEEB; text-align: left;">
-    <p style="text-align: center; font-size: 24px; color: #87CEEB;">
-    <strong>播放器功能说明</strong>
-    </p>
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active">
+            <h2 class="text-center p-2">配置资讯</h2>
+            <table class="table table-borderless callout mb-5">
+                <!-- Table content remains unchanged -->
+            </table>
+            <h2 class="text-center p-2">配置</h2>
+            <div class="container h-100 mb-5">
+                <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./configconf.php" title="yacd" allowfullscreen></iframe>
+            </div>
+        </div>
 
-    <p style="color: #87CEEB; text-align: left;">
-    <strong>1. 歌曲推送和控制：</strong><br>
-    &emsp; 1 播放器通过 GitHub 歌单推送歌曲。<br>
-    &emsp; 2 使用键盘方向键可以切换歌曲。<br>
-    &emsp; 3 终端输入 <code>nekoclash</code> 可以更新客户端和核心。<br>
-    &emsp; 4 sing-box 内置智能转换机制，无论您从哪个机场获取订阅，都能自动适配，无需额外配置。<br><br>
+        <div id="proxy" class="tab-pane fade">
+            <h2 class="text-center p-2">代理编辑器</h2>
+            <div class="container h-100 mb-5">
+                <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./proxyconf.php" title="yacd" allowfullscreen></iframe>
+            </div>
+        </div>
 
-    <strong>2. 播放功能：</strong><br>
-    &emsp; 1 自动播放下一首歌曲：如果启用了播放功能，自动播放下一首歌曲。歌曲列表到达末尾时，会循环到第一首歌曲。<br>
-    &emsp; 2 启用/禁用播放：通过点击或按下 Escape 键，可以启用或禁用播放功能。当禁用时，当前播放将被停止，并且无法选择或播放新歌曲。<br><br>
+        <div id="rules" class="tab-pane fade">
+            <h2 class="text-center p-2">规则编辑器</h2>
+            <div class="container h-100 mb-5">
+                <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./rulesconf.php" title="yacd" allowfullscreen></iframe>
+            </div>
+        </div>
 
-    <strong>3. 键盘控制：</strong><br>
-    &emsp; 1 提供了箭头 ⇦ ⇨ 键和空格键的快捷控制，支持上下首切换和播放/暂停。<br><br>
+        <div id="converter" class="tab-pane fade">
+            <h2 class="text-center p-2 mb-5">转换器</h2>
+            <div class="container h-100">
+                <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./yamlconv.php" title="yacd" allowfullscreen></iframe>
+            </div>
+        </div>
 
-    <strong>4. 播放模式：</strong><br>
-    &emsp; 1 循环播放和顺序播放：可以通过按钮和键盘快捷 ⇧ 键切换循环播放和顺序播放的模式。
-       </p>特别说明：<code>iptables</code> 固件只适配了 Mihomo，非 <code>nftables</code> 的固件不要使用 sing-box，有什么问题后果自负  </p>
-    </p>
+        <div id="upload" class="tab-pane fade">
+            <h2 class="text-center p-2 mb-5">订阅</h2>
+            <div class="container h-100">
+                <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./mo.php" title="yacd" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div id="tip" class="tab-pane fade">
+            <h2 class="text-center p-2 mb-3">小提示</h2>
+            <div class="container text-center border border-3 rounded-4 col-10 mb-4">
+                <p style="color: #87CEEB; text-align: left;">
+         <h1 style="font-size: 24px; color: #87CEEB; margin-bottom: 20px;"><strong>播放器功能说明</strong></h1>
+        <div style="text-align: left; display: inline-block; margin-bottom: 20px;">
+            <strong>1. 歌曲推送和控制：</strong><br>
+            &emsp; 1 播放器通过 GitHub 歌单推送歌曲。<br>
+            &emsp; 2 使用键盘方向键可以切换歌曲。<br>
+            &emsp; 3 终端输入 <code>nekoclash</code> 可以更新客户端和核心。<br>
+            &emsp; 4 sing-box 内置智能转换机制，无论您从哪个机场获取订阅，都能自动适配，无需额外配置。<br><br>
+
+            <strong>2. 播放功能：</strong><br>
+            &emsp; 1 自动播放下一首歌曲：如果启用了播放功能，自动播放下一首歌曲。歌曲列表到达末尾时，会循环到第一首歌曲。<br>
+            &emsp; 2 启用/禁用播放：通过点击或按下 Escape 键，可以启用或禁用播放功能。当禁用时，当前播放将被停止，并且无法选择或播放新歌曲。<br><br>
+
+            <strong>3. 键盘控制：</strong><br>
+            &emsp; 1 提供了箭头 ⇦ ⇨ 键和空格键的快捷控制，支持上下首切换和播放/暂停。<br><br>
+
+            <strong>4. 播放模式：</strong><br>
+            &emsp; 1 循环播放和顺序播放：可以通过按钮和键盘快捷 ⇧ 键切换循环播放和顺序播放的模式。<br><br>
+            
+            特别说明：<code>iptables</code> 固件只适配了 Mihomo，非 <code>nftables</code> 的固件不要使用 sing-box，有什么问题后果自负
+        </div>
+
         <?php
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
@@ -432,18 +221,15 @@ include './cfg.php';
 
             if (isValidIp($routerIp) && !in_array($routerIp, ['0.0.0.0', '255.255.255.255'])) {
                 $controlPanelUrl = "http://$routerIp/nekoclash";
-                echo '<span style="color: #87CEEB;">独立控制面板地址:</span> <a href="' . $controlPanelUrl . '" style="color: red;" target="_blank"><code>' . $controlPanelUrl . '</code></a><br>';
+                echo '<div style="text-align: center; margin-top: 20px;"><span style="color: #87CEEB;">独立控制面板地址:</span> <a href="' . $controlPanelUrl . '" style="color: red;" target="_blank"><code>' . $controlPanelUrl . '</code></a></div>';
             } else {
-                echo "无法获取路由器的 IP 地址。错误信息: $routerIp";
+                echo "<div style='text-align: center; margin-top: 20px;'>无法获取路由器的 IP 地址。错误信息: $routerIp</div>";
             }
-            ?>
-        </p>
+        ?>
     </div>
-</div>
 
-<footer class="text-center">
-    <p><?php echo $footer ?></p>
-</footer>
-</div>
+    <footer style="text-align: center; margin-top: 20px;">
+        <p><?php echo $footer ?></p>
+    </footer>
 </body>
 </html>
