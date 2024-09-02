@@ -132,11 +132,7 @@ if (isset($_POST['set_auto_update'])) {
     <div class="container">
         <h1 class="text-center" style="color: #00FF7F;">Mihomo订阅程序</h1>
         <p class="help-text text-center">
-            Mihomo订阅支持所有格式《Base64/clash格式/节点链接》
-            <br><br>
-            <a href="/nekoclash/upload.php" class="btn btn-primary btn-large btn-rounded">打开Mihomo订阅管理器</a>
-            <a href="/nekoclash/upload_sb.php" class="btn btn-primary btn-large btn-rounded">Sing-box专用订阅管理器</a>
-            <br><br>     
+            Mihomo订阅支持所有格式《Base64/clash格式/节点链接》   
         </p>
         <h2 class="text-center" style="color: #00FF7F;">订阅管理</h2>
         <div class="form-spacing"></div>
