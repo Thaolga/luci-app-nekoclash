@@ -132,11 +132,7 @@ if (isset($_POST['set_auto_update'])) {
     <div class="container">
         <h1 class="text-center" style="color: #00FF7F;">Mihomo Subscription Program</h1>
         <p class="help-text text-center">
-            Mihomo subscriptions support all formats: Base64 / Clash format / Node links
-            <br><br>
-            <a href="/nekoclash/upload.php" class="btn btn-primary btn-large btn-rounded">Open Mihomo Subscription Manager</a>
-            <a href="/nekoclash/upload_sb.php" class="btn btn-primary btn-large btn-rounded">Sing-box Dedicated Subscription Manager</a>
-            <br><br>     
+            Mihomo subscriptions support all formats: Base64 / Clash format / Node links        
         </p>
         <h2 class="text-center" style="color: #00FF7F;">Subscription Management</h2>
         <div class="form-spacing"></div>
