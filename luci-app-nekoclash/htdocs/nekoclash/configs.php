@@ -198,7 +198,6 @@ include './cfg.php';
             <strong>4. 播放模式：</strong><br>
             &emsp; 1 循环播放和顺序播放：可以通过按钮和键盘快捷 ⇧ 键切换循环播放和顺序播放的模式。<br><br>
             
-            特别说明：<code>iptables</code> 固件只适配了 Mihomo，非 <code>nftables</code> 的固件不要使用 sing-box，有什么问题后果自负
         </div>
 
         <?php

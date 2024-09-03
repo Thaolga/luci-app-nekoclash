@@ -390,8 +390,13 @@ $singboxStartLogFile = $logDir . 'singbox_start_log.txt';
 $singBoxPath = '/usr/bin/sing-box';
 $configFilePath = '/etc/neko/config/config.json';
 
-$nftables_rules = <<<EOF
-#!/usr/sbin/nft -f
+$start_script = <<<EOF
+#!/bin/bash
+
+if command -v fw4 > /dev/null; then
+    echo "Detected fw4, configuring nftables rules..."
+
+    echo '#!/usr/sbin/nft -f
 
 flush ruleset
 
@@ -451,16 +456,52 @@ table inet singbox {
     type filter hook prerouting priority mangle; policy accept;
     iifname { lo, eth0 } meta l4proto { tcp, udp } ct direction original goto singbox-tproxy
   }
-}
-EOF;
+}' > /etc/nftables.conf
 
-$start_script = <<<EOF
-#!/bin/bash
+    nft -f /etc/nftables.conf
 
-echo '$nftables_rules' > /etc/nftables.conf
-nft -f /etc/nftables.conf
+elif command -v fw3 > /dev/null; then
+    echo "Detected fw3, configuring iptables rules..."
 
-$singBoxPath run -c $configFilePath
+    iptables -t mangle -F
+    iptables -t mangle -X
+
+    iptables -t mangle -N singbox-mark
+    iptables -t mangle -A singbox-mark -m addrtype --dst-type UNSPEC,LOCAL,ANYCAST,MULTICAST -j RETURN
+    iptables -t mangle -A singbox-mark -d 10.0.0.0/8 -j RETURN
+    iptables -t mangle -A singbox-mark -d 127.0.0.0/8 -j RETURN
+    iptables -t mangle -A singbox-mark -d 169.254.0.0/16 -j RETURN
+    iptables -t mangle -A singbox-mark -d 172.16.0.0/12 -j RETURN
+    iptables -t mangle -A singbox-mark -d 192.168.0.0/16 -j RETURN
+    iptables -t mangle -A singbox-mark -d 240.0.0.0/4 -j RETURN
+    iptables -t mangle -A singbox-mark -p udp --dport 123 -j RETURN
+    iptables -t mangle -A singbox-mark -j MARK --set-mark 1
+
+    iptables -t mangle -N singbox-tproxy
+    iptables -t mangle -A singbox-tproxy -m addrtype --dst-type UNSPEC,LOCAL,ANYCAST,MULTICAST -j RETURN
+    iptables -t mangle -A singbox-tproxy -d 10.0.0.0/8 -j RETURN
+    iptables -t mangle -A singbox-tproxy -d 127.0.0.0/8 -j RETURN
+    iptables -t mangle -A singbox-tproxy -d 169.254.0.0/16 -j RETURN
+    iptables -t mangle -A singbox-tproxy -d 172.16.0.0/12 -j RETURN
+    iptables -t mangle -A singbox-tproxy -d 192.168.0.0/16 -j RETURN
+    iptables -t mangle -A singbox-tproxy -d 240.0.0.0/4 -j RETURN
+    iptables -t mangle -A singbox-tproxy -p udp --dport 123 -j RETURN
+    iptables -t mangle -A singbox-tproxy -p tcp -j TPROXY --tproxy-mark 0x1/0x1 --on-port 9888
+    iptables -t mangle -A singbox-tproxy -p udp -j TPROXY --tproxy-mark 0x1/0x1 --on-port 9888
+
+    iptables -t mangle -A OUTPUT -p tcp -m cgroup ! --cgroup 1 -j singbox-mark
+    iptables -t mangle -A OUTPUT -p udp -m cgroup ! --cgroup 1 -j singbox-mark
+    iptables -t mangle -A PREROUTING -i lo -p tcp -j singbox-tproxy
+    iptables -t mangle -A PREROUTING -i lo -p udp -j singbox-tproxy
+    iptables -t mangle -A PREROUTING -i eth0 -p tcp -j singbox-tproxy
+    iptables -t mangle -A PREROUTING -i eth0 -p udp -j singbox-tproxy
+else
+    echo "Neither fw3 nor fw4 detected, unable to configure firewall rules."
+    exit 1
+fi
+
+echo "Starting sing-box..."
+/usr/bin/sing-box run -c /etc/neko/config/config.json
 EOF;
 
 $maxFileSize = 2 * 1024 * 1024;  
@@ -543,12 +584,12 @@ function getSingboxVersion() {
             }
         }
     }
-    return '未知版本';
+    return 'Unknown version';
 }
 
 function getSingboxPID() {
     global $singBoxPath;
-    $command = "ps w | grep '$singBoxPath' | grep -v grep | awk '{print $1}'";
+    $command = "ps w | grep '$singBoxPath' | grep -v grep | awk '{print \$1}'";
     exec($command, $output);
     return isset($output[0]) ? $output[0] : null;
 }
@@ -593,12 +634,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             createStartScript();
             exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
             $version = getSingboxVersion();
-            $logMessage = $returnVar === 0 ? "Sing-box 已启动，版本号: $version" : "启动 Sing-box 失败";
+            $logMessage = $returnVar === 0 ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";
             logToFile($logFile, $logMessage); 
             $singbox_status = $returnVar === 0 ? 1 : 0;
         } elseif ($_POST['singbox'] === 'disable') {
             $success = stopSingbox();
-            $logMessage = $success ? "Sing-box 已停止" : "停止 Sing-box 失败";
+            $logMessage = $success ? "Sing-box has been stopped" : "Failed to stop Sing-box";
             logToFile($logFile, $logMessage); 
             $singbox_status = $success ? 0 : $singbox_status;
         } elseif ($_POST['singbox'] === 'restart') {
@@ -609,28 +650,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 createStartScript();
                 exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
                 $version = getSingboxVersion();
-                $logMessage = $returnVar === 0 ? "Sing-box 已重启，版本号: $version" : "重启 Sing-box 失败";
+                $logMessage = $returnVar === 0 ? "Sing-box has been restarted, version: $version" : "Failed to restart Sing-box";
                 logToFile($logFile, $logMessage); 
                 $singbox_status = $returnVar === 0 ? 1 : 0;
             } else {
-                logToFile($logFile, "停止 Sing-box 失败"); 
+                logToFile($logFile, "Failed to stop Sing-box"); 
             }
         }
     }
 
     if (isset($_POST['clear_singbox_log'])) {
         file_put_contents($singBoxLogFile, ''); 
-        $message = 'Sing-box 运行日志已清空';
+        $message = 'Sing-box running log has been cleared';
     }
 
     if (isset($_POST['clear_plugin_log'])) {
         file_put_contents($logFile, ''); 
-        $message = '插件日志已清空';
+        $message = 'Plugin log has been cleared';
     }
 
     if (isset($_POST['clear_kernel_log'])) {
         file_put_contents($kernelLogFile, ''); 
-        $message = '内核日志已清空';
+        $message = 'Kernel log has been cleared';
     }
 }
 
@@ -638,7 +679,7 @@ function readLogFile($filePath) {
     if (file_exists($filePath)) {
         return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000)));
     } else {
-        return '日志文件不存在。';
+        return 'Log file does not exist.';
     }
 }
 

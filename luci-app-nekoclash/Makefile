@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_MAINTAINER:=Thaolga <https://github.com/Thaolga/luci-app-nekoclash>
 PKG_NAME:=luci-app-nekoclash
-PKG_VERSION:=1.2.2
+PKG_VERSION:=1.2.3
 PKG_RELEASE:=cn
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -16,7 +16,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=3. Applications
 	TITLE:=LuCI support for mihomo
 	PKGARCH:=all
-	DEPENDS:=+kmod-tun +bash +curl +jq +php8 +php8-fpm +php8-cgi +php8-mod-curl 
+	DEPENDS:=+kmod-tun +bash +curl +jq +php8  +php8-cgi +php8-mod-curl 
 endef
 
 define Package/$(PKG_NAME)/description
