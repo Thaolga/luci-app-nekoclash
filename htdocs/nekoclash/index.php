@@ -509,7 +509,8 @@ function stopSingbox() {
 }
 
 function logToFile($filePath, $message) {
-    file_put_contents($filePath, $message . "\n", FILE_APPEND);
+    $timestamp = date('Y-m-d H:i:s');
+    file_put_contents($filePath, "[$timestamp] $message\n", FILE_APPEND);
 }
 
 function applyFirewallRules() {
@@ -526,9 +527,22 @@ function createStartScript() {
     }
 }
 
+function formatLogLine($line) {
+    $pattern = '/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/';
+    if (preg_match($pattern, $line, $matches)) {
+        $timestamp = $matches[1];
+        $formattedTimestamp = date('Y-m-d H:i:s', strtotime($timestamp));
+        return str_replace($timestamp, $formattedTimestamp, $line);
+    }
+    return $line;
+}
+
 function readRecentLogLines($filePath, $lines = 1000) {
     $command = "tail -n $lines " . escapeshellarg($filePath);
-    return shell_exec($command);
+    $logContent = shell_exec($command);
+    $logLines = explode("\n", $logContent);
+    $formattedLines = array_map('formatLogLine', $logLines);
+    return implode("\n", $formattedLines);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -771,7 +785,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         .log-container {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             height: 100%;
             min-width: 0; 
         }
@@ -785,30 +798,26 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             justify-content: center; 
             margin-top: auto;
         }
-        textarea.form-control {
+        pre.form-control {
             height: 300px; 
             width: 100%; 
-            resize: none; 
             padding: 10px;
             box-sizing: border-box;
             white-space: pre-wrap; 
-            overflow-x: auto; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
         }
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-        .col {
-            flex: 1;
-            min-width: 0; 
-        }
-        .btn-clear-log {
+        .log-section {
             margin-bottom: 20px;
-            flex-shrink: 0; 
+            border: 2px solid #c0c0c0; 
+            padding: 10px; 
+            border-radius: 8px;
         }
         .nav-buttons {
             display: flex;
+            flex-wrap: wrap; 
             justify-content: center;
             gap: 10px; 
             margin-top: 20px;
@@ -828,12 +837,12 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             opacity: 0.9;
         }
         .current-menu-button {
-            background-color: #6c757d; 
-            border-color: #6c757d;
+            background-color: #007bff; 
+            border-color: #007bff;
         }
         .current-menu-button:hover {
-            background-color: #5a6268; 
-            border-color: #5a6268;
+            background-color: #0056b3; 
+            border-color: #004085;
         }
         .config-menu-button {
             background-color: #28a745; 
@@ -860,9 +869,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             background-color: #ff69b4; 
             border-color: #ff1493;    
         }
-        .current-menu-button {
-            background: #007bff; 
-        }
         .main-menu-button {
             background-color: #dc3545; 
             border-color: #dc3545;
@@ -874,36 +880,47 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         footer {
             margin-top: 20px;
         }
+
+        @media (max-width: 768px) {
+            .nav-buttons a {
+                display: block; 
+                width: 100%; 
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
         <h2 class="text-center p-2">Logs</h2>
-        <div class="row mt-3">
-            <div class="col log-container">
+        <div class="log-section">
+            <div class="log-container">
                 <h4 class="log-header">Plugin Logs</h4>
-                <textarea class="form-control" readonly><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                 <form action="index.php" method="post" class="mt-3 log-footer">
                     <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">Clear Plugin Logs</button>
                 </form>
             </div>
-            <div class="col log-container">
+        </div>
+        <div class="log-section">
+            <div class="log-container">
                 <h4 class="log-header">Mihomo Logs</h4>
-                <textarea class="form-control" readonly><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                 <form action="index.php" method="post" class="mt-3 log-footer">
                     <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">Clear Mihomo Logs</button>
                 </form>
             </div>
-            <div class="col log-container">
+        </div>
+        <div class="log-section">
+            <div class="log-container">
                 <h4 class="log-header">Sing-box Logs</h4>
-                <textarea class="form-control" readonly><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                 <form action="index.php" method="post" class="mt-3 log-footer">
                     <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">Clear Sing-box Logs</button>
                 </form>
             </div>
         </div>
     </div>
-    <script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
+
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
         <div class="nav-buttons text-center" style="height: 100%;">
             <a href="/nekoclash/upload.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/upload.php'); return false;">Open Mihomo Management Panel</a>
@@ -911,17 +928,18 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             <a href="/nekoclash/box.php" class="box-menu-button d-block mb-2" onclick="speakAndNavigate('Open Sing-box Conversion Template', '/nekoclash/box.php'); return false;">Open Sing-box Conversion Template</a>
             <a href="/nekoclash/personal.php" class="current-menu-button d-block mb-2" onclick="speakAndNavigate('Open Mihomo Personal Edition', '/nekoclash/personal.php'); return false;">Open Mihomo Personal Edition</a>
             <a href="/nekoclash/mon.php" class="main-menu-button d-block mb-2" onclick="speakAndNavigate('Open Sing-box Monitoring Panel', '/nekoclash/mon.php'); return false;">Open Sing-box Monitoring Panel</a>
-    <script>
-function speakAndNavigate(message, url) {
-    speakMessage(message);
-    setTimeout(function() {
-        window.location.href = url;
-    }, 500); 
-}
-</script>
-  </div>
-   </div>
+        </div>
     </div>
+
+    <script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function speakAndNavigate(message, url) {
+            speakMessage(message);
+            setTimeout(function() {
+                window.location.href = url;
+            }, 500); 
+        }
+    </script>
     <footer class="text-center">
         <p><?php echo isset($message) ? $message : ''; ?></p>
         <p><?php echo $footer; ?></p>
