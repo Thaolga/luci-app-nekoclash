@@ -604,7 +604,8 @@ function stopSingbox() {
 }
 
 function logToFile($filePath, $message) {
-    file_put_contents($filePath, $message . "\n", FILE_APPEND);
+    $timestamp = date('Y-m-d H:i:s');
+    file_put_contents($filePath, "[$timestamp] $message\n", FILE_APPEND);
 }
 
 function applyFirewallRules() {
@@ -621,9 +622,22 @@ function createStartScript() {
     }
 }
 
+function formatLogLine($line) {
+    $pattern = '/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/';
+    if (preg_match($pattern, $line, $matches)) {
+        $timestamp = $matches[1];
+        $formattedTimestamp = date('Y-m-d H:i:s', strtotime($timestamp));
+        return str_replace($timestamp, $formattedTimestamp, $line);
+    }
+    return $line;
+}
+
 function readRecentLogLines($filePath, $lines = 1000) {
     $command = "tail -n $lines " . escapeshellarg($filePath);
-    return shell_exec($command);
+    $logContent = shell_exec($command);
+    $logLines = explode("\n", $logContent);
+    $formattedLines = array_map('formatLogLine', $logLines);
+    return implode("\n", $formattedLines);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -865,7 +879,6 @@ document.getElementById('loadPlaylistButton').addEventListener('click', function
         .log-container {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             height: 100%;
             min-width: 0; 
         }
@@ -879,30 +892,26 @@ document.getElementById('loadPlaylistButton').addEventListener('click', function
             justify-content: center; 
             margin-top: auto;
         }
-        textarea.form-control {
+        pre.form-control {
             height: 300px; 
             width: 100%; 
-            resize: none; 
             padding: 10px;
             box-sizing: border-box;
             white-space: pre-wrap; 
-            overflow-x: auto; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
         }
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-        .col {
-            flex: 1;
-            min-width: 0; 
-        }
-        .btn-clear-log {
+        .log-section {
             margin-bottom: 20px;
-            flex-shrink: 0; 
+            border: 2px solid #c0c0c0; 
+            padding: 10px; 
+            border-radius: 8px;
         }
         .nav-buttons {
             display: flex;
+            flex-wrap: wrap; 
             justify-content: center;
             gap: 10px; 
             margin-top: 20px;
@@ -922,12 +931,12 @@ document.getElementById('loadPlaylistButton').addEventListener('click', function
             opacity: 0.9;
         }
         .current-menu-button {
-            background-color: #6c757d; 
-            border-color: #6c757d;
+            background-color: #007bff; 
+            border-color: #007bff;
         }
         .current-menu-button:hover {
-            background-color: #5a6268; 
-            border-color: #5a6268;
+            background-color: #0056b3; 
+            border-color: #004085;
         }
         .config-menu-button {
             background-color: #28a745; 
@@ -954,9 +963,6 @@ document.getElementById('loadPlaylistButton').addEventListener('click', function
             background-color: #ff69b4; 
             border-color: #ff1493;    
         }
-        .current-menu-button {
-            background: #007bff; 
-        }
         .main-menu-button {
             background-color: #dc3545; 
             border-color: #dc3545;
@@ -968,58 +974,66 @@ document.getElementById('loadPlaylistButton').addEventListener('click', function
         footer {
             margin-top: 20px;
         }
+
+        @media (max-width: 768px) {
+            .nav-buttons a {
+                display: block; 
+                width: 100%; 
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
         <h2 class="text-center p-2">日志</h2>
-        <div class="row mt-3">
-            <div class="col log-container">
+        <div class="log-section">
+            <div class="log-container">
                 <h4 class="log-header">插件日志</h4>
-                <textarea class="form-control" readonly><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                 <form action="index.php" method="post" class="mt-3 log-footer">
                     <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">清空插件日志</button>
                 </form>
             </div>
-            <div class="col log-container">
+        </div>
+        <div class="log-section">
+            <div class="log-container">
                 <h4 class="log-header">Mihomo 日志</h4>
-                <textarea class="form-control" readonly><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                 <form action="index.php" method="post" class="mt-3 log-footer">
                     <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">清空 Mihomo 日志</button>
                 </form>
             </div>
-            <div class="col log-container">
+        </div>
+        <div class="log-section">
+            <div class="log-container">
                 <h4 class="log-header">Sing-box 日志</h4>
-                <textarea class="form-control" readonly><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                 <form action="index.php" method="post" class="mt-3 log-footer">
                     <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">清空 Sing-box 日志</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
+        <div class="nav-buttons text-center" style="height: 100%;">
+            <a href="/nekoclash/upload.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/upload.php'); return false;">打开Mihomo 管理面板</a>
+            <a href="/nekoclash/upload_sb.php" class="monitoring-button d-block mb-2" onclick="speakAndNavigate('打开Sing-box 管理面板', '/nekoclash/upload_sb.php'); return false;">打开Sing-box 管理面板</a>
+            <a href="/nekoclash/box.php" class="box-menu-button d-block mb-2" onclick="speakAndNavigate('打开Sing-box 转换模板', '/nekoclash/box.php'); return false;">打开Sing-box 转换模板</a>
+            <a href="/nekoclash/personal.php" class="current-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 个人版', '/nekoclash/personal.php'); return false;">打开Mihomo 个人版</a>
+            <a href="/nekoclash/mon.php" class="main-menu-button d-block mb-2" onclick="speakAndNavigate('打开Sing-box 监控面板', '/nekoclash/mon.php'); return false;">打开Sing-box 监控面板</a>
+        </div>
+    </div>
+
     <script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
-    <div class="nav-buttons text-center" style="height: 100%;">
-<a href="/nekoclash/upload.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/upload.php'); return false;">打开Mihomo 管理面板</a>
-<a href="/nekoclash/upload_sb.php" class="monitoring-button d-block mb-2" onclick="speakAndNavigate('打开Sing-box 管理面板', '/nekoclash/upload_sb.php'); return false;">打开Sing-box 管理面板</a>
-<a href="/nekoclash/box.php" class="box-menu-button d-block mb-2" onclick="speakAndNavigate('打开Sing-box 转换模板', '/nekoclash/box.php'); return false;">打开Sing-box 转换模板</a>
-<a href="/nekoclash/personal.php" class="current-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 个人版', '/nekoclash/personal.php'); return false;">打开Mihomo 个人版</a>
-<a href="/nekoclash/mon.php" class="main-menu-button d-block mb-2" onclick="speakAndNavigate('打开Sing-box 监控面板', '/nekoclash/mon.php'); return false;">打开Sing-box 监控面板</a>
-
-<script>
-function speakAndNavigate(message, url) {
-    speakMessage(message);
-    setTimeout(function() {
-        window.location.href = url;
-    }, 500); 
-}
-</script>
-
-    </div>
-</div>
-
-
-    </div>
+    <script>
+        function speakAndNavigate(message, url) {
+            speakMessage(message);
+            setTimeout(function() {
+                window.location.href = url;
+            }, 500); 
+        }
+    </script>
     <footer class="text-center">
         <p><?php echo isset($message) ? $message : ''; ?></p>
         <p><?php echo $footer; ?></p>
