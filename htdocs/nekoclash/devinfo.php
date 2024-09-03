@@ -579,7 +579,7 @@ date_default_timezone_set('Asia/Shanghai');
             <button id="orderLoop" class="rounded-button">🔁</button>
             <button id="play" class="rounded-button">⏸️</button>
             <button id="next" class="rounded-button">⏭️</button>
-       </div>
+      </div>
     </div>
     <div id="mobile-controls">
         <button id="togglePlay" class="rounded-button">Play/Pause</button>
@@ -591,7 +591,7 @@ date_default_timezone_set('Asia/Shanghai');
 
     <script>
         let colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
-        let isPlayingAllowed = false;
+        let isPlayingAllowed = JSON.parse(localStorage.getItem('isPlayingAllowed')) || false;
         let isLooping = false;
         let isOrdered = false;
         let currentSongIndex = 0;
@@ -600,7 +600,7 @@ date_default_timezone_set('Asia/Shanghai');
 
         function speakMessage(message) {
             const utterance = new SpeechSynthesisUtterance(message);
-            utterance.lang = 'zh-CN'; 
+            utterance.lang = 'en-US'; 
             speechSynthesis.speak(utterance);
         }
 
@@ -639,10 +639,10 @@ date_default_timezone_set('Asia/Shanghai');
         function updateTime() {
             const now = new Date();
             const hours = now.getHours();
-            const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
             let ancientTime;
 
-            if (hours >= 23 || hours < 1) {
+          if (hours >= 23 || hours < 1) {
                 ancientTime = '子時';
             } else if (hours >= 1 && hours < 3) {
                 ancientTime = '丑時';
@@ -694,20 +694,21 @@ date_default_timezone_set('Asia/Shanghai');
             const playButton = document.getElementById('play');
             if (isPlayingAllowed) {
                 if (audioPlayer.paused) {
-                    showTooltip('Play');
+                    showTooltip('Playing');
                     audioPlayer.play();
                     playButton.textContent = 'Pause';
-                    speakMessage('播放');
+                    speakMessage('Playing');
                 } else {
-                    showTooltip('Pause');
+                    showTooltip('Paused');
                     audioPlayer.pause();
                     playButton.textContent = 'Play';
-                    speakMessage('暂停播放');
+                    speakMessage('Paused');
                 }
             } else {
                 showTooltip('Playback Disabled');
                 audioPlayer.pause();
-                speakMessage('播放被禁用');
+                playButton.textContent = 'Play';
+                speakMessage('Playback Disabled');
             }
         }
 
@@ -717,18 +718,18 @@ date_default_timezone_set('Asia/Shanghai');
                 if (isOrdered) {
                     isOrdered = false;
                     isLooping = !isLooping;
-                    orderLoopButton.textContent = isLooping ? '循' : '';
-                    showTooltip(isLooping ? 'Loop' : 'Loop Paused');
-                    speakMessage(isLooping ? '循环播放' : '暂停循环');
+                    orderLoopButton.textContent = isLooping ? 'Loop' : '';
+                    showTooltip(isLooping ? 'Looping' : 'Looping Off');
+                    speakMessage(isLooping ? 'Looping' : 'Looping Off');
                 } else {
                     isOrdered = true;
                     isLooping = false;
-                    orderLoopButton.textContent = '顺';
-                    showTooltip('Order');
-                    speakMessage('顺序播放');
+                    orderLoopButton.textContent = 'Order';
+                    showTooltip('Order Play');
+                    speakMessage('Order Play');
                 }
             } else {
-                speakMessage('播放被禁用');
+                speakMessage('Playback Disabled');
             }
         }
 
@@ -739,7 +740,7 @@ date_default_timezone_set('Asia/Shanghai');
                         document.getElementById('prev').click();
                     } else {
                         showTooltip('Playback Disabled');
-                        speakMessage('播放被禁用');
+                        speakMessage('Playback Disabled');
                     }
                     break;
                 case 'ArrowRight':
@@ -747,7 +748,7 @@ date_default_timezone_set('Asia/Shanghai');
                         document.getElementById('next').click();
                     } else {
                         showTooltip('Playback Disabled');
-                        speakMessage('播放被禁用');
+                        speakMessage('Playback Disabled');
                     }
                     break;
                 case ' ':
@@ -758,14 +759,15 @@ date_default_timezone_set('Asia/Shanghai');
                     break;
                 case 'Escape':
                     isPlayingAllowed = !isPlayingAllowed;
+                    localStorage.setItem('isPlayingAllowed', isPlayingAllowed); // Save state to localStorage
                     if (!isPlayingAllowed) {
                         audioPlayer.pause();
                         audioPlayer.src = '';
                         showTooltip('Playback Disabled');
-                        speakMessage('您的音乐播放已暂时关闭，按下 ESC 键即可重新启用音乐播放。Your music playback has been paused. Press the ESC key to resume.');
+                        speakMessage('Playback Disabled. Press ESC to re-enable playback.');
                     } else {
                         showTooltip('Playback Enabled');
-                        speakMessage('您的音乐播放已重新启用。Your music playback has resumed.');
+                        speakMessage('Playback Enabled.');
                         if (songs.length > 0) {
                             loadSong(currentSongIndex);
                         }
@@ -779,22 +781,22 @@ date_default_timezone_set('Asia/Shanghai');
             if (isPlayingAllowed) {
                 currentSongIndex = (currentSongIndex + 1) % songs.length;
                 loadSong(currentSongIndex);
-                showTooltip('Next Song');
-                speakMessage('下一首');
+                showTooltip('Next');
+                speakMessage('Next');
             } else {
                 showTooltip('Playback Disabled');
-                speakMessage('播放被禁用。');
+                speakMessage('Playback Disabled');
             }
         });
         document.getElementById('prev').addEventListener('click', function() {
             if (isPlayingAllowed) {
                 currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
                 loadSong(currentSongIndex);
-                showTooltip('Previous Song');
-                speakMessage('上一首');
+                showTooltip('Previous');
+                speakMessage('Previous');
             } else {
                 showTooltip('Playback Disabled');
-                speakMessage('播放被禁用。');
+                speakMessage('Playback Disabled');
             }
         });
         document.getElementById('orderLoop').addEventListener('click', handleOrderLoop);
@@ -804,34 +806,35 @@ date_default_timezone_set('Asia/Shanghai');
             if (isPlayingAllowed) {
                 currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
                 loadSong(currentSongIndex);
-                showTooltip('Previous Song');
-                speakMessage('上一首');
+                showTooltip('Previous');
+                speakMessage('Previous');
             } else {
                 showTooltip('Playback Disabled');
-                speakMessage('播放被禁用，按下 ESC 键即可启用音乐播放。');
+                speakMessage('Playback Disabled. Press ESC to re-enable playback.');
             }
         });
         document.getElementById('nextMobile').addEventListener('click', function() {
             if (isPlayingAllowed) {
                 currentSongIndex = (currentSongIndex + 1) % songs.length;
                 loadSong(currentSongIndex);
-                showTooltip('Next Song');
-                speakMessage('下一首');
+                showTooltip('Next');
+                speakMessage('Next');
             } else {
                 showTooltip('Playback Disabled');
-                speakMessage('播放被禁用，按下 ESC 键即可启用音乐播放。');
+                speakMessage('Playback Disabled. Press ESC to re-enable playback.');
             }
         });
         document.getElementById('toggleEnable').addEventListener('click', function() {
             isPlayingAllowed = !isPlayingAllowed;
+            localStorage.setItem('isPlayingAllowed', isPlayingAllowed); // Save state to localStorage
             if (!isPlayingAllowed) {
                 audioPlayer.pause();
                 audioPlayer.src = '';
                 showTooltip('Playback Disabled');
-                speakMessage('您的音乐播放已暂时关闭，按下 ESC 键即可重新启用音乐播放。Your music playback has been paused. Press the ESC key to resume.');
+                speakMessage('Playback Disabled. Press ESC to re-enable playback.');
             } else {
                 showTooltip('Playback Enabled');
-                speakMessage('您的音乐播放已重新启用。Your music playback has resumed.');
+                speakMessage('Playback Enabled.');
                 if (songs.length > 0) {
                     loadSong(currentSongIndex);
                 }
@@ -865,57 +868,29 @@ date_default_timezone_set('Asia/Shanghai');
             }
         }
 
-        function loadCustomPlaylist(link) {
-            fetch(link)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Custom playlist loading failed, network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    songs = data.split('\n').filter(url => url.trim() !== '');
-                    if (songs.length === 0) {
-                        throw new Error('No valid songs found in the custom playlist');
-                    }
-                    initializePlayer();
-                    speakMessage('自定义歌单已加载');
-                })
-                .catch(error => {
-                    console.error('Error loading custom playlist:', error.message);
-                    speakMessage('加载自定义歌单时出错，加载默认歌单');
-                    loadDefaultPlaylist();
-                });
-        }
-
         function loadDefaultPlaylist() {
             fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Default playlist loading failed, network response was not ok');
+                        throw new Error('Default playlist loading failed, network response not ok');
                     }
                     return response.text();
                 })
                 .then(data => {
                     songs = data.split('\n').filter(url => url.trim() !== '');
                     if (songs.length === 0) {
-                        throw new Error('No valid songs found in the default playlist');
+                        throw new Error('Default playlist has no valid songs');
                     }
                     initializePlayer();
                     console.log('Default playlist loaded:', songs);
                 })
                 .catch(error => {
                     console.error('Error loading default playlist:', error.message);
-                    speakMessage('加载默认歌单时出错');
                 });
         }
 
-        const customPlaylist = localStorage.getItem('customPlaylist');
-        if (customPlaylist) {
-            loadCustomPlaylist(customPlaylist);
-        } else {
-            loadDefaultPlaylist();
-        }
+        loadDefaultPlaylist();
+
     </script>
 </body>
 </html>
