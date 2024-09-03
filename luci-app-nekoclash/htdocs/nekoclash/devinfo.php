@@ -579,7 +579,7 @@ date_default_timezone_set('Asia/Shanghai');
             <button id="orderLoop" class="rounded-button">🔁</button>
             <button id="play" class="rounded-button">⏸️</button>
             <button id="next" class="rounded-button">⏭️</button>
-        </div>
+  </div>
     </div>
     <div id="mobile-controls">
         <button id="togglePlay" class="rounded-button">播放/暂停</button>
@@ -867,30 +867,47 @@ date_default_timezone_set('Asia/Shanghai');
 
         function loadCustomPlaylist(link) {
             fetch(link)
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('自定义歌单加载失败，网络响应不正常');
+                    }
+                    return response.text();
+                })
                 .then(data => {
                     songs = data.split('\n').filter(url => url.trim() !== '');
+                    if (songs.length === 0) {
+                        throw new Error('自定义歌单中没有有效的歌曲');
+                    }
                     initializePlayer();
-                    speakMessage('自定义歌单已加载'); 
+                    speakMessage('自定义歌单已加载');
                 })
                 .catch(error => {
-                    console.error('加载自定义歌单时出错:', error);
-                    speakMessage('加载自定义歌单时出错，加载默认歌单'); 
+                    console.error('加载自定义歌单时出错:', error.message);
+                    speakMessage('加载自定义歌单时出错，加载默认歌单');
                     loadDefaultPlaylist();
                 });
         }
 
         function loadDefaultPlaylist() {
             fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('默认歌单加载失败，网络响应不正常');
+                    }
+                    return response.text();
+                })
                 .then(data => {
                     songs = data.split('\n').filter(url => url.trim() !== '');
+                    if (songs.length === 0) {
+                        throw new Error('默认歌单中没有有效的歌曲');
+                    }
                     initializePlayer();
-                    console.log(songs);
+                    console.log('默认歌单已加载:', songs);
+                    speakMessage('默认歌单已加载');
                 })
                 .catch(error => {
-                    console.error('加载默认歌单时出错:', error);
-                    speakMessage('加载默认歌单时出错'); 
+                    console.error('加载默认歌单时出错:', error.message);
+                    speakMessage('加载默认歌单时出错');
                 });
         }
 
