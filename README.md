@@ -78,12 +78,12 @@ make package/luci-app-nekoclash/{clean,compile} V=s
 ---
 <details><summary>Home</summary>
  <p>
-
+ <img src="https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/tmp/image_2024-09-03_16-50-26.png" alt="home">
  </p>
 </details>
 
  <details><summary>Dasboard</summary>
  <p>
-
+  <img src="https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/tmp/image_2024-09-03_16-50-53.png" alt="home">
  </p>
 </details>
