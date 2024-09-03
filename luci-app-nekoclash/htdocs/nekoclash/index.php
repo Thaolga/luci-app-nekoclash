@@ -811,51 +811,15 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                     <td>
                         <div class="row mb-2">
                             <div class="col">
-                                <input type="text" id="playlistLink" class="form-control" placeholder="输入自定义歌单链接">
-                            </div>
-                            <div class="col-auto">
-                                <button id="loadPlaylistButton" class="btn btn-primary">加载歌单</button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="row mb-2">
-                            <div class="col">
                                 <input type="text" id="city-input" class="form-control" placeholder="如 Beijing">
                             </div>
                             <div class="col-auto">
                                 <button onclick="saveCity()" class="btn btn-success">保存城市</button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-     
-                        <button id="resetPlaylistButton" class="btn btn-warning">恢复默认歌单</button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-
-    <script>
-document.getElementById('loadPlaylistButton').addEventListener('click', function() {
-            const playlistLink = document.getElementById('playlistLink').value;
-            if (playlistLink) {
-                localStorage.setItem('customPlaylist', playlistLink);
-                speakMessage('歌单链接已保存，您可以在播放器页面中播放。');
-            } else {
-                speakMessage('请输入有效的URL。');
-            }
-        });
-        document.getElementById('resetPlaylistButton').addEventListener('click', function() {
-            localStorage.removeItem('customPlaylist');
-            speakMessage('自定义歌单已重置为默认。');
-        });
-    </script>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
