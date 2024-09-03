@@ -40,6 +40,9 @@ Depedencies
   - ` firewall4 `
   - ` kmod-tun `
   - ` xtables-nft `
+ 
+# Since version 1.2.3, the use of Sing-box is no longer version-specific, and both iptables and nftables are supported.
+---
 
 # OpenWrt One-Click Installation Script
 ---
@@ -48,9 +51,6 @@ Depedencies
 wget -O /root/nekoclash.sh https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/main/nekoclash.sh && chmod 0755 /root/nekoclash.sh && /root/nekoclash.sh
 
 ```
-
-# Since version 1.2.3, the use of Sing-box is no longer version-specific, and both iptables and nftables are supported.
----
 
 # OpenWrt Compilation
 ---
