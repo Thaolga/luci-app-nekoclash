@@ -89,21 +89,21 @@ date_default_timezone_set('Asia/Shanghai');
     </style>
 </head>
 <body>
-<div class="controls">
-    <label for="main-toggle">System Switch</label>
-    <input type="checkbox" id="main-toggle">
-    
-    <label for="weather-toggle">Weather Report</label>
-    <input type="checkbox" id="weather-toggle">
-    
-    <label for="website-toggle">Website Check</label>
-    <input type="checkbox" id="website-toggle">
-    
-    <p>
-        Current City:
-        <span id="current-city" style="font-weight: bold; color: #33FF57;">Not Set</span>
-    </p>
-</div>
+    <div class="controls">
+        <label for="main-toggle">系统开关</label>
+        <input type="checkbox" id="main-toggle">
+        
+        <label for="weather-toggle">天气播报</label>
+        <input type="checkbox" id="weather-toggle">
+
+        <label for="website-toggle">网站检查</label>
+        <input type="checkbox" id="website-toggle">
+        
+        <p>
+            当前城市：
+            <span id="current-city" style="font-weight: bold; color: #33FF57;">未设置</span>
+        </p>
+    </div>
     
 <script>
     let city = 'Beijing'; 
@@ -903,7 +903,6 @@ date_default_timezone_set('Asia/Shanghai');
                     }
                     initializePlayer();
                     console.log('Default playlist loaded:', songs);
-                    speakMessage('默认歌单已加载');
                 })
                 .catch(error => {
                     console.error('Error loading default playlist:', error.message);
