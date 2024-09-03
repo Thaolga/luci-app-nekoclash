@@ -197,7 +197,6 @@ include './cfg.php';
                         <strong>4. Playback Modes:</strong><br>
                         &emsp; 1 Loop and Sequential Playback: You can switch between loop and sequential playback modes using buttons and the keyboard shortcut ⇧.<br><br>
 
-                        Special Note: <code>iptables</code> firmware is only compatible with Mihomo; do not use sing-box with non-<code>nftables</code> firmware. Any issues resulting from this use are at your own risk.
                     </div>
                 </p>
 

@@ -49,14 +49,8 @@ wget -O /root/nekoclash.sh https://raw.githubusercontent.com/Thaolga/luci-app-ne
 
 ```
 
-# Run Sing-box with iptables.
+# Since version 1.2.3, the use of Sing-box is no longer version-specific, and both iptables and nftables are supported.
 ---
-
-```bash
-wget -O /etc/neko/core/start.sh https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/tmp/start.sh && chmod 0755 /etc/neko/core/start.sh
-
-```
-## Replace it yourself, not integrated into the plugin.
 
 # OpenWrt Compilation
 ---
