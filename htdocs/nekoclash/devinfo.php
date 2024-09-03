@@ -579,327 +579,344 @@ date_default_timezone_set('Asia/Shanghai');
             <button id="orderLoop" class="rounded-button">🔁</button>
             <button id="play" class="rounded-button">⏸️</button>
             <button id="next" class="rounded-button">⏭️</button>
-     </div>
-</div>
-<div id="mobile-controls">
-    <button id="togglePlay" class="rounded-button">播放/暂停</button>
-    <button id="prevMobile" class="rounded-button">上一首</button>
-    <button id="nextMobile" class="rounded-button">下一首</button>
-    <button id="toggleEnable" class="rounded-button">启用/禁用</button>
-</div>
-<div id="tooltip"></div>
+       </div>
+    </div>
+    <div id="mobile-controls">
+        <button id="togglePlay" class="rounded-button">Play/Pause</button>
+        <button id="prevMobile" class="rounded-button">Previous</button>
+        <button id="nextMobile" class="rounded-button">Next</button>
+        <button id="toggleEnable" class="rounded-button">Enable/Disable</button>
+    </div>
+    <div id="tooltip"></div>
 
-<script>
-    let colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
-    let isPlayingAllowed = false;
-    let isLooping = false;
-    let isOrdered = false;
-    let currentSongIndex = 0;
-    let songs = [];
-    const audioPlayer = document.getElementById('audioPlayer');
+    <script>
+        let colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+        let isPlayingAllowed = false;
+        let isLooping = false;
+        let isOrdered = false;
+        let currentSongIndex = 0;
+        let songs = [];
+        const audioPlayer = document.getElementById('audioPlayer');
 
-    function speakMessage(message) {
-        const utterance = new SpeechSynthesisUtterance(message);
-        utterance.lang = 'zh-CN'; 
-        speechSynthesis.speak(utterance);
-    }
-
-    function toggleAnimation() {
-        const player = document.getElementById('player');
-        if (player.style.animationPlayState === 'paused') {
-            player.style.animationPlayState = 'running';
-        } else {
-            player.style.animationPlayState = 'paused';
-        }
-    }
-
-    var hidePlayerButton = document.getElementById('hidePlayer');
-    hidePlayerButton.addEventListener('click', function() {
-        var player = document.getElementById('player');
-        if (player.style.display === 'none') {
-            player.style.display = 'flex';
-        } else {
-            player.style.display = 'none';
-        }
-    });
-
-    function applyGradient(text, elementId) {
-        const element = document.getElementById(elementId);
-        element.innerHTML = '';
-        for (let i = 0; i < text.length; i++) {
-            const span = document.createElement('span');
-            span.textContent = text[i];
-            span.style.color = colors[i % colors.length];
-            element.appendChild(span);
-        }
-        const firstColor = colors.shift();
-        colors.push(firstColor);
-    }
-
-    function updateTime() {
-        const now = new Date();
-        const hours = now.getHours();
-        const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
-        let ancientTime;
-
-        if (hours >= 23 || hours < 1) {
-            ancientTime = '子時';
-        } else if (hours >= 1 && hours < 3) {
-            ancientTime = '丑時';
-        } else if (hours >= 3 && hours < 5) {
-            ancientTime = '寅時';
-        } else if (hours >= 5 && hours < 7) {
-            ancientTime = '卯時';
-        } else if (hours >= 7 && hours < 9) {
-            ancientTime = '辰時';
-        } else if (hours >= 9 && hours < 11) {
-            ancientTime = '巳時';
-        } else if (hours >= 11 && hours < 13) {
-            ancientTime = '午時';
-        } else if (hours >= 13 && hours < 15) {
-            ancientTime = '未時';
-        } else if (hours >= 15 && hours < 17) {
-            ancientTime = '申時';
-        } else if (hours >= 17 && hours < 19) {
-            ancientTime = '酉時';
-        } else if (hours >= 19 && hours < 21) {
-            ancientTime = '戌時';
-        } else {
-            ancientTime = '亥時';
+        function speakMessage(message) {
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'zh-CN'; 
+            speechSynthesis.speak(utterance);
         }
 
-        const displayString = `${timeString} (${ancientTime})`;
-        applyGradient(displayString, 'timeDisplay');
-    }
-
-    applyGradient('Mihomo', 'hidePlayer');
-    updateTime();
-    setInterval(updateTime, 1000);
-
-    function showTooltip(text) {
-        const tooltip = document.getElementById('tooltip');
-        tooltip.textContent = text;
-        tooltip.style.display = 'block';
-        tooltip.style.left = (window.innerWidth - tooltip.offsetWidth - 20) + 'px';
-        tooltip.style.top = '10px';
-        setTimeout(hideTooltip, 5000);
-    }
-
-    function hideTooltip() {
-        const tooltip = document.getElementById('tooltip');
-        tooltip.style.display = 'none';
-    }
-
-    function handlePlayPause() {
-        const playButton = document.getElementById('play');
-        if (isPlayingAllowed) {
-            if (audioPlayer.paused) {
-                showTooltip('Play');
-                audioPlayer.play();
-                playButton.textContent = 'Pause';
-                speakMessage('Play');
+        function toggleAnimation() {
+            const player = document.getElementById('player');
+            if (player.style.animationPlayState === 'paused') {
+                player.style.animationPlayState = 'running';
             } else {
-                showTooltip('Pause');
-                audioPlayer.pause();
-                playButton.textContent = 'Play';
-                speakMessage('Pause');
+                player.style.animationPlayState = 'paused';
             }
-        } else {
-            showTooltip('Playing is prohibited');
-            audioPlayer.pause();
-            speakMessage('Playing is disabled');
         }
-    }
 
-    function handleOrderLoop() {
-        if (isPlayingAllowed) {
-            const orderLoopButton = document.getElementById('orderLoop');
-            if (isOrdered) {
-                isOrdered = false;
-                isLooping = !isLooping;
-                orderLoopButton.textContent = isLooping ? 'Loop' : '';
-                showTooltip(isLooping ? 'Looping' : 'Loop paused');
-                speakMessage(isLooping ? 'Looping' : 'Loop paused');
+        var hidePlayerButton = document.getElementById('hidePlayer');
+        hidePlayerButton.addEventListener('click', function() {
+            var player = document.getElementById('player');
+            if (player.style.display === 'none') {
+                player.style.display = 'flex';
             } else {
-                isOrdered = true;
-                isLooping = false;
-                orderLoopButton.textContent = 'Order';
-                showTooltip('Sequential play');
-                speakMessage('Sequential play');
+                player.style.display = 'none';
             }
-        } else {
-            speakMessage('Playing is disabled');
-        }
-    }
+        });
 
-    document.addEventListener('keydown', function(event) {
-        switch (event.key) {
-            case 'ArrowLeft':
-                if (isPlayingAllowed) {
-                    document.getElementById('prev').click();
+        function applyGradient(text, elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '';
+            for (let i = 0; i < text.length; i++) {
+                const span = document.createElement('span');
+                span.textContent = text[i];
+                span.style.color = colors[i % colors.length];
+                element.appendChild(span);
+            }
+            const firstColor = colors.shift();
+            colors.push(firstColor);
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+            let ancientTime;
+
+            if (hours >= 23 || hours < 1) {
+                ancientTime = '子時';
+            } else if (hours >= 1 && hours < 3) {
+                ancientTime = '丑時';
+            } else if (hours >= 3 && hours < 5) {
+                ancientTime = '寅時';
+            } else if (hours >= 5 && hours < 7) {
+                ancientTime = '卯時';
+            } else if (hours >= 7 && hours < 9) {
+                ancientTime = '辰時';
+            } else if (hours >= 9 && hours < 11) {
+                ancientTime = '巳時';
+            } else if (hours >= 11 && hours < 13) {
+                ancientTime = '午時';
+            } else if (hours >= 13 && hours < 15) {
+                ancientTime = '未時';
+            } else if (hours >= 15 && hours < 17) {
+                ancientTime = '申時';
+            } else if (hours >= 17 && hours < 19) {
+                ancientTime = '酉時';
+            } else if (hours >= 19 && hours < 21) {
+                ancientTime = '戌時';
+            } else {
+                ancientTime = '亥時';
+            }
+
+            const displayString = `${timeString} (${ancientTime})`;
+            applyGradient(displayString, 'timeDisplay');
+        }
+
+        applyGradient('Mihomo', 'hidePlayer');
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        function showTooltip(text) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = text;
+            tooltip.style.display = 'block';
+            tooltip.style.left = (window.innerWidth - tooltip.offsetWidth - 20) + 'px';
+            tooltip.style.top = '10px';
+            setTimeout(hideTooltip, 5000);
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.display = 'none';
+        }
+
+        function handlePlayPause() {
+            const playButton = document.getElementById('play');
+            if (isPlayingAllowed) {
+                if (audioPlayer.paused) {
+                    showTooltip('Play');
+                    audioPlayer.play();
+                    playButton.textContent = 'Pause';
+                    speakMessage('播放');
                 } else {
-                    showTooltip('Playing is prohibited');
-                    speakMessage('Playing is disabled');
-                }
-                break;
-            case 'ArrowRight':
-                if (isPlayingAllowed) {
-                    document.getElementById('next').click();
-                } else {
-                    showTooltip('Playing is prohibited');
-                    speakMessage('Playing is disabled');
-                }
-                break;
-            case ' ':
-                handlePlayPause();
-                break;
-            case 'ArrowUp':
-                handleOrderLoop();
-                break;
-            case 'Escape':
-                isPlayingAllowed = !isPlayingAllowed;
-                if (!isPlayingAllowed) {
+                    showTooltip('Pause');
                     audioPlayer.pause();
-                    audioPlayer.src = '';
-                    showTooltip('Playing is disabled');
-                    speakMessage('Your music playback has been paused. Press the ESC key to resume.');
-                } else {
-                    showTooltip('Playing is enabled');
-                    speakMessage('Your music playback has resumed.');
-                    if (songs.length > 0) {
-                        loadSong(currentSongIndex);
-                    }
+                    playButton.textContent = 'Play';
+                    speakMessage('暂停播放');
                 }
-                break;
+            } else {
+                showTooltip('Playback Disabled');
+                audioPlayer.pause();
+                speakMessage('播放被禁用');
+            }
         }
-    });
 
-    document.getElementById('play').addEventListener('click', handlePlayPause);
-    document.getElementById('next').addEventListener('click', function() {
-        if (isPlayingAllowed) {
-            currentSongIndex = (currentSongIndex + 1) % songs.length;
-            loadSong(currentSongIndex);
-            showTooltip('Next song');
-            speakMessage('Next song');
-        } else {
-            showTooltip('Playing is prohibited');
-            speakMessage('Playing is disabled.');
+        function handleOrderLoop() {
+            if (isPlayingAllowed) {
+                const orderLoopButton = document.getElementById('orderLoop');
+                if (isOrdered) {
+                    isOrdered = false;
+                    isLooping = !isLooping;
+                    orderLoopButton.textContent = isLooping ? '循' : '';
+                    showTooltip(isLooping ? 'Loop' : 'Loop Paused');
+                    speakMessage(isLooping ? '循环播放' : '暂停循环');
+                } else {
+                    isOrdered = true;
+                    isLooping = false;
+                    orderLoopButton.textContent = '顺';
+                    showTooltip('Order');
+                    speakMessage('顺序播放');
+                }
+            } else {
+                speakMessage('播放被禁用');
+            }
         }
-    });
-    document.getElementById('prev').addEventListener('click', function() {
-        if (isPlayingAllowed) {
-            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-            loadSong(currentSongIndex);
-            showTooltip('Previous song');
-            speakMessage('Previous song');
-        } else {
-            showTooltip('Playing is prohibited');
-            speakMessage('Playing is disabled.');
-        }
-    });
-    document.getElementById('orderLoop').addEventListener('click', handleOrderLoop);
 
-    document.getElementById('togglePlay').addEventListener('click', handlePlayPause);
-    document.getElementById('prevMobile').addEventListener('click', function() {
-        if (isPlayingAllowed) {
-            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-            loadSong(currentSongIndex);
-            showTooltip('Previous song');
-            speakMessage('Previous song');
-        } else {
-            showTooltip('Playing is prohibited');
-            speakMessage('Playing is disabled. Press the ESC key to enable playback.');
+        document.addEventListener('keydown', function(event) {
+            switch (event.key) {
+                case 'ArrowLeft':
+                    if (isPlayingAllowed) {
+                        document.getElementById('prev').click();
+                    } else {
+                        showTooltip('Playback Disabled');
+                        speakMessage('播放被禁用');
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (isPlayingAllowed) {
+                        document.getElementById('next').click();
+                    } else {
+                        showTooltip('Playback Disabled');
+                        speakMessage('播放被禁用');
+                    }
+                    break;
+                case ' ':
+                    handlePlayPause();
+                    break;
+                case 'ArrowUp':
+                    handleOrderLoop();
+                    break;
+                case 'Escape':
+                    isPlayingAllowed = !isPlayingAllowed;
+                    if (!isPlayingAllowed) {
+                        audioPlayer.pause();
+                        audioPlayer.src = '';
+                        showTooltip('Playback Disabled');
+                        speakMessage('您的音乐播放已暂时关闭，按下 ESC 键即可重新启用音乐播放。Your music playback has been paused. Press the ESC key to resume.');
+                    } else {
+                        showTooltip('Playback Enabled');
+                        speakMessage('您的音乐播放已重新启用。Your music playback has resumed.');
+                        if (songs.length > 0) {
+                            loadSong(currentSongIndex);
+                        }
+                    }
+                    break;
+            }
+        });
+
+        document.getElementById('play').addEventListener('click', handlePlayPause);
+        document.getElementById('next').addEventListener('click', function() {
+            if (isPlayingAllowed) {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+                loadSong(currentSongIndex);
+                showTooltip('Next Song');
+                speakMessage('下一首');
+            } else {
+                showTooltip('Playback Disabled');
+                speakMessage('播放被禁用。');
+            }
+        });
+        document.getElementById('prev').addEventListener('click', function() {
+            if (isPlayingAllowed) {
+                currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+                loadSong(currentSongIndex);
+                showTooltip('Previous Song');
+                speakMessage('上一首');
+            } else {
+                showTooltip('Playback Disabled');
+                speakMessage('播放被禁用。');
+            }
+        });
+        document.getElementById('orderLoop').addEventListener('click', handleOrderLoop);
+
+        document.getElementById('togglePlay').addEventListener('click', handlePlayPause);
+        document.getElementById('prevMobile').addEventListener('click', function() {
+            if (isPlayingAllowed) {
+                currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+                loadSong(currentSongIndex);
+                showTooltip('Previous Song');
+                speakMessage('上一首');
+            } else {
+                showTooltip('Playback Disabled');
+                speakMessage('播放被禁用，按下 ESC 键即可启用音乐播放。');
+            }
+        });
+        document.getElementById('nextMobile').addEventListener('click', function() {
+            if (isPlayingAllowed) {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+                loadSong(currentSongIndex);
+                showTooltip('Next Song');
+                speakMessage('下一首');
+            } else {
+                showTooltip('Playback Disabled');
+                speakMessage('播放被禁用，按下 ESC 键即可启用音乐播放。');
+            }
+        });
+        document.getElementById('toggleEnable').addEventListener('click', function() {
+            isPlayingAllowed = !isPlayingAllowed;
+            if (!isPlayingAllowed) {
+                audioPlayer.pause();
+                audioPlayer.src = '';
+                showTooltip('Playback Disabled');
+                speakMessage('您的音乐播放已暂时关闭，按下 ESC 键即可重新启用音乐播放。Your music playback has been paused. Press the ESC key to resume.');
+            } else {
+                showTooltip('Playback Enabled');
+                speakMessage('您的音乐播放已重新启用。Your music playback has resumed.');
+                if (songs.length > 0) {
+                    loadSong(currentSongIndex);
+                }
+            }
+        });
+
+        function loadSong(index) {
+            if (isPlayingAllowed && index >= 0 && index < songs.length) {
+                audioPlayer.src = songs[index];
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
         }
-    });
-    document.getElementById('nextMobile').addEventListener('click', function() {
-        if (isPlayingAllowed) {
-            currentSongIndex = (currentSongIndex + 1) % songs.length;
-            loadSong(currentSongIndex);
-            showTooltip('Next song');
-            speakMessage('Next song');
-        } else {
-            showTooltip('Playing is prohibited');
-            speakMessage('Playing is disabled. Press the ESC key to enable playback.');
-        }
-    });
-    document.getElementById('toggleEnable').addEventListener('click', function() {
-        isPlayingAllowed = !isPlayingAllowed;
-        if (!isPlayingAllowed) {
-            audioPlayer.pause();
-            audioPlayer.src = '';
-            showTooltip('Playing is disabled');
-            speakMessage('Your music playback has been paused. Press the ESC key to resume.');
-        } else {
-            showTooltip('Playing is enabled');
-            speakMessage('Your music playback has resumed.');
+
+        audioPlayer.addEventListener('ended', function() {
+            if (isPlayingAllowed) {
+                if (isLooping) {
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
+                } else {
+                    currentSongIndex = (currentSongIndex + 1) % songs.length;
+                    loadSong(currentSongIndex);
+                }
+            }
+        });
+
+        function initializePlayer() {
             if (songs.length > 0) {
                 loadSong(currentSongIndex);
             }
         }
-    });
 
-    function loadSong(index) {
-        if (isPlayingAllowed && index >= 0 && index < songs.length) {
-            audioPlayer.src = songs[index];
-            audioPlayer.play();
+        function loadCustomPlaylist(link) {
+            fetch(link)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Custom playlist loading failed, network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    songs = data.split('\n').filter(url => url.trim() !== '');
+                    if (songs.length === 0) {
+                        throw new Error('No valid songs found in the custom playlist');
+                    }
+                    initializePlayer();
+                    speakMessage('自定义歌单已加载');
+                })
+                .catch(error => {
+                    console.error('Error loading custom playlist:', error.message);
+                    speakMessage('加载自定义歌单时出错，加载默认歌单');
+                    loadDefaultPlaylist();
+                });
+        }
+
+        function loadDefaultPlaylist() {
+            fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Default playlist loading failed, network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    songs = data.split('\n').filter(url => url.trim() !== '');
+                    if (songs.length === 0) {
+                        throw new Error('No valid songs found in the default playlist');
+                    }
+                    initializePlayer();
+                    console.log('Default playlist loaded:', songs);
+                    speakMessage('默认歌单已加载');
+                })
+                .catch(error => {
+                    console.error('Error loading default playlist:', error.message);
+                    speakMessage('加载默认歌单时出错');
+                });
+        }
+
+        const customPlaylist = localStorage.getItem('customPlaylist');
+        if (customPlaylist) {
+            loadCustomPlaylist(customPlaylist);
         } else {
-            audioPlayer.pause();
+            loadDefaultPlaylist();
         }
-    }
-
-    audioPlayer.addEventListener('ended', function() {
-        if (isPlayingAllowed) {
-            if (isLooping) {
-                audioPlayer.currentTime = 0;
-                audioPlayer.play();
-            } else {
-                currentSongIndex = (currentSongIndex + 1) % songs.length;
-                loadSong(currentSongIndex);
-            }
-        }
-    });
-
-    function initializePlayer() {
-        if (songs.length > 0) {
-            loadSong(currentSongIndex);
-        }
-    }
-
-    function loadCustomPlaylist(link) {
-        fetch(link)
-            .then(response => response.text())
-            .then(data => {
-                songs = data.split('\n').filter(url => url.trim() !== '');
-                initializePlayer();
-                speakMessage('Custom playlist loaded'); 
-            })
-            .catch(error => {
-                console.error('Error loading custom playlist:', error);
-                speakMessage('Error loading custom playlist, loading default playlist'); 
-                loadDefaultPlaylist();
-            });
-    }
-
-    function loadDefaultPlaylist() {
-        fetch('https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/songs.txt')
-            .then(response => response.text())
-            .then(data => {
-                songs = data.split('\n').filter(url => url.trim() !== '');
-                initializePlayer();
-                console.log(songs);
-            })
-            .catch(error => {
-                console.error('Error loading default playlist:', error);
-                speakMessage('Error loading default playlist'); 
-            });
-    }
-
-    const customPlaylist = localStorage.getItem('customPlaylist');
-    if (customPlaylist) {
-        loadCustomPlaylist(customPlaylist);
-    } else {
-        loadDefaultPlaylist();
-    }
     </script>
 </body>
 </html>
