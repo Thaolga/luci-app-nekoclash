@@ -713,36 +713,17 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         <table class="table table-borderless mb-2">
             <tbody>
                 <tr>
-                    <td>
+                    <td>                 
                         <div class="row mb-2">
-                            <div class="col">
-                                <input type="text" id="playlistLink" class="form-control" placeholder="Enter custom playlist link">
-                            </div>
-                            <div class="col-auto">
-                                <button id="loadPlaylistButton" class="btn btn-primary">Load Playlist</button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="row mb-2">
-                            <div class="col">
+                            <div class="col">             
                                 <input type="text" id="city-input" class="form-control" placeholder="e.g. Beijing">
                             </div>
                             <div class="col-auto">
                                 <button onclick="saveCity()" class="btn btn-success">Save City</button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>               
-                        <button id="resetPlaylistButton" class="btn btn-warning">Restore Default Playlist</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+               </tbody>
+         </table>
     </div>
 
 <script>
