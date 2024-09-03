@@ -168,7 +168,7 @@
         if ($_POST['templateOption'] === 'custom' && !empty($customTemplateUrl)) {
             $templateUrlEncoded = urlencode($customTemplateUrl);
         } else {
-            $templateUrlEncoded = urlencode("https://cdn.jsdelivr.net/gh/Thaolga/Rules@main/Clash/json/config_mixed.json");
+            $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
         }
 
         $completeSubscribeUrl = "https://sing-box-subscribe-doraemon.vercel.app/config/{$subscribeUrlEncoded}&file={$templateUrlEncoded}";
