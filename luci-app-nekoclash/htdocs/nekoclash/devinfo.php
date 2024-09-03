@@ -903,7 +903,6 @@ date_default_timezone_set('Asia/Shanghai');
                     }
                     initializePlayer();
                     console.log('默认歌单已加载:', songs);
-                    speakMessage('默认歌单已加载');
                 })
                 .catch(error => {
                     console.error('加载默认歌单时出错:', error.message);
