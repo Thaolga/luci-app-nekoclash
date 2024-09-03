@@ -41,6 +41,15 @@ Depedencies
   - ` kmod-tun `
   - ` xtables-nft `
 
+# Run Sing-box with iptables.
+---
+
+```bash
+wget -O /etc/neko/core/start.sh   https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/tmp/start.sh  && chmod 0755  /etc/neko/core/start.sh
+
+```
+## Replace it yourself, not integrated into the plugin.
+
 # OpenWrt One-Click Installation Script
 ---
 
