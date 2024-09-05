@@ -41,8 +41,6 @@ Depedencies
   - ` kmod-tun `
   - ` xtables-nft `
  
-# Since version 1.2.3, the use of Sing-box is no longer version-specific, and both iptables and nftables are supported.
----
 
 # OpenWrt One-Click Installation Script
 ---
