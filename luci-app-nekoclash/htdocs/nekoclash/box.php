@@ -132,6 +132,17 @@
 <body>
     <div class="container">
     <h1>Sing-box 订阅转换模板</h1>
+        <div class="help-info">
+        <h2>帮助信息</h2>
+        <p>请选择一个模板以生成配置文件：选择你订阅包含的节点信息选择相对于的模板，否则启动不了。</p>
+        <ul>
+            <li><strong>默认模板 1</strong>：香港 台湾 新加坡 日本 美国 韩国。</li>
+            <li><strong>默认模板 2</strong>：新加坡 日本 美国 韩国。</li>
+            <li><strong>默认模板 3</strong>：香港 日本 美国 。</li>
+            <li><strong>默认模板 4</strong>：香港 日本 美国。</li>
+            <li><strong>默认模板 5</strong>：无地区 通用。</li>
+        </ul>
+    </div>
     <form method="post" action="">
         <label for="subscribeUrl">订阅链接地址:</label>
         <input type="text" id="subscribeUrl" name="subscribeUrl" required>
@@ -139,7 +150,24 @@
         <div class="radio-group">
             <input type="radio" id="useDefaultTemplate" name="templateOption" value="default" checked>
             <label for="useDefaultTemplate">使用默认模板</label>
-            
+
+            <div class="default-template-options" style="margin-left: 20px;">
+                <input type="radio" id="useDefaultTemplate1" name="defaultTemplate" value="mixed" checked>
+                <label for="useDefaultTemplate1">默认模板 1</label>
+
+                <input type="radio" id="useDefaultTemplate2" name="defaultTemplate" value="second">
+                <label for="useDefaultTemplate2">默认模板 2</label>
+
+                <input type="radio" id="useDefaultTemplate3" name="defaultTemplate" value="fakeip">
+                <label for="useDefaultTemplate3">默认模板 3</label>
+
+                <input type="radio" id="useDefaultTemplate4" name="defaultTemplate" value="tun">
+                <label for="useDefaultTemplate4">默认模板 4</label>
+
+                <input type="radio" id="useDefaultTemplate5" name="defaultTemplate" value="ip">
+                <label for="useDefaultTemplate5">默认模板 5</label>
+            </div>
+
             <input type="radio" id="useCustomTemplate" name="templateOption" value="custom">
             <label for="useCustomTemplate">使用自定义模板URL:</label>
             <input type="text" id="customTemplateUrl" name="customTemplateUrl" placeholder="输入自定义模板URL">
@@ -167,8 +195,27 @@
 
         if ($_POST['templateOption'] === 'custom' && !empty($customTemplateUrl)) {
             $templateUrlEncoded = urlencode($customTemplateUrl);
-        } else {
-            $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
+        } elseif ($_POST['templateOption'] === 'default') {
+            switch ($_POST['defaultTemplate']) {
+                case 'mixed':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
+                    break;
+                case 'second':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config.json");
+                    break;
+                case 'fakeip':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_fakeip.json");
+                    break;
+                case 'tun':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_tun.json");
+                    break;
+                case 'ip':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_ip.json");
+                    break;
+                default:
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
+                    break;
+            }
         }
 
         $completeSubscribeUrl = "https://sing-box-subscribe-doraemon.vercel.app/config/{$subscribeUrlEncoded}&file={$templateUrlEncoded}";
@@ -280,4 +327,3 @@
         border: 1px solid #ccc;
     }
 </style>
-
