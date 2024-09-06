@@ -12,8 +12,8 @@ firewall="/etc/init.d/firewall"
 neko_version=$1
 
 neko_checknewver(){
-    new_version=$(curl -m 5 -f -s https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/neko_version)
-    if [ $neko_version == $new_version ] || [ -z $new_version ]; then
+    new_version=$(curl -m 5 -f -s https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/main/neko_version)
+     if [ -z "$new_version" ] || [ "$(printf '%s\n' "$neko_version" "$new_version" | sort -V | head -n1)" = "$new_version" ]; then
         strversion="- Latest"
     else
         strversion="- New v.$new_version"
