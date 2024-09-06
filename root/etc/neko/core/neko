@@ -43,18 +43,6 @@ logs() {
     fi
 }
 
-neko_checknewver(){
-    new_version=$(curl -m 5 -f -s https://raw.githubusercontent.com/Thaolga/neko/luci-app-nekoclash/neko_version)
-    if [ $neko_version = $new_version ] || [ -z $new_version ]; then
-        strversion="- Latest"
-    else
-        strversion="- New Version v.$new_version"
-        if [[ $1 == "log" ]]; then
-            logs "New Version v.$new_version"
-        fi
-    fi
-}
-
 check_depedency() {
     opw_version=`cat /etc/os-release | grep VERSION_ID | cut -d\" -f 2`
     logs "- Check Depedencies : $opw_version"
