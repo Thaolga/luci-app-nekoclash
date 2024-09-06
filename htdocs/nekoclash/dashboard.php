@@ -42,7 +42,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
 </head>
 <body>
     <div class="container-sm text-center col-8">
-        <img src="./assets/img/photo.png" class="img-fluid mb-5 draggable" style="display: none;">
+        <img src="./assets/img/neko.png" class="img-fluid mb-5" style="display: none;">
     </div>
 
     <script>
@@ -51,7 +51,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
             var btn = document.getElementById('showHideButton');
             if (img.style.display === 'none') {
                 img.style.display = 'block';
-                btn.innerText = 'Hide Icon';
+                btn.innerText = 'Hide Icon'';
             } else {
                 img.style.display = 'none';
                 btn.innerText = 'Show Icon';
@@ -73,10 +73,10 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
     </script>
 
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
-        <div class="row">
+      <div class="row">
             <a href="./" class="col btn btn-lg">Home</a>
-            <a href="./dashboard.php" class="col btn btn-lg">Dashboard</a>
-            <a href="#" class="col btn btn-lg">Configs</a>
+            <a href="#" class="col btn btn-lg">Dashboard</a>
+            <a href="./configs.php" class="col btn btn-lg">Configs</a>
             <a href="./settings.php" class="col btn btn-lg">Settings</a>
         </div>
     </div>
