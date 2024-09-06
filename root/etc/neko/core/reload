@@ -11,19 +11,6 @@ log="/etc/neko/tmp/log.txt"
 firewall="/etc/init.d/firewall"
 neko_version=$1
 
-neko_checknewver(){
-    new_version=$(curl -m 5 -f -s https://raw.githubusercontent.com/Thaolga/luci-app-nekoclash/neko_version)
-    if [ $neko_version == $new_version ] || [ -z $new_version ]; then
-        strversion="- Latest"
-    else
-        strversion="- New v.$new_version"
-        if [ $1 == "log" ]; then
-            echo "[ `date +%T` ] New Version detected. v.$new_version" >> $log
-
-        fi
-    fi
-}
-
 neko_reload(){
     echo "Checking New Interfaces."
     dt=`ubus call network.interface dump`
