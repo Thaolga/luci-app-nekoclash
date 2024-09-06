@@ -130,16 +130,44 @@
     </style>
 </head>
 <body>
-    <div class="container">
+  <div class="container">
     <h1>Sing-box Subscription Conversion Template</h1>
+    <div class="help-info">
+        <h2>Help Information</h2>
+        <p>Please choose a template to generate the configuration file: select the node information included in your subscription and choose the corresponding template; otherwise, it will not start.</p>
+        <ul>
+            <li><strong>Default Template 1</strong>: Hong Kong, Taiwan, Singapore, Japan, USA, South Korea.</li>
+            <li><strong>Default Template 2</strong>: Singapore, Japan, USA, South Korea.</li>
+            <li><strong>Default Template 3</strong>: Hong Kong, Japan, USA.</li>
+            <li><strong>Default Template 4</strong>: Hong Kong, Japan, USA.</li>
+            <li><strong>Default Template 5</strong>: No region, universal.</li>
+        </ul>
+    </div>
     <form method="post" action="">
-        <label for="subscribeUrl">Subscription Link URL:</label>
+        <label for="subscribeUrl">Subscription Link Address:</label>
         <input type="text" id="subscribeUrl" name="subscribeUrl" required>
 
         <div class="radio-group">
             <input type="radio" id="useDefaultTemplate" name="templateOption" value="default" checked>
             <label for="useDefaultTemplate">Use Default Template</label>
-            
+
+            <div class="default-template-options" style="margin-left: 20px;">
+                <input type="radio" id="useDefaultTemplate1" name="defaultTemplate" value="mixed" checked>
+                <label for="useDefaultTemplate1">Default Template 1</label>
+
+                <input type="radio" id="useDefaultTemplate2" name="defaultTemplate" value="second">
+                <label for="useDefaultTemplate2">Default Template 2</label>
+
+                <input type="radio" id="useDefaultTemplate3" name="defaultTemplate" value="fakeip">
+                <label for="useDefaultTemplate3">Default Template 3</label>
+
+                <input type="radio" id="useDefaultTemplate4" name="defaultTemplate" value="tun">
+                <label for="useDefaultTemplate4">Default Template 4</label>
+
+                <input type="radio" id="useDefaultTemplate5" name="defaultTemplate" value="ip">
+                <label for="useDefaultTemplate5">Default Template 5</label>
+            </div>
+
             <input type="radio" id="useCustomTemplate" name="templateOption" value="custom">
             <label for="useCustomTemplate">Use Custom Template URL:</label>
             <input type="text" id="customTemplateUrl" name="customTemplateUrl" placeholder="Enter Custom Template URL">
@@ -147,7 +175,7 @@
 
         <div class="button-group">
             <input type="submit" name="generateConfig" class="submit-button" value="Generate Configuration File">
-            <button type="button" class="return-button" onclick="window.location.href='javascript:history.back()';">Go Back</button>
+            <button type="button" class="return-button" onclick="window.location.href='javascript:history.back()';">Return to Previous Level</button>
             <button type="button" class="return-danger" onclick="window.location.href='/nekoclash';">Return to Main Menu</button>
         </div>
     </form>
@@ -160,15 +188,34 @@
         $subscribeUrl = trim($_POST['subscribeUrl']);
         $customTemplateUrl = trim($_POST['customTemplateUrl']);
 
-        $dataContent = "Subscription Link URL: " . $subscribeUrl . "\n" . "Custom Template URL: " . $customTemplateUrl . "\n";
+        $dataContent = "Subscription Link Address: " . $subscribeUrl . "\n" . "Custom Template URL: " . $customTemplateUrl . "\n";
         file_put_contents($dataFilePath, $dataContent, FILE_APPEND);
 
         $subscribeUrlEncoded = urlencode($subscribeUrl);
 
         if ($_POST['templateOption'] === 'custom' && !empty($customTemplateUrl)) {
             $templateUrlEncoded = urlencode($customTemplateUrl);
-        } else {
-            $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
+        } elseif ($_POST['templateOption'] === 'default') {
+            switch ($_POST['defaultTemplate']) {
+                case 'mixed':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
+                    break;
+                case 'second':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config.json");
+                    break;
+                case 'fakeip':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_fakeip.json");
+                    break;
+                case 'tun':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_tun.json");
+                    break;
+                case 'ip':
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_ip.json");
+                    break;
+                default:
+                    $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_mixed.json");
+                    break;
+            }
         }
 
         $completeSubscribeUrl = "https://sing-box-subscribe-doraemon.vercel.app/config/{$subscribeUrlEncoded}&file={$templateUrlEncoded}";
@@ -180,21 +227,21 @@
         $logMessages = [];
 
         if ($returnVar !== 0) {
-            $logMessages[] = "Unable to Download Content " . htmlspecialchars($completeSubscribeUrl);
+            $logMessages[] = "Unable to download content: " . htmlspecialchars($completeSubscribeUrl);
         }
 
         $downloadedContent = file_get_contents($tempFilePath);
         if ($downloadedContent === false) {
-            $logMessages[] = "Unable to Read Downloaded File Content";
+            $logMessages[] = "Unable to read the downloaded file content";
         }
 
         $updatedContent = $downloadedContent;
 
         if (file_put_contents($configFilePath, $updatedContent) === false) {
-            $logMessages[] = "Unable to Save Modified Content to: " . $configFilePath;
+            $logMessages[] = "Unable to save the modified content to: " . $configFilePath;
         } else {
-            $logMessages[] = "Configuration File Generated and Saved Successfully:" . $configFilePath;
-            $logMessages[] = "Generated and Downloaded Subscription URL: " . htmlspecialchars($completeSubscribeUrl);
+            $logMessages[] = "Configuration file generated and saved successfully: " . $configFilePath;
+            $logMessages[] = "Generated and downloaded subscription URL: " . htmlspecialchars($completeSubscribeUrl);
         }
 
         echo "<div class='result-container'>";
@@ -219,9 +266,9 @@
         if (isset($_POST['configContent'])) {
             $editedContent = trim($_POST['configContent']);
             if (file_put_contents($configFilePath, $editedContent) === false) {
-                echo "<div class='log-container'>Unable to Save Modified Content to:" . htmlspecialchars($configFilePath) . "</div>";
+                echo "<div class='log-container'>Unable to save the modified content to: " . htmlspecialchars($configFilePath) . "</div>";
             } else {
-                echo "<div class='log-container'>Content Successfully Saved to: " . htmlspecialchars($configFilePath) . "</div>";
+                echo "<div class='log-container'>Content successfully saved to: " . htmlspecialchars($configFilePath) . "</div>";
             }
         }
     }
@@ -229,7 +276,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clearData'])) {
         if (file_exists($dataFilePath)) {
             file_put_contents($dataFilePath, '');
-            echo "<div class='log-container'>The saved data has been cleared.</div>";
+            echo "<div class='log-container'>Saved data has been cleared.</div>";
         }
     }
 
@@ -250,7 +297,7 @@
             const copyText = document.getElementById("configContent");
             copyText.select();
             document.execCommand("copy");
-            alert("Copied to Clipboard");
+            alert("Copied to clipboard");
         }
     </script>
 </div>
@@ -280,4 +327,3 @@
         border: 1px solid #ccc;
     }
 </style>
-
