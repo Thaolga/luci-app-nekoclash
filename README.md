@@ -37,9 +37,9 @@ Depedencies
   - ` php8 `
   - ` php8-cgi `
   - `php8-mod-curl`
-  - ` firewall4 `
+  - ` firewall `/` firewall4 `
   - ` kmod-tun `
-  - ` xtables-nft `
+  - ` iptables `/` xtables-nft `
  
 
 # OpenWrt One-Click Installation Script
