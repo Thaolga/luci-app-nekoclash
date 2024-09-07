@@ -170,7 +170,6 @@ include './cfg.php';
         </div>
 
         <div id="upload" class="tab-pane fade">
-            <h2 class="text-center p-2 mb-5">订阅</h2>
             <div class="container h-100">
                 <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./mo.php" title="yacd" allowfullscreen></iframe>
             </div>
