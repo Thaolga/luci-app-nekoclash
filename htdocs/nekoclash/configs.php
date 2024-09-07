@@ -51,7 +51,7 @@ include './cfg.php';
 </head>
 <body>
     <div class="container-sm text-center col-8">
-        <img src="./assets/img/photo.png" class="img-fluid mb-5 draggable" style="display: none;">
+        <img src="./assets/img/neko.png" class="img-fluid mb-5 draggable" style="display: none;">
     </div>
 
     <script>

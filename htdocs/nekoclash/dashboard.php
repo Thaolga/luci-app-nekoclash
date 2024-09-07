@@ -32,8 +32,9 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
     <script type="text/javascript" src="./assets/js/jquery-2.1.3.min.js"></script>
   </head>
   <body>
-<head>
+   <head>
     <meta charset="UTF-8">
+
     <style>
         .container-sm {
             margin: 20px auto;
@@ -42,7 +43,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
 </head>
 <body>
     <div class="container-sm text-center col-8">
-        <img src="./assets/img/neko.png" class="img-fluid mb-5" style="display: none;">
+        <img src="./assets/img/neko.png" class="img-fluid mb-5 draggable" style="display: none;">
     </div>
 
     <script>
@@ -51,7 +52,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
             var btn = document.getElementById('showHideButton');
             if (img.style.display === 'none') {
                 img.style.display = 'block';
-                btn.innerText = 'Hide Icon'';
+                btn.innerText = 'Hide Icon';
             } else {
                 img.style.display = 'none';
                 btn.innerText = 'Show Icon';
