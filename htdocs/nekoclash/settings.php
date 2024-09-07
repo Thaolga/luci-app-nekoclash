@@ -58,9 +58,8 @@ $singBoxVersion = getSingboxVersion();
     <script type="text/javascript" src="./assets/js/neko.js"></script>
   </head>
   <body>
-   <head>
+<head>
     <meta charset="UTF-8">
-
     <style>
         .container-sm {
             margin: 20px auto;
@@ -69,7 +68,7 @@ $singBoxVersion = getSingboxVersion();
 </head>
 <body>
     <div class="container-sm text-center col-8">
-        <img src="./assets/img/neko.png" class="img-fluid mb-5 draggable" style="display: none;">
+        <img src="./assets/img/neko.png" class="img-fluid mb-5" style="display: none;">
     </div>
 
     <script>
@@ -100,84 +99,84 @@ $singBoxVersion = getSingboxVersion();
     </script>
 
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
-           <div class="row">
+        <div class="row">
             <a href="./" class="col btn btn-lg">Home</a>
             <a href="./dashboard.php" class="col btn btn-lg">Dashboard</a>
             <a href="./configs.php" class="col btn btn-lg">Configs</a>
             <a href="#" class="col btn btn-lg">Settings</a>
         </div>
     </div>
-<div class="container text-left p-3">
+    <div class="container text-left p-3">
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
         <h2 class="text-center p-2 mb-3">Theme Settings</h2>
-        <form action="settings.php" method="post">
-            <div class="container text-center justify-content-md-center">
-                <div class="row justify-content-md-center">
-                    <div class="col mb-3 justify-content-md-center">
-                        <select class="form-select" name="themechange" aria-label="themex">
-                            <option selected>Change Theme (<?php echo $neko_theme ?>)</option>
-                            <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
-                        </select>
-                    </div>
+            <form action="settings.php" method="post">
+                <div class="container text-center justify-content-md-center">
                     <div class="row justify-content-md-center">
-                        <div class="col justify-content-md-center mb-3">
-                            <input class="btn btn-info" type="submit" value="Change Theme">
+                        <div class="col mb-3 justify-content-md-center">
+                          <select class="form-select" name="themechange" aria-label="themex">
+                                <option selected>Change Theme (<?php echo $neko_theme ?>)</option>
+                                <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
+                          </select>
+                        </div>
+                        <div class="row justify-content-md-center">
+                            <div class="col justify-content-md-center mb-3">
+                              <input class="btn btn-info" type="submit" value="Change Theme">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
-        <h2 class="text-center p-2 mb-3">Software Information</h2>
-        <table class="table table-borderless mb-3">
-            <tbody>
-                <tr>
-                    <td class="col-2">Auto Reload Firewall</td>
-                    <form action="settings.php" method="post">
-                        <td class="d-grid">
-                            <div class="btn-group col" role="group" aria-label="ctrl">
-                                <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?> d-grid">Enable</button>
-                                <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?> d-grid">Disable</button>
-                            </div>
-                        </td>
-                    </form>
-                </tr>
-                <tr>
-                    <td class="col-2">Client Version</td>
-                    <td class="col-4">
-                        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                            <div style="font-family: monospace; flex-grow: 1; text-align: left;">
-                                <div class="form-control text-center" id="cliver">-</div>
-                            </div>
-                            <button class="form-control text-center" id="updateButton">Update to Latest Version</button>
-                        </div>
-                        <div id="logOutput"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-2">Sing-box Core Version</td>
-                    <td class="col-4">
-                        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                            <div class="form-control text-center" id="singBoxCorever">
-                                <?php echo htmlspecialchars($singBoxVersion); ?>
-                            </div>    
-                            <button class="form-control text-center" id="updateSingboxButton">Update Singbox Core</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-2">Mihomo Core Version</td>
-                    <td class="col-4">
-                        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                            <div class="form-control text-center" id="corever">-</div>
-                            <button class="form-control text-center" id="updateNekoButton">Switch to NeKo Core</button>
-                            <button class="form-control text-center" id="updateCoreButton">Switch to Mihomo Core</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+            </form>
+<h2 class="text-center p-2 mb-3">Software Information</h2>
+<table class="table table-borderless mb-3">
+    <tbody>
+        <tr>
+            <td class="col-2">Auto Reload Firewall</td>
+            <form action="settings.php" method="post">
+                <td class="d-grid">
+                    <div class="btn-group col" role="group" aria-label="ctrl">
+                        <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?> d-grid">Enable</button>
+                        <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?> d-grid">Disable</button>
+                    </div>
+                </td>
+            </form>
+        </tr>
+        <tr>
+<td class="col-2">Client Version</td>
+<td class="col-4">
+    <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <div style="font-family: monospace; flex-grow: 1; text-align: left;">
+        <div class="form-control text-center" id="cliver">-</div>
+        </div>
+        <button class="form-control text-center" id="updateButton" ">Update to Latest Version</button>
     </div>
-</div>
+    <div id="logOutput"></div>
+</td>
+</tr>
+<tr>
+    <td class="col-2">Sing-box Core Version</td>
+    <td class="col-4">
+        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="form-control text-center"  id="singBoxCorever">
+                <?php echo htmlspecialchars($singBoxVersion); ?>
+            </div>    
+                <button class="form-control text-center"  id="updateSingboxButton">Update Singbox Core</button>
+            </div>
+        </div>
+    </td>
+</tr>
+    <td class="col-2">Mihomo Core Version</td>
+    <td class="col-4">
+        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="form-control text-center"  id="corever">-</div>
+                <button class="form-control text-center"  id="updateNekoButton">Switch to NeKo Core</button>
+                <button class="form-control text-center"  id="updateCoreButton" >Switch to Mihomo Core</button>
+            </div>
+        </div>
+    </td>
+</tr>
+<tr>
+ </tbody>
+ </table>
 <style>
     #updateButton:hover {
         background-color: #20B2AA; 
@@ -353,131 +352,129 @@ $singBoxVersion = getSingboxVersion();
 </head>
 <body>
     <div class="container mt-4">
-    <h2 class="text-center mb-4">About NekoClash</h2>
-    <div class="feature-box text-center">
-        <h5>NekoClash</h5>
-        <p>NekoClash is a thoughtfully designed Mihomo proxy tool, created specifically for home users, aimed at providing a simple yet powerful proxy solution. Built on PHP and BASH technologies, NekoClash simplifies complex proxy configurations into an intuitive experience, allowing every user to easily enjoy an efficient and secure network environment.</p>
-    </div>
+        <h2 class="text-center mb-4">About NekoClash</h2>
+        <div class="feature-box text-center">
+            <h5>NekoClash</h5>
+            <p>NekoClash is a thoughtfully designed Mihomo proxy tool, created specifically for home users, aimed at providing a simple yet powerful proxy solution. Built on PHP and BASH technologies, NekoClash simplifies complex proxy configurations into an intuitive experience, allowing every user to easily enjoy an efficient and secure network environment.</p>
+        </div>
 
-    <h5 class="text-center mb-4">Core Features</h5>
-    <div class="row">
-        <div class="col-md-4 mb-4 d-flex">
-            <div class="feature-box text-center flex-fill">
-                <h6>Simplified Configuration</h6>
-                <p>With a user-friendly interface and smart configuration features, easily set up and manage Mihomo proxies.</p>
+        <h5 class="text-center mb-4">Core Features</h5>
+        <div class="row">
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="feature-box text-center flex-fill">
+                    <h6>Simplified Configuration</h6>
+                    <p>With a user-friendly interface and smart configuration features, easily set up and manage Mihomo proxies.。</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="feature-box text-center flex-fill">
+                    <h6>Optimized Performance</h6>
+                    <p>Ensures optimal proxy performance and stability through efficient scripts and automation.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="feature-box text-center flex-fill">
+                    <h6>Seamless Experience</h6>
+                    <p>Designed for home users, balancing ease of use and functionality, ensuring every family member can conveniently use the proxy service.</p>
+                </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4 d-flex">
-            <div class="feature-box text-center flex-fill">
-                <h6>Optimized Performance</h6>
-                <p>Ensures optimal proxy performance and stability through efficient scripts and automation.</p>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 d-flex">
-            <div class="feature-box text-center flex-fill">
-                <h6>Seamless Experience</h6>
-                <p>Designed for home users, balancing ease of use and functionality, ensuring every family member can conveniently use the proxy service.</p>
-            </div>
-        </div>
-    </div>
 
-    <h5 class="text-center mb-4">Tool Information</h5>
-    <div class="d-flex justify-content-center">
-        <div class="table-container">
-            <table class="table table-borderless mb-5">
-                <tbody>
-                    <tr class="text-center">
-                        <td>SagerNet</td>
-                        <td>MetaCubeX</td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>
-                            <div class="link-box">
-                                <a href="https://github.com/SagerNet/sing-box" target="_blank">Sing-box</a>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="link-box">
-                                <a href="https://github.com/MetaCubeX/mihomo" target="_blank">Mihomo</a>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <h5 class="text-center mb-4">External Links</h5>
+<h5 class="text-center mb-4">Tool Information</h5>
+<div class="d-flex justify-content-center">
     <div class="table-container">
         <table class="table table-borderless mb-5">
             <tbody>
                 <tr class="text-center">
-                    <td>Github</td>
-                    <td>Github</td>
-                </tr>
-                <tr class="text-center">
-                    <td>
-                        <div class="link-box">
-                            <a href="https://github.com/nosignals/neko" target="_blank">nosignals</a>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="link-box">
-                            <a href="https://github.com/Thaolga/luci-app-nekoclash" target="_blank">Thaolga</a>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="text-center">
-                    <td>Telegram</td>
+                    <td>SagerNet</td>
                     <td>MetaCubeX</td>
                 </tr>
                 <tr class="text-center">
                     <td>
                         <div class="link-box">
-                            <a href="https://t.me/+J55MUupktxFmMDgx" target="_blank">Telegram</a>
+                            <a href="https://github.com/SagerNet/sing-box" target="_blank">Sing-box</a>
                         </div>
                     </td>
                     <td>
                         <div class="link-box">
-                            <a href="https://github.com/MetaCubeX" target="_blank">METACUBEX</a>
+                            <a href="https://github.com/MetaCubeX/mihomo" target="_blank">Mihomo</a>
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-
-    <h5 class="text-center mb-4">Sing-box Subscription Template Collection</h5>
-    <div class="d-flex justify-content-center">
+</div>
+    <h5 class="text-center mb-4">External Links</h5>
         <div class="table-container">
             <table class="table table-borderless mb-5">
                 <tbody>
                     <tr class="text-center">
                         <td>Github</td>
-                        <td>NeKoClash</td>
+                        <td>Github</td>
                     </tr>
                     <tr class="text-center">
                         <td>
                             <div class="link-box">
-                                <a href="https://github.com/Thaolga/Sing-box" target="_blank">Sing-box</a>
+                                <a href="https://github.com/nosignals/neko" target="_blank">nosignals</a>
                             </div>
                         </td>
                         <td>
                             <div class="link-box">
-                                <a href="https://github.com/Thaolga/luci-app-nekoclash/issues" target="_blank">Issues</a>
+                                <a href="https://github.com/Thaolga/luci-app-nekoclash" target="_blank">Thaolga</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="text-center">
+                        <td>Telegram</td>
+                        <td>MetaCubeX</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td>
+                            <div class="link-box">
+                                <a href="https://t.me/+J55MUupktxFmMDgx" target="_blank">Telegram</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="link-box">
+                                <a href="https://github.com/MetaCubeX" target="_blank">METACUBEX</a>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+<h5 class="text-center mb-4">Sing-box Subscription Template Collection</h5>
+<div class="d-flex justify-content-center">
+    <div class="table-container">
+        <table class="table table-borderless mb-5">
+            <tbody>
+                <tr class="text-center">
+                    <td>Github</td>
+                    <td>NeKoClash</td>
+                </tr>
+                <tr class="text-center">
+                    <td>
+                        <div class="link-box">
+                            <a href="https://github.com/Thaolga/Sing-box" target="_blank">Sing-box</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="link-box">
+                            <a href="https://github.com/Thaolga/luci-app-nekoclash/issues" target="_blank">Issues</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-
-    <footer class="text-center">
-        <p><?php echo $footer ?></p>
-    </footer>
 </div>
 
-<script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
+      <footer class="text-center">
+    <p><?php echo $footer ?></p>
+</footer>
+    </div>
+
+    <script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
