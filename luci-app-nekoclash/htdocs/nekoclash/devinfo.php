@@ -67,7 +67,6 @@ date_default_timezone_set('Asia/Shanghai');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Music Player</title>
     <style>
         .controls {
             display: flex;
@@ -425,7 +424,6 @@ date_default_timezone_set('Asia/Shanghai');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Music Player</title>
     <style>
         body {
             font-family: Arial, sans-serif;

@@ -12,6 +12,7 @@ if(isset($_POST['neko'])){
 }
 $neko_status=exec("uci -q get neko.cfg.enabled");
 ?>
+
 <!doctype html>
 <html lang="en" data-bs-theme="<?php echo substr($neko_theme,0,-4) ?>">
   <head>
@@ -27,71 +28,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
     <script type="text/javascript" src="./assets/js/neko.js"></script>
   </head>
   <body>
-</div>
-  <title>双击显示图标</title>
-    <style>
-        .container-sm {
-            margin: 20px auto;
-            position: relative;
-        }
-        .draggable {
-            position: absolute;
-            cursor: move;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-sm text-center col-8">
-        <img src="./assets/img/photo.png" class="img-fluid mb-5 draggable" style="display: none;">
-    </div>
-
-    <script>
-        function toggleImage() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'none') {
-                img.style.display = 'block';
-                btn.innerText = '隐藏图标';
-            } else {
-                img.style.display = 'none';
-                btn.innerText = '显示图标';
-            }
-        }
-
-        function hideIcon() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'block') {
-                img.style.display = 'none';
-                btn.innerText = '显示图标';
-            }
-        }
-
-        document.body.ondblclick = function() {
-            toggleImage();
-        };
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var img = document.querySelector('.container-sm img');
-            img.addEventListener('mousedown', function(e) {
-                var offsetX = e.clientX - parseInt(window.getComputedStyle(img).left);
-                var offsetY = e.clientY - parseInt(window.getComputedStyle(img).top);
-
-                function mouseMoveHandler(e) {
-                    img.style.left = (e.clientX - offsetX) + 'px';
-                    img.style.top = (e.clientY - offsetY) + 'px';
-                }
-
-                function reset() {
-                    document.removeEventListener('mousemove', mouseMoveHandler);
-                    document.removeEventListener('mouseup', reset);
-                }
-
-                document.addEventListener('mousemove', mouseMoveHandler);
-                document.addEventListener('mouseup', reset);
-            });
-        });
-    </script>
+ 
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
             <a href="#" class="col btn btn-lg">首页</a>
@@ -338,9 +275,8 @@ $lang = $_GET['lang'] ?? 'en';
             let isp = translate[data.isp] || data.isp;
             let asnOrganization = translate[data.asn_organization] || data.asn_organization;
 
-            // Check system language
             if (data.country === 'Taiwan') {
-                country = (navigator.language === 'en') ? 'China Taiwan' : '中国台湾省';
+                country = (navigator.language === 'en') ? 'China Taiwan' : '中国台湾';
             }
 
             document.getElementById(elID).innerHTML = `${country} ${isp} ${asnOrganization}`;
@@ -374,7 +310,6 @@ $lang = $_GET['lang'] ?? 'en';
 </script>
 </body>
 </html>
-       
 <tbody>
     <tr>
 <?php
@@ -384,13 +319,13 @@ $neko_status = 0;
 $logDir = '/etc/neko/tmp/';
 $logFile = $logDir . 'log.txt'; 
 $kernelLogFile = $logDir . 'neko_log.txt';
-$singBoxLogFile = $logDir . 'singbox_log.txt'; 
+$singBoxLogFile = '/var/log/singbox_log.txt'; 
 $singboxStartLogFile = $logDir . 'singbox_start_log.txt'; 
 
 $singBoxPath = '/usr/bin/sing-box';
-$configFilePath = '/etc/neko/config/config.json';
+$configDir = '/etc/neko/config'; 
 
-$start_script = <<<EOF
+$start_script_template = <<<EOF
 #!/bin/bash
 
 if command -v fw4 > /dev/null; then
@@ -456,11 +391,12 @@ table inet singbox {
     type filter hook prerouting priority mangle; policy accept;
     iifname { lo, eth0 } meta l4proto { tcp, udp } ct direction original goto singbox-tproxy
   }
-}' > /etc/nftables.conf
+  }' > /etc/nftables.conf
 
     nft -f /etc/nftables.conf
+    echo "防火墙规则已应用（fw4）。" >> /etc/neko/tmp/log.txt
 
-elif command -v fw3 > /dev/null; then
+    elif command -v fw3 > /dev/null; then
     echo "Detected fw3, configuring iptables rules..."
 
     iptables -t mangle -F
@@ -495,17 +431,31 @@ elif command -v fw3 > /dev/null; then
     iptables -t mangle -A PREROUTING -i lo -p udp -j singbox-tproxy
     iptables -t mangle -A PREROUTING -i eth0 -p tcp -j singbox-tproxy
     iptables -t mangle -A PREROUTING -i eth0 -p udp -j singbox-tproxy
+    echo "防火墙规则已应用（fw3）。" >> /etc/neko/tmp/log.txt
+
 else
     echo "Neither fw3 nor fw4 detected, unable to configure firewall rules."
     exit 1
 fi
 
-echo "Starting sing-box..."
-/usr/bin/sing-box run -c /etc/neko/config/config.json
+echo "启动sing-box，使用配置文件：%s"
+/usr/bin/sing-box run -c %s
 EOF;
 
-$maxFileSize = 2 * 1024 * 1024;  
-$maxBackupFiles = 2;  
+$maxFileSize = 1024 * 1024 * 5; 
+$maxBackupFiles = 5; 
+
+function getAvailableConfigFiles() {
+    global $configDir;
+    return glob("$configDir/*.json");
+}
+
+function createStartScript($configFile) {
+    global $start_script_template;
+    $start_script = sprintf($start_script_template, $configFile, $configFile);
+    file_put_contents('/etc/neko/core/start.sh', $start_script);
+    chmod('/etc/neko/core/start.sh', 0755);
+}
 
 function rotateLogFile($filePath) {
     $backupPath = $filePath . '-' . date('Y-m-d-H-i-s') . '.bak';
@@ -553,6 +503,13 @@ function isMihomoRunning() {
     return !empty($output);
 }
 
+function getRunningConfigFile() {
+    global $singBoxPath;
+    $command = "ps w | grep '$singBoxPath' | grep -oP '(?<=-c )[^ ]+'";
+    exec($command, $output);
+    return isset($output[0]) ? trim($output[0]) : null;
+}
+
 if (isSingboxRunning()) {
     $singbox_status = 1; 
 } else {
@@ -568,7 +525,12 @@ if (isMihomoRunning()) {
 if ($neko_status == 1) {
     $str_cfg = 'Mihomo 配置文件';
 } elseif ($singbox_status == 1) {
-    $str_cfg = 'Sing-box 配置文件';
+    $runningConfigFile = getRunningConfigFile();
+    if ($runningConfigFile) {
+        $str_cfg = 'Sing-box 配置文件: ' . htmlspecialchars(basename($runningConfigFile));
+    } else {
+        $str_cfg = 'Sing-box 配置文件：未找到运行中的配置文件';
+    }
 } else {
     $str_cfg = '无运行中的服务';
 }
@@ -597,8 +559,19 @@ function getSingboxPID() {
 function stopSingbox() {
     $pid = getSingboxPID();
     if ($pid) {
-        exec("kill -9 $pid", $output, $returnVar);
-        return $returnVar === 0;
+        exec("kill -15 $pid", $output, $returnVar);
+        if ($returnVar !== 0) {
+            exec("kill -9 $pid", $output, $returnVar);
+        }
+        exec("service firewall restart", $output, $returnVar);
+
+        if ($returnVar === 0) {
+            logToFile('/etc/neko/tmp/log.txt', "防火墙重启成功。");
+            return true;
+        } else {
+            logToFile('/etc/neko/tmp/log.txt', "防火墙重启失败。");
+            error_log("Failed to stop Sing-box with PID $pid");
+        }
     }
     return false;
 }
@@ -612,14 +585,7 @@ function applyFirewallRules() {
     global $nftables_rules;
     file_put_contents('/etc/nftables.conf', $nftables_rules);
     exec('nft -f /etc/nftables.conf');
-}
-
-function createStartScript() {
-    global $start_script;
-    if (!file_exists('/etc/neko/core/start.sh')) {
-        file_put_contents('/etc/neko/core/start.sh', $start_script);
-        chmod('/etc/neko/core/start.sh', 0755);
-    }
+    logToFile('/etc/neko/tmp/log.txt', '防火墙规则已应用');
 }
 
 function readRecentLogLines($filePath, $lines = 1000) {
@@ -627,15 +593,22 @@ function readRecentLogLines($filePath, $lines = 1000) {
     return shell_exec($command);
 }
 
+$availableConfigs = getAvailableConfigFiles();
+$currentConfigFile = isset($_POST['config_file']) ? $_POST['config_file'] : '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['singbox'])) {
+    if (isset($_POST['config_file']) && file_exists($_POST['config_file'])) {
+        $configFile = $_POST['config_file'];  
+
         if ($_POST['singbox'] === 'start') {
             checkLogFileSize($singBoxLogFile, $maxFileSize);
             applyFirewallRules();
-            createStartScript();
+            createStartScript($configFile); 
             exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
             $version = getSingboxVersion();
-            $logMessage = $returnVar === 0 ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";
+            $pid = getSingboxPID();
+            $logMessage = $returnVar === 0 
+               ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";      
             logToFile($logFile, $logMessage); 
             $singbox_status = $returnVar === 0 ? 1 : 0;
         } elseif ($_POST['singbox'] === 'disable') {
@@ -648,10 +621,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($success) {
                 checkLogFileSize($singBoxLogFile, $maxFileSize); 
                 applyFirewallRules();
-                createStartScript();
+                createStartScript($configFile);
                 exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
                 $version = getSingboxVersion();
-                $logMessage = $returnVar === 0 ? "Sing-box has been restarted, version: $version" : "Failed to restart Sing-box";
+                $pid = getSingboxPID();
+                $logMessage = $returnVar === 0 
+                    ? "Sing-box has been restarted，version: $version, PID: $pid" 
+                    : "Failed to start Sing-box";    
                 logToFile($logFile, $logMessage); 
                 $singbox_status = $returnVar === 0 ? 1 : 0;
             } else {
@@ -662,17 +638,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['clear_singbox_log'])) {
         file_put_contents($singBoxLogFile, ''); 
-        $message = 'Sing-box running log has been cleared';
+        $message = 'Sing-box运行日志已清空';
     }
 
     if (isset($_POST['clear_plugin_log'])) {
         file_put_contents($logFile, ''); 
-        $message = 'Plugin log has been cleared';
+        $message = '插件日志已清空';
     }
 
     if (isset($_POST['clear_kernel_log'])) {
         file_put_contents($kernelLogFile, ''); 
-        $message = 'Kernel log has been cleared';
+        $message = '内核日志已清空';
     }
 }
 
@@ -680,7 +656,7 @@ function readLogFile($filePath) {
     if (file_exists($filePath)) {
         return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000)));
     } else {
-        return 'Log file does not exist.';
+        return '日志文件不存在。';
     }
 }
 
@@ -695,65 +671,78 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
-        <td>状态</td>
-        <td class="d-grid">
-            <div class="btn-group col" role="group" aria-label="ctrl">
-                <?php
+    <style>
+        .btn-group .btn {
+            width: 100%; 
+        }
+    </style>
+            <td>状态</td>
+                <td class="d-grid">
+                    <div class="btn-group" role="group" aria-label="ctrl">
+                        <?php
+                            if ($neko_status == 1) {
+                                echo "<button type=\"button\" class=\"btn btn-success\">Mihomo 运行中</button>\n";
+                            } else {
+                                echo "<button type=\"button\" class=\"btn btn-outline-danger\">Mihomo 未运行</button>\n";
+                            }
+
+                            echo "<button type=\"button\" class=\"btn btn-warning\">$str_cfg</button>\n";
+
+                            if ($singbox_status == 1) {
+                                echo "<button type=\"button\" class=\"btn btn-success\">Sing-box 运行中</button>\n";
+                            } else {
+                                echo "<button type=\"button\" class=\"btn btn-outline-danger\">Sing-box 未运行</button>\n";
+                            }
+                        ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+            <td>控制</td>
+                <form action="index.php" method="post">
+                    <td class="d-grid">
+                        <div class="btn-group col" role="group" aria-label="ctrl">
+                            <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-success <?php if ($neko_status == 1) echo "disabled" ?> d-grid">启用 Mihomo</button>
+                            <button type="submit" name="neko" value="disable" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-danger <?php if ($neko_status == 0) echo "disabled" ?> d-grid">停用 Mihomo</button>
+                            <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">重启 Mihomo</button>
+                        </div>
+                    </td>
+                </form>
+
+                <form action="index.php" method="post">
+                    <td class="d-grid">   
+                        <select name="config_file" id="config_file" class="form-select">
+                            <?php foreach ($availableConfigs as $config): ?>
+                                <option value="<?= htmlspecialchars($config) ?>" <?= isset($_POST['config_file']) && $_POST['config_file'] === $config ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars(basename($config)) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="btn-group col" role="group" aria-label="ctrl">
+                            <button type="submit" name="singbox" value="start" class="btn btn<?php echo ($singbox_status == 1) ? "-outline" : "" ?>-success <?php echo ($singbox_status == 1) ? "disabled" : "" ?> d-grid">启用 Sing-box</button>
+                            <button type="submit" name="singbox" value="disable" class="btn btn<?php echo ($singbox_status == 0) ? "-outline" : "" ?>-danger <?php echo ($singbox_status == 0) ? "disabled" : "" ?> d-grid">停用 Sing-box</button>
+                            <button type="submit" name="singbox" value="restart" class="btn btn<?php echo ($singbox_status == 0) ? "-outline" : "" ?>-warning <?php echo ($singbox_status == 0) ? "disabled" : "" ?> d-grid">重启 Sing-box</button>
+                        </div>
+                    </td>
+                </form>
+            </tr>
+            <tr>
+                <td>运行模式</td>
+                <td class="d-grid">
+                    <?php
+                    $mode_placeholder = '';
                     if ($neko_status == 1) {
-                        echo "<button type=\"button\" class=\"btn btn-success\">Mihomo 运行中</button>\n";
+                        $mode_placeholder = $neko_cfg['echanced'] . " | " . $neko_cfg['mode'];
+                    } elseif ($singbox_status == 1) {
+                        $mode_placeholder = "Rule 模式";
                     } else {
-                        echo "<button type=\"button\" class=\"btn btn-outline-danger\">Mihomo 未运行</button>\n";
+                        $mode_placeholder = "未运行";
                     }
-
-                    echo "<button type=\"button\" class=\"btn btn-warning d-grid\">$str_cfg</button>\n";
-
-                    if ($singbox_status == 1) {
-                        echo "<button type=\"button\" class=\"btn btn-success\">Sing-box 运行中</button>\n";
-                    } else {
-                        echo "<button type=\"button\" class=\"btn btn-outline-danger\">Sing-box 未运行</button>\n";
-                    }
-                ?>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>控制</td>
-        <form action="index.php" method="post">
-            <td class="d-grid">
-                <div class="btn-group col" role="group" aria-label="ctrl">
-                    <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-success <?php if ($neko_status == 1) echo "disabled" ?> d-grid">启用 Mihomo</button>
-                    <button type="submit" name="neko" value="disable" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-danger <?php if ($neko_status == 0) echo "disabled" ?> d-grid">停用 Mihomo</button>
-                    <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">重启 Mihomo</button>
-                </div>
-            </td>
-        </form>
-        <form action="index.php" method="post">
-            <td class="d-grid">
-                <div class="btn-group col" role="group" aria-label="ctrl">
-                    <button type="submit" name="singbox" value="start" class="btn btn<?php if ($singbox_status == 1) echo "-outline" ?>-success <?php if ($singbox_status == 1) echo "disabled" ?> d-grid">启用 Sing-box</button>
-                    <button type="submit" name="singbox" value="disable" class="btn btn<?php if ($singbox_status == 0) echo "-outline" ?>-danger <?php if ($singbox_status == 0) echo "disabled" ?> d-grid">停用 Sing-box</button>
-                    <button type="submit" name="singbox" value="restart" class="btn btn<?php if ($singbox_status == 0) echo "-outline" ?>-warning <?php if ($singbox_status == 0) echo "disabled" ?> d-grid">重启 Sing-box</button>
-                </div>
-            </td>
-        </form>
-    </tr>
-    <tr>
-        <td>运行模式</td>
-        <td class="d-grid">
-             <?php
-             $mode_placeholder = '';
-             if ($neko_status == 1) {
-             $mode_placeholder = $neko_cfg['echanced'] . " | " . $neko_cfg['mode'];
-             } elseif ($singbox_status == 1) {
-             $mode_placeholder = "Rule 模式";
-             } else {
-             $mode_placeholder = "未运行";
-             }
-             ?>
-            <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $mode_placeholder; ?>" disabled>
-        </td>
-    </tr>
-</tbody>
+                    ?>
+                    <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $mode_placeholder; ?>" disabled>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </div>
 
