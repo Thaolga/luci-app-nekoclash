@@ -27,69 +27,6 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
     <script type="text/javascript" src="./assets/js/neko.js"></script>
   </head>
   <body>
-</div>
-    <style>
-        .container-sm {
-            margin: 20px auto;
-            position: relative;
-        }
-        .draggable {
-            position: absolute;
-            cursor: move;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-sm text-center col-8">
-        <img src="./assets/img/photo.png" class="img-fluid mb-5 draggable" style="display: none;">
-    </div>
-
-    <script>
-        function toggleImage() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'none') {
-                img.style.display = 'block';
-                btn.innerText = 'Hide Icon';
-            } else {
-                img.style.display = 'none';
-                btn.innerText = 'Show Icon';
-            }
-        }
-
-        function hideIcon() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'block') {
-                img.style.display = 'none';
-                btn.innerText = 'Show Icon';
-            }
-        }
-
-        document.body.ondblclick = function() {
-            toggleImage();
-        };
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var img = document.querySelector('.container-sm img');
-            img.addEventListener('mousedown', function(e) {
-                var offsetX = e.clientX - parseInt(window.getComputedStyle(img).left);
-                var offsetY = e.clientY - parseInt(window.getComputedStyle(img).top);
-
-                function mouseMoveHandler(e) {
-                    img.style.left = (e.clientX - offsetX) + 'px';
-                    img.style.top = (e.clientY - offsetY) + 'px';
-                }
-
-                function reset() {
-                    document.removeEventListener('mousemove', mouseMoveHandler);
-                    document.removeEventListener('mouseup', reset);
-                }
-
-                document.addEventListener('mousemove', mouseMoveHandler);
-                document.addEventListener('mouseup', reset);
-            });
-        });
-    </script>
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
             <a href="#" class="col btn btn-lg">Home</a>
@@ -279,23 +216,22 @@ $lang = $_GET['lang'] ?? 'en';
 </script>
 </body>
 </html>
-       
-<tbody>
+  <tbody>
     <tr>
 <?php
 $singbox_status = 0;
 $neko_status = 0;
 
 $logDir = '/etc/neko/tmp/';
-$logFile = $logDir . 'log.txt'; 
+$logFile = $logDir . 'log.txt';
 $kernelLogFile = $logDir . 'neko_log.txt';
-$singBoxLogFile = $logDir . 'singbox_log.txt'; 
-$singboxStartLogFile = $logDir . 'singbox_start_log.txt'; 
+$singBoxLogFile = '/var/log/singbox_log.txt';
+$singboxStartLogFile = $logDir . 'singbox_start_log.txt';
 
 $singBoxPath = '/usr/bin/sing-box';
-$configFilePath = '/etc/neko/config/config.json';
+$configDir = '/etc/neko/config';
 
-$start_script = <<<EOF
+$start_script_template = <<<EOF
 #!/bin/bash
 
 if command -v fw4 > /dev/null; then
@@ -361,11 +297,12 @@ table inet singbox {
     type filter hook prerouting priority mangle; policy accept;
     iifname { lo, eth0 } meta l4proto { tcp, udp } ct direction original goto singbox-tproxy
   }
-}' > /etc/nftables.conf
+  }' > /etc/nftables.conf
 
     nft -f /etc/nftables.conf
+    echo "Firewall rules applied (fw4)." >> /etc/neko/tmp/log.txt
 
-elif command -v fw3 > /dev/null; then
+    elif command -v fw3 > /dev/null; then
     echo "Detected fw3, configuring iptables rules..."
 
     iptables -t mangle -F
@@ -400,22 +337,36 @@ elif command -v fw3 > /dev/null; then
     iptables -t mangle -A PREROUTING -i lo -p udp -j singbox-tproxy
     iptables -t mangle -A PREROUTING -i eth0 -p tcp -j singbox-tproxy
     iptables -t mangle -A PREROUTING -i eth0 -p udp -j singbox-tproxy
+    echo "Firewall rules applied (fw3)." >> /etc/neko/tmp/log.txt
+
 else
     echo "Neither fw3 nor fw4 detected, unable to configure firewall rules."
     exit 1
 fi
 
-echo "Starting sing-box..."
-/usr/bin/sing-box run -c /etc/neko/config/config.json
+echo "Starting sing-box, using configuration file: %s"
+/usr/bin/sing-box run -c %s
 EOF;
 
-$maxFileSize = 2 * 1024 * 1024;  
-$maxBackupFiles = 2;  
+$maxFileSize = 1024 * 1024 * 5;
+$maxBackupFiles = 5;
+
+function getAvailableConfigFiles() {
+    global $configDir;
+    return glob("$configDir/*.json");
+}
+
+function createStartScript($configFile) {
+    global $start_script_template;
+    $start_script = sprintf($start_script_template, $configFile, $configFile);
+    file_put_contents('/etc/neko/core/start.sh', $start_script);
+    chmod('/etc/neko/core/start.sh', 0755);
+}
 
 function rotateLogFile($filePath) {
     $backupPath = $filePath . '-' . date('Y-m-d-H-i-s') . '.bak';
-    rename($filePath, $backupPath);  
-    touch($filePath);  
+    rename($filePath, $backupPath);
+    touch($filePath);
     cleanUpOldBackups(dirname($filePath), basename($filePath));
 }
 
@@ -458,22 +409,34 @@ function isMihomoRunning() {
     return !empty($output);
 }
 
+function getRunningConfigFile() {
+    global $singBoxPath;
+    $command = "ps w | grep '$singBoxPath' | grep -oP '(?<=-c )[^ ]+'";
+    exec($command, $output);
+    return isset($output[0]) ? trim($output[0]) : null;
+}
+
 if (isSingboxRunning()) {
-    $singbox_status = 1; 
+    $singbox_status = 1;
 } else {
-    $singbox_status = 0; 
+    $singbox_status = 0;
 }
 
 if (isMihomoRunning()) {
-    $neko_status = 1; 
+    $neko_status = 1;
 } else {
-    $neko_status = 0; 
+    $neko_status = 0;
 }
 
 if ($neko_status == 1) {
-    $str_cfg = 'Mihomo Configuration File';
+    $str_cfg = 'Mihomo configuration file';
 } elseif ($singbox_status == 1) {
-    $str_cfg = 'Sing-box Configuration File';
+    $runningConfigFile = getRunningConfigFile();
+    if ($runningConfigFile) {
+        $str_cfg = 'Sing-box configuration file: ' . htmlspecialchars(basename($runningConfigFile));
+    } else {
+        $str_cfg = 'Sing-box configuration file: No running configuration file found';
+    }
 } else {
     $str_cfg = 'No running services';
 }
@@ -485,7 +448,7 @@ function getSingboxVersion() {
     if ($returnVar === 0) {
         foreach ($output as $line) {
             if (strpos($line, 'version') !== false) {
-                return trim(substr($line, strpos($line, 'version') + 8)); 
+                return trim(substr($line, strpos($line, 'version') + 8));
             }
         }
     }
@@ -502,8 +465,19 @@ function getSingboxPID() {
 function stopSingbox() {
     $pid = getSingboxPID();
     if ($pid) {
-        exec("kill -9 $pid", $output, $returnVar);
-        return $returnVar === 0;
+        exec("kill -15 $pid", $output, $returnVar);
+        if ($returnVar !== 0) {
+            exec("kill -9 $pid", $output, $returnVar);
+        }
+        exec("service firewall restart", $output, $returnVar);
+
+        if ($returnVar === 0) {
+            logToFile('/etc/neko/tmp/log.txt', "Firewall restarted successfully.");
+            return true;
+        } else {
+            logToFile('/etc/neko/tmp/log.txt', "Failed to restart firewall.");
+            error_log("Failed to stop Sing-box with PID $pid");
+        }
     }
     return false;
 }
@@ -517,14 +491,7 @@ function applyFirewallRules() {
     global $nftables_rules;
     file_put_contents('/etc/nftables.conf', $nftables_rules);
     exec('nft -f /etc/nftables.conf');
-}
-
-function createStartScript() {
-    global $start_script;
-    if (!file_exists('/etc/neko/core/start.sh')) {
-        file_put_contents('/etc/neko/core/start.sh', $start_script);
-        chmod('/etc/neko/core/start.sh', 0755);
-    }
+    logToFile('/etc/neko/tmp/log.txt', 'Firewall rules applied');
 }
 
 function readRecentLogLines($filePath, $lines = 1000) {
@@ -532,52 +499,62 @@ function readRecentLogLines($filePath, $lines = 1000) {
     return shell_exec($command);
 }
 
+$availableConfigs = getAvailableConfigFiles();
+$currentConfigFile = isset($_POST['config_file']) ? $_POST['config_file'] : '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['singbox'])) {
+    if (isset($_POST['config_file']) && file_exists($_POST['config_file'])) {
+        $configFile = $_POST['config_file'];
+
         if ($_POST['singbox'] === 'start') {
             checkLogFileSize($singBoxLogFile, $maxFileSize);
             applyFirewallRules();
-            createStartScript();
+            createStartScript($configFile);
             exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
             $version = getSingboxVersion();
-            $logMessage = $returnVar === 0 ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";
-            logToFile($logFile, $logMessage); 
+            $pid = getSingboxPID();
+            $logMessage = $returnVar === 0 
+               ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";
+            logToFile($logFile, $logMessage);
             $singbox_status = $returnVar === 0 ? 1 : 0;
         } elseif ($_POST['singbox'] === 'disable') {
             $success = stopSingbox();
-            $logMessage = $success ? "Sing-box has been stopped" : "Failed to stop Sing-box";
-            logToFile($logFile, $logMessage); 
+            $logMessage = $success ? "Sing-box stopped" : "Failed to stop Sing-box";
+            logToFile($logFile, $logMessage);
             $singbox_status = $success ? 0 : $singbox_status;
         } elseif ($_POST['singbox'] === 'restart') {
             $success = stopSingbox();
             if ($success) {
-                checkLogFileSize($singBoxLogFile, $maxFileSize); 
+                checkLogFileSize($singBoxLogFile, $maxFileSize);
                 applyFirewallRules();
-                createStartScript();
+                createStartScript($configFile);
                 exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
                 $version = getSingboxVersion();
-                $logMessage = $returnVar === 0 ? "Sing-box has been restarted, version: $version" : "Failed to restart Sing-box";
-                logToFile($logFile, $logMessage); 
+                $pid = getSingboxPID();
+                $logMessage = $returnVar === 0 
+                    ? "Sing-box restarted, version: $version, PID: $pid"
+                    : "Failed to start Sing-box";
+                logToFile($logFile, $logMessage);
                 $singbox_status = $returnVar === 0 ? 1 : 0;
             } else {
-                logToFile($logFile, "Failed to stop Sing-box"); 
+                logToFile($logFile, "Failed to stop Sing-box");
             }
         }
     }
 
     if (isset($_POST['clear_singbox_log'])) {
-        file_put_contents($singBoxLogFile, ''); 
-        $message = 'Sing-box running log has been cleared';
+        file_put_contents($singBoxLogFile, '');
+        $message = 'Sing-box runtime log cleared';
     }
 
     if (isset($_POST['clear_plugin_log'])) {
-        file_put_contents($logFile, ''); 
-        $message = 'Plugin log has been cleared';
+        file_put_contents($logFile, '');
+        $message = 'Plugin log cleared';
     }
 
     if (isset($_POST['clear_kernel_log'])) {
-        file_put_contents($kernelLogFile, ''); 
-        $message = 'Kernel log has been cleared';
+        file_put_contents($kernelLogFile, '');
+        $message = 'Kernel log cleared';
     }
 }
 
@@ -589,17 +566,21 @@ function readLogFile($filePath) {
     }
 }
 
-$logContent = readLogFile($logFile); 
+$logContent = readLogFile($logFile);
 $kernelLogContent = readLogFile($kernelLogFile);
-$singboxLogContent = readLogFile($singBoxLogFile); 
-$singboxStartLogContent = readLogFile($singboxStartLogFile); 
+$singboxLogContent = readLogFile($singBoxLogFile);
+$singboxStartLogContent = readLogFile($singboxStartLogFile);
 ?>
-
 <div class="container container-bg border border-3 col-12 mb-4">
     <h2 class="text-center p-2">NekoClash Control Panel</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
+            <style>
+            .btn-group .btn {
+            width: 100%; 
+            }
+            </style>
                 <td>Status</td>
                 <td class="d-grid">
                     <div class="btn-group col" role="group" aria-label="ctrl">
@@ -633,7 +614,14 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                     </td>
                 </form>
                 <form action="index.php" method="post">
-                    <td class="d-grid">
+                    <td class="d-grid">   
+                        <select name="config_file" id="config_file" class="form-select">
+                            <?php foreach ($availableConfigs as $config): ?>
+                                <option value="<?= htmlspecialchars($config) ?>" <?= isset($_POST['config_file']) && $_POST['config_file'] === $config ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars(basename($config)) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                         <div class="btn-group col" role="group" aria-label="ctrl">
                             <button type="submit" name="singbox" value="start" class="btn btn<?php if ($singbox_status == 1) echo "-outline" ?>-success <?php if ($singbox_status == 1) echo "disabled" ?> d-grid">Enable Sing-box</button>
                             <button type="submit" name="singbox" value="disable" class="btn btn<?php if ($singbox_status == 0) echo "-outline" ?>-danger <?php if ($singbox_status == 0) echo "disabled" ?> d-grid">Disable Sing-box</button>
@@ -665,7 +653,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
 <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
    <h2 class="text-center p-2">System Information</h2>
     <table class="table table-borderless mb-2">
-
         <tbody>
             <tr>
                 <td>Devices</td>
@@ -749,113 +736,117 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        .log-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            min-width: 0; 
-        }
-        .log-header {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.1rem; 
-        }
-        .log-footer {
-            display: flex;
-            justify-content: center; 
-            margin-top: auto;
-        }
-        pre.form-control {
-            height: 300px; 
-            width: 100%; 
-            padding: 10px;
-            box-sizing: border-box;
-            white-space: pre-wrap; 
-            overflow-x: hidden; 
-            overflow-y: auto; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-        }
-        .log-section {
-            margin-bottom: 20px;
-            border: 2px solid #c0c0c0; 
-            padding: 10px; 
-            border-radius: 8px;
-        }
+<style>
+    .log-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-width: 0;
+    }
+    .log-header {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+    .log-footer {
+        display: flex;
+        justify-content: center;
+        margin-top: auto;
+    }
+    pre.form-control {
+        height: 300px;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        white-space: pre-wrap;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .log-section {
+        margin-bottom: 20px;
+        border: 2px solid #c0c0c0;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    .nav-buttons {
+        display: flex;
+        flex-wrap: nowrap; 
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+        overflow-x: auto; 
+    }
+    .nav-buttons a {
+        display: inline-block;
+        text-decoration: none;
+        color: #ffffff;
+        border: 1px solid;
+        border-radius: 4px;
+        padding: 10px 20px;
+        text-align: center;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .nav-buttons a:hover {
+        opacity: 0.9;
+    }
+    .current-menu-button {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .current-menu-button:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+    .config-menu-button {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    .config-menu-button:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    .monitoring-button {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+    .monitoring-button:hover {
+        background-color: #e0a800;
+        border-color: #d39e00;
+    }
+    .box-menu-button {
+        background-color: #ff69b4;
+        border-color: #ff1493;
+        color: white;
+    }
+    .box-menu-button:hover {
+        background-color: #ff69b4;
+        border-color: #ff1493;
+    }
+    .main-menu-button {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    .main-menu-button:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+    footer {
+        margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
         .nav-buttons {
-            display: flex;
             flex-wrap: wrap; 
-            justify-content: center;
-            gap: 10px; 
-            margin-top: 20px;
         }
         .nav-buttons a {
-            display: inline-block;
-            text-decoration: none;
-            color: #ffffff;
-            border: 1px solid;
-            border-radius: 4px;
-            padding: 10px 20px;
-            text-align: center;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
         }
-        .nav-buttons a:hover {
-            opacity: 0.9;
-        }
-        .current-menu-button {
-            background-color: #007bff; 
-            border-color: #007bff;
-        }
-        .current-menu-button:hover {
-            background-color: #0056b3; 
-            border-color: #004085;
-        }
-        .config-menu-button {
-            background-color: #28a745; 
-            border-color: #28a745;
-        }
-        .config-menu-button:hover {
-            background-color: #218838; 
-            border-color: #1e7e34;
-        }
-        .monitoring-button {
-            background-color: #ffc107; 
-            border-color: #ffc107;
-        }
-        .monitoring-button:hover {
-            background-color: #e0a800; 
-            border-color: #d39e00;
-        }
-        .box-menu-button {
-            background-color: #ff69b4; 
-            border-color: #ff1493;     
-            color: white;              
-        }
-        .box-menu-button:hover {
-            background-color: #ff69b4; 
-            border-color: #ff1493;    
-        }
-        .main-menu-button {
-            background-color: #dc3545; 
-            border-color: #dc3545;
-        }
-        .main-menu-button:hover {
-            background-color: #c82333; 
-            border-color: #bd2130;
-        }
-        footer {
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .nav-buttons a {
-                display: block; 
-                width: 100%; 
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">

@@ -16,7 +16,7 @@ function writeVersionToFile($version) {
     }
 }
 
-$latest_version = 'v1.18.7'; 
+$latest_version = 'v1.18.8'; 
 $current_version = ''; 
 $install_path = '/etc/neko/core/mihomo'; 
 $temp_file = '/tmp/mihomo.gz'; 
@@ -34,13 +34,13 @@ $current_arch = trim(shell_exec("uname -m"));
 $download_url = '';
 switch ($current_arch) {
     case 'aarch64':
-        $download_url = 'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.7/mihomo-linux-arm64-v1.18.7.gz';
+        $download_url = 'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.8/mihomo-linux-arm64-v1.18.8.gz';
         break;
     case 'armv7l':
-        $download_url = 'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.7/mihomo-linux-armv7l-v1.18.7.gz';
+        $download_url = 'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.8/mihomo-linux-armv7l-v1.18.8.gz';
         break;
     case 'x86_64':
-        $download_url = 'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.7/mihomo-linux-amd64-v1.18.7.gz';
+        $download_url = 'https://github.com/MetaCubeX/mihomo/releases/download/v1.18.8/mihomo-linux-amd64-v1.18.8.gz';
         break;
     default:
         logMessage("No suitable download link found for architecture: $current_arch");
