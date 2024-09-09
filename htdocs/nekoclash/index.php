@@ -574,15 +574,15 @@ $kernelLogContent = readLogFile($kernelLogFile);
 $singboxLogContent = readLogFile($singBoxLogFile);
 $singboxStartLogContent = readLogFile($singboxStartLogFile);
 ?>
-<div class="container container-bg border border-3 col-12 mb-4 rounded-3">
+<div class="container container-bg border border-3 col-12 mb-4">
     <h2 class="text-center p-2">NekoClash Control Panel</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
             <style>
             .btn-group .btn {
-                width: 100%; 
-            }   
+            width: 100%; 
+            }
             </style>
                 <td>Status</td>
                 <td class="d-grid">
@@ -615,9 +615,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                             <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">Restart Mihomo</button>
                         </div>
                     </td>
-                </tr>
-            <tr>
-                 <td>Change Config</td>
+                </form>
                 <form action="index.php" method="post">
                     <td class="d-grid">   
                         <select name="config_file" id="config_file" class="form-select">
