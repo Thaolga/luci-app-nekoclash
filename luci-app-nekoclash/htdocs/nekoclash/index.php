@@ -508,8 +508,12 @@ function getRunningConfigFile() {
     $command = "ps w | grep '$singBoxPath' | grep -v grep";
     exec($command, $output);
     foreach ($output as $line) {
-        if (preg_match('/-c ([^ ]+)/', $line, $matches)) {
-            return trim($matches[1]);
+        if (strpos($line, '-c') !== false) {
+            $parts = explode('-c', $line);
+            if (isset($parts[1])) {
+                $configPath = trim(explode(' ', trim($parts[1]))[0]);
+                return $configPath;
+            }
         }
     }
     return null;
@@ -556,7 +560,7 @@ function getSingboxVersion() {
 
 function getSingboxPID() {
     global $singBoxPath;
-    $command = "ps w | grep '$singBoxPath' | grep -v grep | awk '{print \\$1}'";
+    $command = "ps w | grep '$singBoxPath' | grep -v grep | awk '{print \$1}'";
     exec($command, $output);
     return isset($output[0]) ? $output[0] : null;
 }
