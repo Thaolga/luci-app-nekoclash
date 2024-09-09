@@ -500,7 +500,6 @@ function applyFirewallRules() {
     global $nftables_rules;
     file_put_contents('/etc/nftables.conf', $nftables_rules);
     exec('nft -f /etc/nftables.conf');
-    logToFile('/etc/neko/tmp/log.txt', 'Firewall rules applied');
 }
 
 function readRecentLogLines($filePath, $lines = 1000) {
