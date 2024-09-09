@@ -5,129 +5,144 @@
     <title>Subscription Conversion Template</title>
     <link rel="stylesheet" href="./assets/css/all.min.css">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #87ceeb;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            padding: 20px;
-            box-sizing: border-box;
-            margin-top: 50px;
-        }
-        h1 {
-            color: #007BFF;
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], textarea {
-            width: calc(100% - 16px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="radio"] {
-            margin-right: 5px;
-        }
-        .radio-group {
-            margin-bottom: 15px;
-        }
-        .radio-group label {
-            margin: 0 10px 0 0;
-            display: inline-block;
-            font-weight: normal;
-        }
-        input[type="submit"], button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            width: 150px;
-            height: 40px;
-        }
-        input[type="submit"] {
-            background-color: #007BFF;
-        }
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        button.return-button {
-            background-color: #dc3545;
-        }
-        button.return-button:hover {
-            background-color: #c82333;
-        }
-        button.return-danger {
-            background-color: #17a2b8;
-        }
-        button.copy-button {
-            background-color: #17a2b8;
-        }
-        button.copy-button:hover {
-            background-color: #138496;
-        }
-        button.save-button {
-            background-color: #28a745;
-        }
-        button.save-button:hover {
-            background-color: #218838;
-        }
-        textarea {
-            height: 200px;
-            resize: vertical;
-            overflow-y: auto;
-        }
-        .result-container {
-            margin-top: 20px;
-        }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-            gap: 10px;
-        }
-        .log-container {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            height: 200px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            font-family: monospace;
-            box-sizing: border-box;
-        }
-        .saved-data-container {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-    </style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #87ceeb;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+    }
+    .container {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        padding: 20px;
+        box-sizing: border-box;
+        margin-top: 50px;
+    }
+    h1 {
+        color: #007BFF;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input[type="text"], textarea {
+        width: calc(100% - 16px);
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    input[type="radio"] {
+        margin-right: 5px;
+    }
+    .radio-group {
+        margin-bottom: 15px;
+    }
+    .radio-group label {
+        margin: 0 10px 0 0;
+        display: inline-block;
+        font-weight: normal;
+    }
+    input[type="submit"], button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        width: auto; 
+        height: auto; 
+    }
+    input[type="submit"] {
+        background-color: #007BFF;
+    }
+    input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+    button.return-button {
+        background-color: #dc3545;
+    }
+    button.return-button:hover {
+        background-color: #c82333;
+    }
+    button.return-danger {
+        background-color: #17a2b8;
+    }
+    button.copy-button {
+        background-color: #17a2b8;
+    }
+    button.copy-button:hover {
+        background-color: #138496;
+    }
+    button.save-button {
+        background-color: #28a745;
+    }
+    button.save-button:hover {
+        background-color: #218838;
+    }
+    textarea {
+        height: 200px;
+        resize: vertical;
+        overflow-y: auto;
+    }
+    .result-container {
+        margin-top: 20px;
+    }
+    .button-group {
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: center;
+        margin-top: 10px;
+        gap: 10px; 
+    }
+    .log-container {
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        padding: 10px;
+        height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: monospace;
+        box-sizing: border-box;
+    }
+    .saved-data-container {
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .clear-button {
+        background-color: #ff4c4c; 
+        color: white; 
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .clear-button:hover {
+        background-color: #ff1a1a; 
+    }
+</style>
+
 </head>
 <body>
   <div class="container">

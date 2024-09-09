@@ -2,6 +2,7 @@
 
 include './cfg.php';
 include './devinfo.php';
+include './video.php';
 $str_cfg=substr($selected_config, strlen("$neko_dir/config")+1);
 $_IMG = '/luci-static/ssr/';
 if(isset($_POST['neko'])){
@@ -38,7 +39,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
     <div class="container text-left p-3">
        
         <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-    <h2 class="text-center p-2">Operating Status</h2>
+    <h2 class="text-center p-2">Running Status</h2>
     <table class="table table-borderless mb-2">
         <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
    <br>
@@ -435,17 +436,13 @@ if (isMihomoRunning()) {
     $neko_status = 0;
 }
 
-if ($neko_status == 1) {
-    $str_cfg = 'Mihomo configuration file';
-} elseif ($singbox_status == 1) {
+if ($singbox_status == 1) {
     $runningConfigFile = getRunningConfigFile();
     if ($runningConfigFile) {
-        $str_cfg = 'Sing-box configuration file: ' . htmlspecialchars(basename($runningConfigFile));
+        $str_cfg = htmlspecialchars(basename($runningConfigFile));
     } else {
         $str_cfg = 'Sing-box configuration file: No running configuration file found';
     }
-} else {
-    $str_cfg = 'No running services';
 }
 
 function getSingboxVersion() {
@@ -577,15 +574,15 @@ $kernelLogContent = readLogFile($kernelLogFile);
 $singboxLogContent = readLogFile($singBoxLogFile);
 $singboxStartLogContent = readLogFile($singboxStartLogFile);
 ?>
-<div class="container container-bg border border-3 col-12 mb-4">
+<div class="container container-bg border border-3 col-12 mb-4 rounded-3">
     <h2 class="text-center p-2">NekoClash Control Panel</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
             <style>
             .btn-group .btn {
-            width: 100%; 
-            }
+                width: 100%; 
+            }   
             </style>
                 <td>Status</td>
                 <td class="d-grid">
@@ -618,7 +615,9 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                             <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">Restart Mihomo</button>
                         </div>
                     </td>
-                </form>
+                </tr>
+            <tr>
+                 <td>Change Config</td>
                 <form action="index.php" method="post">
                     <td class="d-grid">   
                         <select name="config_file" id="config_file" class="form-select">
