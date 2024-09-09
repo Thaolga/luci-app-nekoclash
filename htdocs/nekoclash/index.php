@@ -695,40 +695,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         </tbody>
     </table>
 </div>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-        <h2 class="text-center p-2">Voice Broadcast System</h2>
-        <table class="table table-borderless mb-2">
-            <tbody>
-                <tr>
-                    <td>                 
-                        <div class="row mb-2">
-                            <div class="col">             
-                                <input type="text" id="city-input" class="form-control" placeholder="e.g. Beijing">
-                            </div>
-                            <div class="col-auto">
-                                <button onclick="saveCity()" class="btn btn-success">Save City</button>
-                        </td>
-                    </tr>
-               </tbody>
-         </table>
-    </div>
-
-<script>
-    document.getElementById('loadPlaylistButton').addEventListener('click', function() {
-        const playlistLink = document.getElementById('playlistLink').value;
-        if (playlistLink) {
-            localStorage.setItem('customPlaylist', playlistLink);
-            speakMessage('Playlist link has been saved, you can play it on the player page.');
-        } else {
-            speakMessage('Please enter a valid URL.');
-        }
-    });
-
-    document.getElementById('resetPlaylistButton').addEventListener('click', function() {
-        localStorage.removeItem('customPlaylist');
-        speakMessage('Custom playlist has been reset to default.');
-    });
-</script>
 
 <!DOCTYPE html>
 <html lang="zh">
@@ -736,7 +702,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
+    <style>
     .log-container {
         display: flex;
         flex-direction: column;
