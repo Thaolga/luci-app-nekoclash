@@ -505,9 +505,14 @@ function isMihomoRunning() {
 
 function getRunningConfigFile() {
     global $singBoxPath;
-    $command = "ps w | grep '$singBoxPath' | grep -oP '(?<=-c )[^ ]+'";
+    $command = "ps w | grep '$singBoxPath' | grep -v grep";
     exec($command, $output);
-    return isset($output[0]) ? trim($output[0]) : null;
+    foreach ($output as $line) {
+        if (preg_match('/-c ([^ ]+)/', $line, $matches)) {
+            return trim($matches[1]);
+        }
+    }
+    return null;
 }
 
 if (isSingboxRunning()) {
@@ -551,7 +556,7 @@ function getSingboxVersion() {
 
 function getSingboxPID() {
     global $singBoxPath;
-    $command = "ps w | grep '$singBoxPath' | grep -v grep | awk '{print \$1}'";
+    $command = "ps w | grep '$singBoxPath' | grep -v grep | awk '{print \\$1}'";
     exec($command, $output);
     return isset($output[0]) ? $output[0] : null;
 }
