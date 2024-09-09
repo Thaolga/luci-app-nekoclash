@@ -181,23 +181,62 @@ $singBoxVersion = getSingboxVersion();
 <tr>
  </tbody>
  </table>
-<style>
-    #updateButton:hover {
-        background-color: #20B2AA; 
-    }
+        <style>
+            .table-container {
+                overflow-x: auto;
+            }
 
-    #updateSingboxButton:hover {
-        background-color: #FF69B4; 
-    }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
 
-    #updateCoreButton:hover {
-        background-color: #90EE90; 
-    }
+            .table td {
+                padding: 10px;
+                word-wrap: break-word; 
+            }
 
-    #updateNekoButton:hover {
-        background-color: #87CEFA; 
-    }
-</style>
+            .form-control {
+                width: 100%; 
+            }
+
+            .btn {
+                white-space: nowrap; 
+                flex: 1; 
+            }
+
+            @media (max-width: 767px) {
+                .table td {
+                    display: block;
+                    width: 100%;
+                }
+
+                .form-control {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .btn-group {
+                    flex-direction: column; 
+                }
+            }  
+
+            #updateButton:hover {
+                background-color: #20B2AA; 
+            }
+
+            #updateSingboxButton:hover {
+                background-color: #FF69B4; 
+            }
+
+            #updateCoreButton:hover {
+                background-color: #90EE90; 
+            }
+
+            #updateNekoButton:hover {
+                background-color: #87CEFA; 
+            }
+        </style>
 
 <script>
     document.getElementById('updateButton').addEventListener('click', function() {

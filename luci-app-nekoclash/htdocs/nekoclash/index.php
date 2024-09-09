@@ -2,6 +2,7 @@
 
 include './cfg.php';
 include './devinfo.php';
+include './video.php';
 $str_cfg=substr($selected_config, strlen("$neko_dir/config")+1);
 $_IMG = '/luci-static/ssr/';
 if(isset($_POST['neko'])){
@@ -529,17 +530,13 @@ if (isMihomoRunning()) {
     $neko_status = 0; 
 }
 
-if ($neko_status == 1) {
-    $str_cfg = 'Mihomo 配置文件';
-} elseif ($singbox_status == 1) {
+if ($singbox_status == 1) {
     $runningConfigFile = getRunningConfigFile();
     if ($runningConfigFile) {
-        $str_cfg = 'Sing-box 配置文件: ' . htmlspecialchars(basename($runningConfigFile));
+        $str_cfg = htmlspecialchars(basename($runningConfigFile));
     } else {
         $str_cfg = 'Sing-box 配置文件：未找到运行中的配置文件';
     }
-} else {
-    $str_cfg = '无运行中的服务';
 }
 
 function getSingboxVersion() {
