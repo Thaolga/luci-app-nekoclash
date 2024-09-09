@@ -16,7 +16,7 @@ function writeVersionToFile($version) {
     }
 }
 
-$latest_version = '1.10.0-beta.6'; 
+$latest_version = '1.10.0-beta.7'; 
 $current_version = ''; 
 $install_path = '/usr/bin/sing-box'; 
 $temp_file = '/tmp/sing-box.tar.gz'; 
@@ -34,10 +34,10 @@ $current_arch = trim(shell_exec("uname -m"));
 $download_url = '';
 switch ($current_arch) {
     case 'aarch64':
-        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.6/sing-box-1.10.0-beta.6-linux-arm64.tar.gz';
+        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.7/sing-box-1.10.0-beta.7-linux-arm64.tar.gz';
         break;
     case 'x86_64':
-        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.6/sing-box-1.10.0-beta.6-linux-amd64.tar.gz';
+        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.7/sing-box-1.10.0-beta.7-linux-amd64.tar.gz';
         break;
     default:
         logMessage("No suitable download link found for architecture: $current_arch");
