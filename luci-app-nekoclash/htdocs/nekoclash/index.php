@@ -594,7 +594,6 @@ function applyFirewallRules() {
     global $nftables_rules;
     file_put_contents('/etc/nftables.conf', $nftables_rules);
     exec('nft -f /etc/nftables.conf');
-    logToFile('/etc/neko/tmp/log.txt', '防火墙规则已应用');
 }
 
 function readRecentLogLines($filePath, $lines = 1000) {
