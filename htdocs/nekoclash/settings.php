@@ -127,7 +127,7 @@ $singBoxVersion = getSingboxVersion();
                 </div>
             </form>
 <h2 class="text-center p-2 mb-3">Software Information</h2>
-<table class="table table-borderless mb-3">
+<table class="table table-borderless mb-3" style="border-radius: 15px; overflow: hidden;">
     <tbody>
         <tr>
             <td class="col-2">Auto Reload Firewall</td>
@@ -141,42 +141,41 @@ $singBoxVersion = getSingboxVersion();
             </form>
         </tr>
         <tr>
-<td class="col-2">Client Version</td>
-<td class="col-4">
-    <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        <div style="font-family: monospace; flex-grow: 1; text-align: left;">
-        <div class="form-control text-center" id="cliver">-</div>
-        </div>
-        <button class="form-control text-center" id="updateButton" ">Update to Latest Version</button>
-    </div>
-    <div id="logOutput"></div>
-</td>
-</tr>
-<tr>
-    <td class="col-2">Sing-box Core Version</td>
-    <td class="col-4">
-        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <div class="form-control text-center"  id="singBoxCorever">
-                <?php echo htmlspecialchars($singBoxVersion); ?>
-            </div>    
-                <button class="form-control text-center"  id="updateSingboxButton">Update Singbox Core</button>
-            </div>
-        </div>
-    </td>
-</tr>
-    <td class="col-2">Mihomo Core Version</td>
-    <td class="col-4">
-        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <div class="form-control text-center"  id="corever">-</div>
-                <button class="form-control text-center"  id="updateNekoButton">Switch to NeKo Core</button>
-                <button class="form-control text-center"  id="updateCoreButton" >Switch to Mihomo Core</button>
-            </div>
-        </div>
-    </td>
-</tr>
-<tr>
- </tbody>
- </table>
+            <td class="col-2">Client Version</td>
+            <td class="col-4">
+                <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div style="font-family: monospace; flex-grow: 1; text-align: left;">
+                    <div class="form-control text-center" id="cliver">-</div>
+                    </div>
+                    <button class="form-control text-center" id="updateButton" ">Update to Latest Version</button>
+                </div>
+                <div id="logOutput"></div>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-2">Sing-box Core Version</td>
+            <td class="col-4">
+                <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div class="form-control text-center"  id="singBoxCorever">
+                        <?php echo htmlspecialchars($singBoxVersion); ?>
+                    </div>    
+                    <button class="form-control text-center"  id="updateSingboxButton">Update Singbox Core</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-2">Mihomo Core Version</td>
+            <td class="col-4">
+                <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div class="form-control text-center"  id="corever">-</div>
+                    <button class="form-control text-center"  id="updateNekoButton">Switch to NeKo Core</button>
+                    <button class="form-control text-center"  id="updateCoreButton" >Switch to Mihomo Core</button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 <style>
     #updateButton:hover {
         background-color: #20B2AA; 
