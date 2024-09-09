@@ -411,9 +411,18 @@ function isMihomoRunning() {
 
 function getRunningConfigFile() {
     global $singBoxPath;
-    $command = "ps w | grep '$singBoxPath' | grep -oP '(?<=-c )[^ ]+'";
+    $command = "ps w | grep '$singBoxPath' | grep -v grep";
     exec($command, $output);
-    return isset($output[0]) ? trim($output[0]) : null;
+    foreach ($output as $line) {
+        if (strpos($line, '-c') !== false) {
+            $parts = explode('-c', $line);
+            if (isset($parts[1])) {
+                $configPath = trim(explode(' ', trim($parts[1]))[0]);
+                return $configPath;
+            }
+        }
+    }
+    return null;
 }
 
 if (isSingboxRunning()) {
