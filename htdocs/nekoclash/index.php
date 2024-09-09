@@ -300,7 +300,6 @@ table inet singbox {
   }' > /etc/nftables.conf
 
     nft -f /etc/nftables.conf
-    echo "Firewall rules applied (fw4)." >> /etc/neko/tmp/log.txt
 
     elif command -v fw3 > /dev/null; then
     echo "Detected fw3, configuring iptables rules..."
@@ -337,7 +336,6 @@ table inet singbox {
     iptables -t mangle -A PREROUTING -i lo -p udp -j singbox-tproxy
     iptables -t mangle -A PREROUTING -i eth0 -p tcp -j singbox-tproxy
     iptables -t mangle -A PREROUTING -i eth0 -p udp -j singbox-tproxy
-    echo "Firewall rules applied (fw3)." >> /etc/neko/tmp/log.txt
 
 else
     echo "Neither fw3 nor fw4 detected, unable to configure firewall rules."
