@@ -137,8 +137,6 @@ $translate = [
     'InterServer' => '互联服务器',
     'Hostwinds' => '主机之风',
     'ScalaHosting' => '斯卡拉主机',
-    'Networks' => '网络',
-    'Psychz Networks' => 'Psychz网络',
     'GreenGeeks' => '绿色极客'
 ];
 $lang = $_GET['lang'] ?? 'en';
@@ -705,7 +703,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                 <form action="index.php" method="post">
                     <td class="d-grid">
                         <div class="btn-group col" role="group" aria-label="ctrl">
-                            <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-success <?php if ($neko_status == 1) echo "disabled" ?> d-grid">启用 Mihomo</button>
+                            <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-info <?php if ($neko_status == 1) echo "disabled" ?> d-grid">启用 Mihomo</button>
                             <button type="submit" name="neko" value="disable" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-danger <?php if ($neko_status == 0) echo "disabled" ?> d-grid">停用 Mihomo</button>
                             <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">重启 Mihomo</button>
                         </div>
@@ -722,7 +720,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                             <?php endforeach; ?>
                         </select>
                         <div class="btn-group col" role="group" aria-label="ctrl">
-                            <button type="submit" name="singbox" value="start" class="btn btn<?php echo ($singbox_status == 1) ? "-outline" : "" ?>-success <?php echo ($singbox_status == 1) ? "disabled" : "" ?> d-grid">启用 Sing-box</button>
+                            <button type="submit" name="singbox" value="start" class="btn btn<?php echo ($singbox_status == 1) ? "-outline" : "" ?>-info <?php echo ($singbox_status == 1) ? "disabled" : "" ?> d-grid">启用 Sing-box</button>
                             <button type="submit" name="singbox" value="disable" class="btn btn<?php echo ($singbox_status == 0) ? "-outline" : "" ?>-danger <?php echo ($singbox_status == 0) ? "disabled" : "" ?> d-grid">停用 Sing-box</button>
                             <button type="submit" name="singbox" value="restart" class="btn btn<?php echo ($singbox_status == 0) ? "-outline" : "" ?>-warning <?php echo ($singbox_status == 0) ? "disabled" : "" ?> d-grid">重启 Sing-box</button>
                         </div>
