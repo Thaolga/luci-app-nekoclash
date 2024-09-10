@@ -92,73 +92,88 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
         .text-center {
             text-align: center;
         }
+
         .btn-outline-info {
             height: 50px;
-            line-height: 40px;
-            display: inline-block; 
-            margin: 0; 
-            text-align: center; 
-            color: #fff; 
-            border: 3px solid; 
-            transition: background-color 0.3s, border-color 0.3s; 
-            width: 100%; 
-            box-sizing: border-box; 
+            line-height: 50px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0;
+            text-align: center;
+            color: #fff;
+            border: 3px solid;
+            transition: background-color 0.3s, border-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+            text-decoration: none;
         }
+
         .btn-yacd {
-            background-color: #007bff; 
+            background-color: #007bff;
             border-color: #007bff;
         }
+
         .btn-yacd:hover {
-            background-color: #0056b3; 
+            background-color: #0056b3;
             border-color: #0056b3;
         }
+
         .btn-dashboard {
-            background-color: #28a745; 
+            background-color: #28a745;
             border-color: #28a745;
         }
+
         .btn-dashboard:hover {
-            background-color: #1e7e34; 
+            background-color: #1e7e34;
             border-color: #1e7e34;
         }
+
         .btn-meta {
-            background-color: #dc3545; 
+            background-color: #dc3545;
             border-color: #dc3545;
         }
+
         .btn-meta:hover {
             background-color: #c82333;
             border-color: #c82333;
         }
+
         .btn-container {
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
             justify-content: center;
-            align-items: stretch; 
-            width: 100%; 
-            position: relative; 
-            top: -15px; 
-            margin-top: 20px; 
+            align-items: stretch;
+            width: 100%;
+            position: relative;
+            top: -15px;
+            margin-top: 20px;
         }
+
         .btn-container a {
-            margin: 5px 0; 
+            margin: 5px 0;
         }
+
         @media (min-width: 768px) {
             .btn-container {
-                flex-direction: row; 
-                justify-content: space-between; 
+                flex-direction: row;
+                justify-content: space-between;
             }
             .btn-container a {
-                flex: 1; 
+                flex: 1;
                 margin: 0 5px;
             }
         }
+
         iframe {
-            border: 3px solid #ddd; 
+            border: 3px solid #ddd;
             width: 100%;
             height: auto;
-            min-height: 700px; 
+            min-height: 700px;
         }
+
         footer {
-            margin-top: 20px; 
+            margin-top: 20px;
         }
     </style>
 </head>
