@@ -1,1 +1,1 @@
-/etc/neko/config/tuanbe.yaml
+/etc/neko/config/mihomo.yaml
