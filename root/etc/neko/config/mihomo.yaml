@@ -1,0 +1,1003 @@
+# September 11, 2024 08:40  By:𝐓𝐮𝐚̂𝐧 𝐁𝐞́  UTC/GMT +8
+
+redir-port: 7892
+port: 7890
+socks-port: 7891
+mixed-port: 7893
+mode: rule
+log-level: silent
+allow-lan: true
+unified-delay: true
+external-controller: 0.0.0.0:9090
+secret: Akun
+bind-address: 0.0.0.0
+external-ui: ui
+tproxy-port: 7895
+tcp-concurrent: true	
+enable-process: true
+find-process-mode: always
+ipv6: true
+
+experimental:
+  ignore-resolve-fail: true
+  sniff-tls-sni: true
+  tracing: true
+hosts:
+  "localhost": 127.0.0.1
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+sniffer:
+  enable: true
+  sniff:
+    http: { ports: [1-442, 444-8442, 8444-65535], override-destination: true }
+    tls: { ports: [1-79, 81-8079, 8081-65535], override-destination: true }
+  force-domain:
+      - "+.v2ex.com"
+      - www.google.com
+      - google.com
+  skip-domain:
+      - Mijia Cloud
+      - dlg.io.mi.com
+  sniffing:
+    - tls
+    - http
+  port-whitelist:
+    - "80"
+    - "443"
+
+tun:
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:53
+  stack: gvisor
+  dns-hijack:
+     - "any:53"
+     - "tcp://any:53"
+  auto-redir: true
+  auto-route: true
+  auto-detect-interface: true
+
+dns:
+  enable: true
+  ipv6: true
+  default-nameserver:
+    - '1.1.1.1'
+    - '8.8.8.8'
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - 'stun.*.*'
+    - 'stun.*.*.*'
+    - '+.stun.*.*'
+    - '+.stun.*.*.*'
+    - '+.stun.*.*.*.*'
+    - '+.stun.*.*.*.*.*'
+    - '*.lan'
+    - '+.msftncsi.com'
+    - msftconnecttest.com
+    - 'time?.*.com'
+    - 'time.*.com'
+    - 'time.*.gov'
+    - 'time.*.apple.com'
+    - time-ios.apple.com
+    - 'time1.*.com'
+    - 'time2.*.com'
+    - 'time3.*.com'
+    - 'time4.*.com'
+    - 'time5.*.com'
+    - 'time6.*.com'
+    - 'time7.*.com'
+    - 'ntp?.*.com'
+    - 'ntp.*.com'
+    - 'ntp1.*.com'
+    - 'ntp2.*.com'
+    - 'ntp3.*.com'
+    - 'ntp4.*.com'
+    - 'ntp5.*.com'
+    - 'ntp6.*.com'
+    - 'ntp7.*.com'
+    - '+.pool.ntp.org'
+    - '+.ipv6.microsoft.com'
+    - speedtest.cros.wr.pvp.net
+    - network-test.debian.org
+    - detectportal.firefox.com
+    - cable.auth.com
+    - miwifi.com
+    - routerlogin.com
+    - routerlogin.net
+    - tendawifi.com
+    - tendawifi.net
+    - tplinklogin.net
+    - tplinkwifi.net
+    - '*.xiami.com'
+    - tplinkrepeater.net
+    - router.asus.com
+    - '*.*.*.srv.nintendo.net'
+    - '*.*.stun.playstation.net'
+    - '*.openwrt.pool.ntp.org'
+    - resolver1.opendns.com
+    - 'GC._msDCS.*.*'
+    - 'DC._msDCS.*.*'
+    - 'PDC._msDCS.*.*'
+  use-hosts: true
+
+  nameserver:
+    - '8.8.4.4'
+    - '1.0.0.1'
+    - "https://1.0.0.1/dns-query"
+    - "https://8.8.4.4/dns-query"
+
+###Start establishing anchor points
+
+# All nodes
+all: &all {type: select, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8]}
+filtered_lines: &filtered_lines  # Removing duplicate nodes
+  - *all
+final_lines: *filtered_lines
+
+# Backup emergency
+backup: &backup {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8], filter: "(?i)ZW|Zimbabwe|VN|Vietnam|UA|Ukraine|TR|Turkey|FR|France|AR|Argentina|IN|India|CA|Canada|MY|Malaysia|DE|Germany|NL|Netherlands|TH|Thailand|AU|Australia|ES|Spain|EE|Estonia|GB|United Kingdom|BR|Brazil|AE|United Arab Emirates|ZA|South Africa|AT|Austria|KZ|Kazakhstan|LT|Lithuania|CH|Switzerland|SE|Sweden"}
+
+# Asian region
+Asia: &Asia {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8], filter: "(?i)AF|Afghanistan|AM|Armenia|AZ|Azerbaijan|BD|Bangladesh|BT|Bhutan|BN|Brunei|KH|Cambodia|CN|China|CY|Cyprus|TL|Timor-Leste|GE|Georgia|ID|Indonesia|IR|Iran|IQ|Iraq|IL|Israel|JO|Jordan|KZ|Kazakhstan|KW|Kuwait|KG|Kyrgyzstan|LA|Laos|LB|Lebanon|MY|Malaysia|MV|Maldives|MN|Mongolia|MM|Myanmar|NP|Nepal|KP|North Korea|OM|Oman|PK|Pakistan|PS|Palestine|PH|Philippines|QA|Qatar|SA|Saudi Arabia|LK|Sri Lanka|SY|Syria|TJ|Tajikistan|TH|Thailand|TM|Turkmenistan|AE|United Arab Emirates|UZ|Uzbekistan|YE|Yemen|VN|Vietnam|MO|Macau"}
+
+# European region
+Europe: &Europe {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8], filter: "(?i)AL|Albania|AD|Andorra|AM|Armenia|AT|Austria|AZ|Azerbaijan|BY|Belarus|BE|Belgium|BA|Bosnia and Herzegovina|BG|Bulgaria|HR|Croatia|CY|Cyprus|CZ|Czech Republic|DK|Denmark|EE|Estonia|FI|Finland|GE|Georgia|GR|Greece|HU|Hungary|IS|Iceland|IE|Ireland|IT|Italy|LV|Latvia|LI|Liechtenstein|LT|Lithuania|LU|Luxembourg|MK|Macedonia|MT|Malta|MD|Moldova|MC|Monaco|ME|Montenegro|NO|Norway|PL|Poland|PT|Portugal|RO|Romania|SM|San Marino|RS|Serbia|SK|Slovakia|SI|Slovenia|ES|Spain|SE|Sweden|CH|Switzerland|TR|Turkey|UA|Ukraine|VA|Vatican City"}
+
+
+# North America
+America: &America {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7], filter: "(?i)AG|Antigua and Barbuda|BS|Bahamas|BB|Barbados|BZ|Belize|CR|Costa Rica|CU|Cuba|DM|Dominica|DO|Dominican Republic|SV|El Salvador|GD|Grenada|GT|Guatemala|HT|Haiti|HN|Honduras|JM|Jamaica|MX|Mexico|NI|Nicaragua|PA|Panama|KN|Saint Kitts and Nevis|LC|Saint Lucia|VC|Saint Vincent and the Grenadines|TT|Trinidad and Tobago"}
+
+
+# South America Region
+Oceania: &Oceania {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8], filter: "(?i)AR|Argentina|BO|Bolivia|BR|Brazil|CL|Chile|CO|Colombia|EC|Ecuador|GY|Guyana|PY|Paraguay|PE|Peru|SR|Suriname|TT|Trinidad and Tobago|UY|Uruguay|VE|Venezuela"}
+
+# Africa Region
+Africa: &Africa {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8], filter: "(?i)DZ|Algeria|AO|Angola|BJ|Benin|BW|Botswana|BF|Burkina Faso|BI|Burundi|CV|Cape Verde|CM|Cameroon|CF|Central African Republic|TD|Chad|KM|Comoros|CG|Congo (Brazzaville)|CD|Congo (Kinshasa)|CI|Ivory Coast|DJ|Djibouti|EG|Egypt|GQ|Equatorial Guinea|ER|Eritrea|ET|Ethiopia|GA|Gabon|GM|Gambia|GH|Ghana|GN|Guinea|GW|Guinea-Bissau|KE|Kenya|LS|Lesotho|LR|Liberia|LY|Libya|MG|Madagascar|MW|Malawi|ML|Mali|MR|Mauritania|MU|Mauritius|MA|Morocco|MZ|Mozambique|NA|Namibia|NE|Niger|NG|Nigeria|RW|Rwanda|ST|São Tomé and Príncipe|SN|Senegal|SC|Seychelles|SL|Sierra Leone|SO|Somalia|ZA|South Africa|SS|South Sudan|SD|Sudan|TZ|Tanzania|TG|Togo|TN|Tunisia|UG|Uganda|ZM|Zambia|ZW|Zimbabwe"}
+
+
+# Selected Node
+best: &best {type: select, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8],filter: "(?i)hk|hongkong|hong kong|tw|taiwan|jp|japan|sg|singapore|🇺🇲|UM|U.S. Outlying Islands|🇺🇳|UN|United Nations|🇺🇸|US|United States|🇰🇷|KR|South Korea"}
+
+# Automatically filter the fastest node.
+fly: &fly {type: url-test, url: "http://www.google.com/generate_204", interval: 300, tolerance: 50, lazy: true, use: [Subscription 1, Subscription 2, Subscription 3, Subscription 4, Subscription 5, Subscription 6, Subscription 7, Subscription 8],filter: "(?i)hk|hongkong|hong kong|tw|taiwan|jp|japan|sg|singapore|us|unitedstates|united states|🇰🇷|KR|South Korea"}  
+
+# Subscribe to updates and latency testing related.
+p: &p {type: http, interval: 21600, health-check: {enable: true, url: "http://www.google.com/generate_204", interval: 1800, filter: "(?i)^(?!unavailable).*$"}}
+
+#  Subscription node keyword filtering
+exclude-filter-list: &exclude-filter "" 
+
+### End anchor establishment
+
+proxy-providers:  # Meta supports universal airport subscriptions; simply replace the URL link at the end for use.
+  Subscription 1:
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_0.yaml
+    exclude-filter: *exclude-filter
+  Subscription 2: 
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_1.yaml
+    exclude-filter: *exclude-filter
+  Subscription 3: 
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_2.yaml
+    exclude-filter: *exclude-filter
+  Subscription 4: 
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_3.yaml
+    exclude-filter: *exclude-filter
+  Subscription 5: 
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_4.yaml
+    exclude-filter: *exclude-filter
+  Subscription 6: 
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_5.yaml
+    exclude-filter: *exclude-filter
+  Subscription 7: 
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_6.yaml
+    exclude-filter: *exclude-filter
+  Subscription 8:  # Manually add nodes for use.
+    <<: *p
+    url: "url"
+    path: ./proxy_provider/subscription_7.json
+    exclude-filter: *exclude-filter
+proxy-groups:
+- name: "✈️ International agency"
+  type: select
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ♻️ Auto-select
+  - 🔯 Failover
+  - 🔮 Load Balancing
+  - ⭕️ Direct Connection 
+- name: 🌍️ Asian region
+  type: select
+  proxies:
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇮🇳 India
+  <<: *Asia
+- name: 🌍 European region
+  type: select
+  proxies:
+  - 🇬🇧 United Kingdom
+  - 🇫🇷 France
+  - 🇩🇪 Germany
+  - 🇳🇱 Netherlands
+  <<: *Europe
+- name: 🌍 Africa Region
+  type: select
+  <<: *Africa
+- name: 🌍️ North America
+  type: select
+  proxies:
+  - 🇺🇸 United States
+  - 🇨🇦 Canada
+  <<: *America
+- name: 🌍️ South America Region
+  type: select
+  <<: *Oceania
+- name: "🇭🇰 Hong Kong"
+  <<: *all
+  filter: "(?i)🇭🇰|hk|hongkong|hong kong"  
+- name: "🇹🇼 Taiwan"
+  <<: *all
+  filter: "(?i)🇹🇼|tw|taiwan"
+- name: "🇸🇬 Singapore"
+  <<: *all
+  filter: "(?i)🇸🇬|sg|singapore"
+- name: "🇯🇵 Japan"
+  <<: *all
+  filter: "(?i)🇯🇵|jp|japan"  
+- name: "🇷🇺 Russia"
+  <<: *all
+  filter: "(?i)🇷🇺|RU|Russia"
+- name: "🇰🇷 South Korea"
+  <<: *all
+  filter: "(?i)🇰🇷|KR|South Korea"
+- name: "🇺🇸 United States"
+  <<: *all
+  filter: "(?i)🇺🇲|UM|U.S. Outlying Islands|🇺🇳|UN|United Nations|🇺🇸|US|United States"
+- name: "🇩🇪 Germany"
+  <<: *all
+  filter: "(?i)🇩🇪|DE|Germany"
+- name: "🇳🇱 Netherlands"
+  <<: *all
+  filter: "(?i)🇳🇱|NL|Netherlands"
+- name: "🇮🇳 India"
+  <<: *all
+  filter: "(?i)🇮🇳|IN|India"
+- name: "🇬🇧 United Kingdom"
+  <<: *all
+  filter: "(?i)🇬🇧|United Kingdom"
+- name: "🇫🇷 France"
+  <<: *all
+  filter: "(?i)🇫🇷|FR|France"
+- name: "🇨🇦 Canada"
+  <<: *all
+  filter: "(?i)🇨🇦|CA|Canada"
+- name: "🎥 International media"
+  type: select
+  proxies:
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ♻️ Auto-select
+  - 🔯 Failover
+  - 🔮 Load Balancing
+  - ⭕️ Direct Connection 
+- name: "🎵 TikTok"
+  type: select
+  proxies:
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+- name: 📹 YouTube
+  type: select
+  proxies:
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+- name: "🎥 Netflix"
+  type: select
+  proxies:
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+- name: "🎬 Disney"
+  type: select
+  proxies:
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+- name: "🤖 OpenAI"
+  type: select
+  proxies:
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+- name: "📡 Telegram"
+  type: select
+  proxies:
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+- name: "🍎 Apple"
+  type: select
+  proxies:
+  - ⭕️ Direct Connection
+  - 🎥 International media
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+- name: "🪟 Microsoft"
+  type: select
+  proxies:
+  - ⭕️ Direct Connection
+  - ✈️ International agency
+- name: "🎮 Game platform"
+  type: select
+  proxies:
+  - ✈️ International agency
+  - ⭕️ Direct Connection
+- name: "🎧 Spotify"
+  type: select
+  proxies:
+  - 🎥 International media
+  - ⭕️ Direct Connection
+- name: "💳 PayPal"
+  type: select
+  proxies:
+  - ✈️ International agency
+  - ⭕️ Direct Connection
+- name: "🎵 NetEase CloudMusic"
+  type: select
+  proxies:
+  - 📽 Chinese Media
+  - ⭕️ Direct Connection
+
+- name: "🌏 Chinese Network"
+  type: select
+  proxies:
+  - ⭕️ Direct Connection
+  - ✈️ International agency
+- name: "📽 Chinese Media"
+  type: select
+  proxies:
+  - 🌏 Chinese Network
+  - 🌍️ Asian region
+- name: "🆎 Ad Blocking"
+  type: select
+  proxies:
+  - ❌ Blocking
+  - ⭕️ Direct Connection
+- name: "⭕️ Direct Connection"
+  type: select
+  proxies:
+  - DIRECT
+- name: "❌ Blocking"
+  type: select
+  proxies:
+  - REJECT
+- name: "⏳ Abbreviation"
+  type: select
+  url:  http://www.google.com/generate_204
+  interval: 300
+  proxies:
+  <<: *all
+- name: "📌 Selected Node"
+  type: select
+  <<: *best
+- name: "🚀 Backup emergency"
+  type: select
+  <<: *backup
+- name: ♻️ Auto-select
+  <<: *fly
+- name: 🔯 Failover
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  <<: *all
+- name: 🔮 Load Balancing
+  type: load-balance
+  strategy: consistent-hashing
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  <<: *all
+  filter: "(?i)hk|hongkong|hong kong|tw|taiwan|jp|japan|sg|singapore|us|unitedstates|united states|🇰🇷|KR|South Korea"
+- name: "🐟 missed opportunity"
+  type: select
+  proxies:
+  - ✈️ International agency
+  - 🇭🇰 Hong Kong
+  - 🇹🇼 Taiwan
+  - 🇸🇬 Singapore
+  - 🇯🇵 Japan
+  - 🇰🇷 South Korea
+  - 🇺🇸 United States
+  - 🌍️ Asian region
+  - 🌍 European region
+  - 🌍 Africa Region
+  - 🌍️ South America Region
+  - 🌍️ North America
+  - 📌 Selected Node
+  - 🚀 Backup emergency
+  - ⭕️ Direct Connection 
+rule-providers:
+# Direct connection and ad blocking
+  Special:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Special.yaml
+    path: ./rule_provider/Special.yaml
+    interval: 86400
+  Reject:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Reject.yaml
+    path: ./rule_provider/Reject.yaml
+    interval: 86400 
+  AD:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/AD.yaml"
+    path: ./rule_provider/AD.yaml
+    interval: 86400
+    
+  EasyList:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/EasyList.yaml"
+    path: ./rule_provider/EasyList.yaml
+    interval: 86400
+    
+  EasyListChina:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/EasyListChina.yaml"
+    path: ./rules/EasyListChina.yaml
+    interval: 86400
+
+  EasyPrivacy:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/EasyPrivacy.yaml"
+    path: ./rule_provider/EasyPrivacy.yaml
+    interval: 86400
+
+  ProgramAD:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/ProgramAD.yaml"
+    path: ./rule_provider/ProgramAD.yaml
+    interval: 86400
+# Media Groups in China
+  Bilibili:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Bilibili.yaml
+    path: ./rule_provider/Bilibili.yaml
+    interval: 86400
+  IQ:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/IQ.yaml
+    path: ./rule_provider/IQI.yaml
+    interval: 86400
+  IQIYI:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/IQIYI.yaml
+    path: ./rule_provider/IQYI.yaml
+    interval: 86400
+  Letv:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Letv.yaml
+    path: ./rule_provider/Letv.yaml
+    interval: 86400
+  Netease Music:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Netease%20Music.yaml
+    path: ./rule_provider/Netease_Music.yaml
+    interval: 86400
+  Tencent Video:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Tencent%20Video.yaml
+    path: ./rule_provider/Tencent_Video.yaml
+    interval: 86400
+  Youku:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Youku.yaml
+    path: ./rule_provider/Youku.yaml
+    interval: 86400
+  WeTV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/WeTV.yaml
+    path: ./rule_provider/WeTV.yaml
+    interval: 86400
+# International Media Groups
+  ABC:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/ABC.yaml
+    path: ./rule_provider/ABC.yaml
+    interval: 86400
+  Abema TV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Abema%20TV.yaml
+    path: ./rule_provider/Abema_TV.yaml
+    interval: 86400
+  Amazon:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Amazon.yaml
+    path: ./rule_provider/Amazon.yaml
+    interval: 86400
+  Apple Music:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Apple%20Music.yaml
+    path: ./rule_provider/Apple_Music.yaml
+    interval: 86400
+  Apple News:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Apple%20News.yaml
+    path: ./rule_provider/Apple_News.yaml
+    interval: 86400
+  Apple TV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Apple%20TV.yaml
+    path: ./rule_provider/Apple_TV.yaml
+    interval: 86400
+  Bahamut:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Bahamut.yaml
+    path: ./rule_provider/Bahamut.yaml
+    interval: 86400
+  BBC iPlayer:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/BBC%20iPlayer.yaml
+    path: ./rule_provider/BBC_iPlayer.yaml
+    interval: 86400
+  DAZN:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/DAZN.yaml
+    path: ./rule_provider/DAZN.yaml
+    interval: 86400
+  Discovery Plus:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Discovery%20Plus.yaml
+    path: ./rule_provider/Discovery_Plus.yaml
+    interval: 86400
+  Disney Plus:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Disney%20Plus.yaml
+    path: ./rule_provider/Disney_Plus.yaml
+    interval: 86400
+  encoreTVB:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/encoreTVB.yaml
+    path: ./rule_provider/encoreTVB.yaml
+    interval: 86400
+  F1 TV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/F1%20TV.yaml
+    path: ./rule_provider/F1_TV.yaml
+    interval: 86400
+  Fox Now:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Fox%20Now.yaml
+    path: ./rule_provider/Fox_Now.yaml
+    interval: 86400
+  Fox+:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Fox%2B.yaml
+    path: ./rule_provider/Fox+.yaml
+    interval: 86400
+  HBO Go:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/HBO%20Go.yaml
+    path: ./rule_provider/HBO_Go.yaml
+    interval: 86400
+  HBO Max:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/HBO%20Max.yaml
+    path: ./rule_provider/HBO_Max.yaml
+    interval: 86400
+  Hulu Japan:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Hulu%20Japan.yaml
+    path: ./rule_provider/Hulu_Japan.yaml
+    interval: 86400
+  Hulu:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Hulu.yaml
+    path: ./rule_provider/Hulu.yaml
+    interval: 86400
+  Japonx:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Japonx.yaml
+    path: ./rule_provider/Japonx.yaml
+    interval: 86400
+  JOOX:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/JOOX.yaml
+    path: ./rule_provider/JOOX.yaml
+    interval: 86400
+  KKBOX:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/KKBOX.yaml
+    path: ./rule_provider/KKBOX.yaml
+    interval: 86400
+  KKTV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/KKTV.yaml
+    path: ./rule_provider/KKTV.yaml
+    interval: 86400
+  Line TV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Line%20TV.yaml
+    path: ./rule_provider/Line_TV.yaml
+    interval: 86400
+  myTV SUPER:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/myTV%20SUPER.yaml
+    path: ./rule_provider/myTV_SUPER.yaml
+    interval: 86400
+  Netflix:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Netflix.yaml
+    path: ./rule_provider/Netflix.yaml
+    interval: 86400
+  Pandora:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Pandora.yaml
+    path: ./rule_provider/Pandora.yaml
+    interval: 86400
+  PBS:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/PBS.yaml
+    path: ./rule_provider/PBS.yaml
+    interval: 86400
+  Pornhub:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Pornhub.yaml
+    path: ./rule_provider/Pornhub.yaml
+    interval: 86400
+  Soundcloud:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Soundcloud.yaml
+    path: ./rule_provider/Soundcloud.yaml
+    interval: 86400
+  Spotify:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/Spotify.yaml
+    path: ./rule_provider/Spotify.yaml
+    interval: 86400
+  ViuTV:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/ViuTV.yaml
+    path: ./rule_provider/ViuTV.yaml
+    interval: 86400
+  YouTube:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/YouTube.yaml
+    path: ./rule_provider/YouTube.yaml
+    interval: 86400
+  YouTube Music:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Media/YouTube%20Music.yaml
+    path: ./rule_provider/YouTube_Music.yaml
+    interval: 86400
+# Apple Service Rules List
+  Apple:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Apple.yaml
+    path: ./rule_provider/Apple.yaml
+    interval: 86400
+# Optional Rules List for Telegram, Microsoft, OpenAI, Steam, PayPal, and TikTok
+  Telegram:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Telegram.yaml
+    path: ./rule_provider/Telegram.yaml
+    interval: 86400
+  Microsoft:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Microsoft.yaml
+    path: ./rule_provider/Microsoft.yaml
+    interval: 86400
+  OpenAI:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/OpenAI.yaml
+    path: ./rule_provider/OpenAI.yaml
+    interval: 86400
+  Steam:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Steam.yaml
+    path: ./rule_provider/Steam.yaml
+    interval: 86400
+  PayPal:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/PayPal.yaml
+    path: ./rule_provider/PayPal.yaml
+    interval: 86400
+  TikTok:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml
+    path: ./rule_provider/TikTok.yaml
+    interval: 86400   
+# Mandatory Rules List
+  Speedtest:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Speedtest.yaml
+    path: ./rule_provider/Speedtest.yaml
+    interval: 86400
+  Proxy:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Proxy.yaml
+    path: ./rule_provider/Proxy.yaml
+    interval: 86400
+  Domestic:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/Domestic.yaml
+    path: ./rule_provider/Domestic.yaml
+    interval: 86400
+  LAN:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/Provider/LAN.yaml
+    path: ./rule_provider/LAN.yaml
+    interval: 86400
+
+rules:
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,100.64.0.0/10,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,169.254.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,224.0.0.0/3,DIRECT
+  - IP-CIDR6,::1/128,DIRECT
+  - IP-CIDR6,fc00::/7,DIRECT
+  - IP-CIDR6,fe80::/10,DIRECT
+  - IP-CIDR6,fd00::/8,DIRECT
+
+  # Direct Connection and Ad Blocking
+  - RULE-SET,AD,REJECT
+  - RULE-SET,EasyList,REJECT
+  - RULE-SET,EasyListChina,REJECT
+  - RULE-SET,EasyPrivacy,REJECT
+  - RULE-SET,ProgramAD,REJECT
+  - RULE-SET,Special,DIRECT
+  - RULE-SET,Reject,🆎 Ad Blocking
+  # Media Groups in China
+  - RULE-SET,Bilibili,📽 Chinese Media
+  - RULE-SET,IQ,📽 Chinese Media
+  - RULE-SET,IQIYI,📽 Chinese Media
+  - RULE-SET,Letv,📽 Chinese Media
+  - RULE-SET,Netease Music,🎵 NetEase CloudMusic
+  - RULE-SET,Tencent Video,📽 Chinese Media
+  - RULE-SET,Youku,📽 Chinese Media
+  - RULE-SET,WeTV,📽 Chinese Media
+  # International Media Groups
+  - RULE-SET,Netflix,🎥 International media #🎥 Netflix
+  - RULE-SET,Disney Plus,🎥 International media #🎬 Disney
+  - RULE-SET,Spotify,🎥 International media #🎧 Spotify
+  - RULE-SET,YouTube Music,🎥 International media
+  - RULE-SET,ABC,🎥 International media
+  - RULE-SET,Abema TV,🎥 International media
+  - RULE-SET,Amazon,🎥 International media
+  - RULE-SET,Apple News,🎥 International media
+  - RULE-SET,Apple TV,🎥 International media
+  - RULE-SET,Bahamut,🎥 International media
+  - RULE-SET,BBC iPlayer,🎥 International media
+  - RULE-SET,DAZN,🎥 International media
+  - RULE-SET,Discovery Plus,🎥 International media
+  - RULE-SET,encoreTVB,🎥 International media
+  - RULE-SET,F1 TV,🎥 International media
+  - RULE-SET,Fox Now,🎥 International media
+  - RULE-SET,Fox+,🎥 International media
+  - RULE-SET,HBO Go,🎥 International media
+  - RULE-SET,HBO Max,🎥 International media
+  - RULE-SET,Hulu Japan,🎥 International media
+  - RULE-SET,Hulu,🎥 International media
+  - RULE-SET,Japonx,🎥 International media
+  - RULE-SET,JOOX,🎥 International media
+  - RULE-SET,KKBOX,🎥 International media
+  - RULE-SET,KKTV,🎥 International media
+  - RULE-SET,Line TV,🎥 International media
+  - RULE-SET,myTV SUPER,🎥 International media
+  - RULE-SET,Pandora,🎥 International media
+  - RULE-SET,PBS,🎥 International media
+  - RULE-SET,Pornhub,🎥 International media
+  - RULE-SET,Soundcloud,🎥 International media
+  - RULE-SET,ViuTV,🎥 International media
+  
+  # Apple Services
+  - RULE-SET,Apple,🍎 Apple
+  
+  # Optional rules for Telegram, Microsoft, PayPal, and Steam. If you need to set a separate policy for a specific rule list, please modify the policy name to match the name of the above policy group.
+  - RULE-SET,Microsoft,🌏 Chinese Network #🪟 Microsoft
+  - RULE-SET,OpenAI,✈️ International agency # 🤖 OpenAI
+  - RULE-SET,YouTube,📹 YouTube
+  - RULE-SET,Telegram,📡 Telegram
+  - RULE-SET,PayPal,💳 PayPal
+  - RULE-SET,Steam,🎮 Game platform
+  - RULE-SET,TikTok,🎵 TikTok
+
+  # Must Rules
+  - RULE-SET,Speedtest,⏳ Abbreviation
+  - RULE-SET,Proxy,✈️ International agency
+  - RULE-SET,Domestic,🌏 Chinese Network
+  - RULE-SET,LAN,DIRECT
+
+  # Final Rule
+  - GEOIP,CN,🌏 Chinese Network
+  - MATCH,🐟 missed opportunity
