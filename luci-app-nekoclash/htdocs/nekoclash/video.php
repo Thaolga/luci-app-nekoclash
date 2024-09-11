@@ -832,7 +832,14 @@ date_default_timezone_set('Asia/Shanghai');
         }
 
         loadDefaultPlaylist();
-
+        document.addEventListener('dblclick', function() {
+            var player = document.getElementById('player');
+            if (player.style.display === 'none') {
+                player.style.display = 'flex'; 
+            } else {
+                player.style.display = 'none'; 
+            }
+        });
     </script>
 </body>
 </html>
