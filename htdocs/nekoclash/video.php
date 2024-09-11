@@ -339,7 +339,7 @@
                     break;
                 case 'Escape':
                     isPlayingAllowed = !isPlayingAllowed;
-                    localStorage.setItem('isPlayingAllowed', isPlayingAllowed); // Save state to localStorage
+                    localStorage.setItem('isPlayingAllowed', isPlayingAllowed); 
                     if (!isPlayingAllowed) {
                         audioPlayer.pause();
                         audioPlayer.src = '';
@@ -406,7 +406,7 @@
         });
         document.getElementById('toggleEnable').addEventListener('click', function() {
             isPlayingAllowed = !isPlayingAllowed;
-            localStorage.setItem('isPlayingAllowed', isPlayingAllowed); // Save state to localStorage
+            localStorage.setItem('isPlayingAllowed', isPlayingAllowed); 
             if (!isPlayingAllowed) {
                 audioPlayer.pause();
                 audioPlayer.src = '';
@@ -470,7 +470,14 @@
         }
 
         loadDefaultPlaylist();
-
+        document.addEventListener('dblclick', function() {
+            var player = document.getElementById('player');
+            if (player.style.display === 'none') {
+                player.style.display = 'flex'; 
+            } else {
+                player.style.display = 'none'; 
+            }
+        });
     </script>
 </body>
 </html>
