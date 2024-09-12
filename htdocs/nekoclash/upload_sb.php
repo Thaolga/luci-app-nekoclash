@@ -329,13 +329,12 @@ if (isset($_POST['update_index'])) {
             background-color: #018786;
         }
         .modal-header, .modal-body, .modal-footer {
-            background: #2C2C2C;
-            color: #E0E0E0;
+            background: #f8f9fa;
+            color: #333;
         }
         .modal-content {
-            background: #3C3C3C;
-            border: 1px solid #444;
-            max-height: 80vh; 
+            background: #ffffff;
+            border: 1px solid #ced4da;
         }
         .modal-body {
             overflow-y: auto; 
@@ -519,9 +518,9 @@ if (isset($_POST['update_index'])) {
         </form>
 
         <div class="nav-buttons mt-4">
-            <a href="javascript:history.back()" class="btn btn-info">Return to Previous Menu</a>
-            <a href="/nekoclash/upload_sb.php" class="btn btn-info">Back to Current Menu</a>
-            <a href="/nekoclash" class="btn btn-info">Return to Main Menu</a>
+            <a href="javascript:history.back()" class="btn btn-success">Return to Previous Menu</a>
+            <a href="/nekoclash/upload_sb.php" class="btn btn-success">Back to Current Menu</a>
+            <a href="/nekoclash" class="btn btn-success">Return to Main Menu</a>
         </div>
     </div>
 
@@ -561,7 +560,8 @@ if (isset($_POST['update_index'])) {
             var button = $(event.relatedTarget); 
             var oldFileName = button.data('filename'); 
             var modal = $(this);
-            modal.find('#oldFileName').val(oldFileName);
+            modal.find('#oldFileName').val(oldFileName); 
+            modal.find('#newFileName').val(oldFileName); 
         });
     </script>
 </body>
