@@ -537,7 +537,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #E0E0E0; 
             background-color: red;
             font-family: Arial, sans-serif;
-            background: url('/nekoclash/assets/img/1.jpg') no-repeat center center fixed; 
+            background-color: #87ceeb;
             background-size: cover; 
         }
         .container {
