@@ -328,13 +328,12 @@ if (isset($_POST['update_index'])) {
             background-color: #018786;
         }
         .modal-header, .modal-body, .modal-footer {
-            background: #2C2C2C;
-            color: #E0E0E0;
+            background: #f8f9fa;
+            color: #333;
         }
         .modal-content {
-            background: #3C3C3C;
-            border: 1px solid #444;
-            max-height: 80vh; 
+            background: #ffffff;
+            border: 1px solid #ced4da;
         }
         .modal-body {
             overflow-y: auto; 
@@ -406,23 +405,19 @@ if (isset($_POST['update_index'])) {
             width: auto; 
             white-space: nowrap; 
         }
-
         @media (max-width: 768px) {
             .btn-group {
                 flex-direction: column;
             }
-
             .btn-group .btn {
                 width: 100%;
                 margin-bottom: 5px;
             }
-
             .nav-buttons {
                 display: flex;
                 flex-direction: column; 
                 align-items: center;    
             }
-
             .nav-buttons .btn {
                 width: 100%;            
                 margin-bottom: 10px;   
@@ -518,10 +513,10 @@ if (isset($_POST['update_index'])) {
         </form>
 
         <div class="nav-buttons mt-4">
-            <a href="javascript:history.back()" class="btn btn-info">返回上一级菜单</a>
-            <a href="/nekoclash/upload_sb.php" class="btn btn-info">返回当前菜单</a>
-            <a href="/nekoclash" class="btn btn-info">返回主菜单</a>
-            <a href="/nekoclash/box.php" class="btn btn-info">打开订阅转换模板</a>
+            <a href="javascript:history.back()" class="btn btn-success">返回上一级菜单</a>
+            <a href="/nekoclash/upload_sb.php" class="btn btn-success">返回当前菜单</a>
+            <a href="/nekoclash" class="btn btn-success">返回主菜单</a>
+            <a href="/nekoclash/box.php" class="btn btn-success">打开订阅转换模板</a>
         </div>
     </div>
 
@@ -561,7 +556,8 @@ if (isset($_POST['update_index'])) {
             var button = $(event.relatedTarget); 
             var oldFileName = button.data('filename'); 
             var modal = $(this);
-            modal.find('#oldFileName').val(oldFileName);
+            modal.find('#oldFileName').val(oldFileName); 
+            modal.find('#newFileName').val(oldFileName); 
         });
     </script>
 </body>
