@@ -6,7 +6,6 @@ $tmpPath = "$neko_www/lib/selected_config.txt";
 $arrFiles = array();
 $arrFiles = array_merge(glob("$dirPath/*.yaml"), glob("$dirPath/*.json")); 
 
-
 $error = "";
 
 if (isset($_POST['clashconfig'])) {
@@ -22,14 +21,16 @@ if (isset($_POST['clashconfig'])) {
         $error = "选择的文件内容不是有效的 JSON 格式，请选择另一个配置文件。"; 
     }
 }
-if(isset($_POST['neko'])){
+
+if (isset($_POST['neko'])) {
     $dt = $_POST['neko'];
     if ($dt == 'apply') shell_exec("$neko_dir/core/neko -r");
 }
+
 include './cfg.php';
 ?>
 <!doctype html>
-<html lang="en" data-bs-theme="<?php echo substr($neko_theme,0,-4) ?>">
+<html lang="en" data-bs-theme="<?php echo substr($neko_theme, 0, -4); ?>">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,7 +44,7 @@ include './cfg.php';
     <script type="text/javascript" src="./assets/js/bootstrap.min.js"></script>
   </head>
   <body>
-         <title>双击显示图标</title>
+    <title>双击显示图标</title>
     <style>
         .container-sm {
             margin: 20px auto;
@@ -81,6 +82,7 @@ include './cfg.php';
             toggleImage();
         };
     </script>
+
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
             <a href="./" class="col btn btn-lg">首页</a>
@@ -88,30 +90,30 @@ include './cfg.php';
             <a href="#" class="col btn btn-lg">配置</a>
             <a href="./settings.php" class="col btn btn-lg">设定</a>
         </div>
-    </div>
-    <div class="container text-left p-3">
-        
-        <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-            <h2 class="text-center p-2">配置</h2>
-            <form action="configs.php" method="post">
-                <div class="container text-center justify-content-md-center">
-                    <div class="row justify-content-md-center">
-                        <div class="col input-group mb-3 justify-content-md-center">
-                          <select class="form-select" name="clashconfig" aria-label="themex">
-                            <option selected><?php echo $selected_config ?></option>
-                            <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
-                          </select>
-                        </div>
-                        <div class="row justify-content-md-center">
-                            <div class="btn-group d-grid d-md-flex justify-content-md-center mb-5" role="group">
-                              <input class="btn btn-info" type="submit" value="更改配置">
-                              <button name="neko" type="submit" value="应用" class="btn btn-warning d-grid">应用</button>
-                            </div>
-                        </div>
+     </div>
+  <div class="container text-left p-3">     
+<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+    <h2 class="text-center p-2">配置</h2>
+    <form action="configs.php" method="post">
+        <div class="container text-center justify-content-md-center">
+            <div class="row justify-content-md-center">
+                <div class="col input-group mb-3 justify-content-md-center">
+                    <select class="form-select" name="clashconfig" aria-label="themex">
+                        <option selected><?php echo $selected_config; ?></option>
+                        <?php foreach ($arrFiles as $file) echo "<option value=\"" . $file . '">' . $file . "</option>"; ?>
+                    </select>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="btn-group d-grid d-md-flex justify-content-md-center mb-5" role="group">
+                        <input class="btn btn-info" type="submit" value="更改配置">
+                        <button name="neko" type="submit" value="应用" class="btn btn-warning d-grid">应用</button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
+    </form>
+</div>
+
 <div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
     <ul class="nav text-center justify-content-md-center">
         <li class="nav-item">
@@ -140,7 +142,56 @@ include './cfg.php';
         <div id="info" class="tab-pane fade show active">
             <h2 class="text-center p-2">配置资讯</h2>
             <table class="table table-borderless callout mb-5">
-                <!-- Table content remains unchanged -->
+                <tbody>
+                    <tr class="text-center">
+                        <td class="col-2">HTTP 端口</td>
+                        <td class="col-2">Redir 端口</td>
+                        <td class="col-2">Socks 端口</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="col-2">
+                            <input class="form-control text-center" name="port" type="text" placeholder="<?php echo $neko_cfg['port']; ?>" disabled>
+                        </td>
+                        <td class="col-2">
+                            <input class="form-control text-center" name="redir" type="text" placeholder="<?php echo $neko_cfg['redir']; ?>" disabled>
+                        </td>
+                        <td class="col-2">
+                            <input class="form-control text-center" name="socks" type="text" placeholder="<?php echo $neko_cfg['socks']; ?>" disabled>
+                        </td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="col-2">混合 端口</td>
+                        <td class="col-2">TProxy 端口</td>
+                        <td class="col-2">模式</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="col-2">
+                            <input class="form-control text-center" name="mixed" type="text" placeholder="<?php echo $neko_cfg['mixed']; ?>" disabled>
+                        </td>
+                        <td class="col-2">
+                            <input class="form-control text-center" name="tproxy" type="text" placeholder="<?php echo $neko_cfg['tproxy']; ?>" disabled>
+                        </td>
+                        <td class="col-2">
+                            <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $neko_cfg['mode']; ?>" disabled>
+                        </td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="col-2">增强型</td>
+                        <td class="col-2">密钥</td>
+                        <td class="col-2">控制器</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td class="col-2">
+                            <input class="form-control text-center" name="ech" type="text" placeholder="<?php echo $neko_cfg['echanced']; ?>" disabled>
+                        </td>
+                        <td class="col-2">
+                            <input class="form-control text-center" name="sec" type="text" placeholder="<?php echo $neko_cfg['secret']; ?>" disabled>
+                        </td>
+                        <td class="col-2">
+                            <input class="form-control text-center" name="ext" type="text" placeholder="<?php echo $neko_cfg['ext_controller']; ?>" disabled>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
             <h2 class="text-center p-2">配置</h2>
             <div class="container h-100 mb-5">
@@ -184,8 +235,7 @@ include './cfg.php';
             <strong>1. 歌曲推送和控制：</strong><br>
             &emsp; 1 播放器通过 GitHub 歌单推送歌曲。<br>
             &emsp; 2 使用键盘方向键可以切换歌曲。<br>
-            &emsp; 3 终端输入 <code>nekoclash</code> 可以更新客户端和核心。<br>
-            &emsp; 4 sing-box 内置智能转换机制，无论您从哪个机场获取订阅，都能自动适配，无需额外配置。<br><br>
+            &emsp; 3 终端输入 <code>nekoclash</code> 可以更新客户端和核心。<br><br>
 
             <strong>2. 播放功能：</strong><br>
             &emsp; 1 自动播放下一首歌曲：如果启用了播放功能，自动播放下一首歌曲。歌曲列表到达末尾时，会循环到第一首歌曲。<br>

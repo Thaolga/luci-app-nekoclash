@@ -109,78 +109,88 @@ $singBoxVersion = getSingboxVersion();
             <a href="#" class="col btn btn-lg">设定</a>
         </div>
     </div>
-    <div class="container text-left p-3">
+<div class="container text-left p-3">
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
         <h2 class="text-center p-2 mb-3">主题设定</h2>
-            <form action="settings.php" method="post">
-                <div class="container text-center justify-content-md-center">
+        <form action="settings.php" method="post">
+            <div class="container text-center justify-content-md-center">
+                <div class="row justify-content-md-center">
+                    <div class="col mb-3 justify-content-md-center">
+                        <select class="form-select" name="themechange" aria-label="themex">
+                            <option selected>Change Theme (<?php echo $neko_theme ?>)</option>
+                            <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
+                        </select>
+                    </div>
                     <div class="row justify-content-md-center">
-                        <div class="col mb-3 justify-content-md-center">
-                          <select class="form-select" name="themechange" aria-label="themex">
-                                <option selected>Change Theme (<?php echo $neko_theme ?>)</option>
-                                <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
-                          </select>
-                        </div>
-                        <div class="row justify-content-md-center">
-                            <div class="col justify-content-md-center mb-3">
-                              <input class="btn btn-info" type="submit" value="更改主题">
-                            </div>
+                        <div class="col justify-content-md-center mb-3">
+                            <input class="btn btn-info" type="submit" value="更改主题">
                         </div>
                     </div>
                 </div>
-            </form>
-<h2 class="text-center p-2 mb-3">软体资讯</h2>
-<table class="table table-borderless mb-3">
-    <tbody>
-        <tr>
-            <td class="col-2">自动重新载入防火墙</td>
-            <form action="settings.php" method="post">
-                <td class="d-grid">
-                    <div class="btn-group col" role="group" aria-label="ctrl">
-                        <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?> d-grid">启用</button>
-                        <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?> d-grid">停用</button>
-                    </div>
-                </td>
-            </form>
-        </tr>
-        <tr>
-<td class="col-2">客户端版本</td>
-<td class="col-4">
-    <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        <div style="font-family: monospace; flex-grow: 1; text-align: left;">
-        <div class="form-control text-center" id="cliver">-</div>
-        </div>
-        <button class="form-control text-center" id="updateButton" ">更新到最新版本</button>
-    </div>
-    <div id="logOutput"></div>
-</td>
-</tr>
-<tr>
-    <td class="col-2">Sing-box核心版本</td>
-    <td class="col-4">
-        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <div class="form-control text-center"  id="singBoxCorever">
-                <?php echo htmlspecialchars($singBoxVersion); ?>
-            </div>    
-                <button class="form-control text-center"  id="updateSingboxButton">更新Singbox内核</button>
             </div>
-        </div>
-    </td>
-</tr>
-    <td class="col-2">Mihomo核心版本</td>
-    <td class="col-4">
-        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <div class="form-control text-center"  id="corever">-</div>
-                   
-                <button class="form-control text-center"  id="updateNekoButton">切换NeKo内核</button>
-                <button class="form-control text-center"  id="updateCoreButton" >切换Mihomo内核</button>
-            </div>
-        </div>
-    </td>
-</tr>
-<tr>
- </tbody>
- </table>
+        </form>
+
+        <h2 class="text-center p-2 mb-3">软体资讯</h2>
+        <table class="table table-borderless mb-3">
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <h3 class="text-center mb-3">自动重载防火墙</h3>
+                        <form action="settings.php" method="post">
+                            <div class="btn-group d-flex justify-content-center">
+                                <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?>">启用</button>
+                                <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?>">停用</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>客户端版本</h3>
+                                    <div class="form-control text-center" style="font-family: monospace; text-align: center;">
+                                        <div id="cliver"></div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-primary" id="updateButton">更新到最新版本</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Sing-box核心版本</h3>
+                                    <div class="form-control text-center">
+                                        <div id="singBoxCorever">
+                                            <?php echo htmlspecialchars($singBoxVersion); ?>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-pink" id="updateSingboxButton">更新Singbox内核</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Mihomo核心版本</h3>
+                                    <div class="form-control text-center">
+                                        <div id="corever">-</div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-success" id="updateCoreButton">切换Mihomo内核</button>
+                                        <button class="btn btn-info" id="updateNekoButton">切换NeKo内核</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="logOutput" class="mt-3"></div>
+
         <style>
             .table-container {
                 overflow-x: auto;
@@ -193,16 +203,16 @@ $singBoxVersion = getSingboxVersion();
 
             .table td {
                 padding: 10px;
-                word-wrap: break-word; 
+                word-wrap: break-word;
             }
 
             .form-control {
-                width: 100%; 
+                width: 100%;
             }
 
             .btn {
-                white-space: nowrap; 
-                flex: 1; 
+                white-space: nowrap;
+                flex: 1;
             }
 
             @media (max-width: 767px) {
@@ -217,105 +227,104 @@ $singBoxVersion = getSingboxVersion();
                 }
 
                 .btn-group {
-                    flex-direction: column; 
+                    flex-direction: column;
                 }
-            }  
+            }
 
             #updateButton:hover {
-                background-color: #20B2AA; 
+                background-color: #20B2AA;
             }
 
             #updateSingboxButton:hover {
-                background-color: #FF69B4; 
+                background-color: #FF69B4;
             }
 
             #updateCoreButton:hover {
-                background-color: #90EE90; 
+                background-color: #90EE90;
             }
 
             #updateNekoButton:hover {
-                background-color: #87CEFA; 
+                background-color: #87CEFA;
             }
         </style>
 
-<script>
-    document.getElementById('updateButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_script.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        <script>
+            document.getElementById('updateButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'update_script.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = '开始下载更新...';
+                document.getElementById('logOutput').innerHTML = '开始下载更新...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\n更新完成！';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
+                xhr.send();
+            });
 
-    document.getElementById('updateSingboxButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'singbox.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            document.getElementById('updateSingboxButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'singbox.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
+                xhr.send();
+            });
 
-    document.getElementById('updateCoreButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'core.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            document.getElementById('updateCoreButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'core.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
+                xhr.send();
+            });
 
+            document.getElementById('updateNekoButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'neko.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-    document.getElementById('updateNekoButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'neko.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
 
-        document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
-            }
-        };
-
-        xhr.send(); 
-    });
-</script>
+                xhr.send();
+            });
+        </script>
 <!DOCTYPE html>
 <html lang="zh">
 <head>

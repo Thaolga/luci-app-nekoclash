@@ -52,7 +52,7 @@
   --btn-info-bg: #17a2b8;
   --btn-info-color: #fff;
   --btn-warning-bg: #ffc107;
-  --btn-warning-color: #212529;
+  --btn-warning-color: #fff;
   --btn-danger-bg: #dc3545;
   --btn-danger-color: #fff;
 }
@@ -121,6 +121,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-warning {
   background-color: var(--btn-warning-bg);
+  color: var(--btn-warning-color);
+}
+
+.btn-warning:hover {
   color: var(--btn-warning-color);
 }
 
