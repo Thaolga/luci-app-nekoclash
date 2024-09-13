@@ -116,55 +116,68 @@ $singBoxVersion = getSingboxVersion();
                 </div>
             </div>
         </form>
+
         <h2 class="text-center p-2 mb-3">Software Information</h2>
-        <table class="table table-borderless mb-3" style="border-radius: 15px; overflow: hidden;">
+        <table class="table table-borderless mb-3">
             <tbody>
                 <tr>
-                    <td class="col-2">Auto Reload Firewall</td>
-                    <form action="settings.php" method="post">
-                        <td class="d-grid">
-                            <div class="btn-group col" role="group" aria-label="ctrl">
-                                <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?> d-grid">Enable</button>
-                                <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?> d-grid">Disable</button>
+                    <td colspan="2">
+                        <h3 class="text-center mb-3">Auto Reload Firewall</h3>
+                        <form action="settings.php" method="post">
+                            <div class="btn-group d-flex justify-content-center">
+                                <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?>">启用</button>
+                                <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?>">停用</button>
                             </div>
-                        </td>
-                    </form>
-                </tr>
-                <tr>
-                    <td class="col-2">Client Version</td>
-                    <td class="col-4">
-                        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                            <div style="font-family: monospace; flex-grow: 1; text-align: left;">
-                                <div class="form-control text-center" id="cliver">-</div>
-                            </div>
-                            <button class="form-control text-center" id="updateButton">Update to Latest Version</button>
-                        </div>
-                        <div id="logOutput"></div>
+                        </form>
                     </td>
                 </tr>
                 <tr>
-                    <td class="col-2">Sing-box Core Version</td>
-                    <td class="col-4">
-                        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                            <div class="form-control text-center" id="singBoxCorever">
-                                <?php echo htmlspecialchars($singBoxVersion); ?>
-                            </div>    
-                            <button class="form-control text-center" id="updateSingboxButton">Update Singbox Core</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-2">Mihomo Core Version</td>
-                    <td class="col-4">
-                        <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                            <div class="form-control text-center" id="corever">-</div>
-                            <button class="form-control text-center" id="updateNekoButton">Switch to NeKo Core</button>
-                            <button class="form-control text-center" id="updateCoreButton">Switch to Mihomo Core</button>
+                    <td colspan="2">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Client Version</h3>
+                                    <div class="form-control text-center" style="font-family: monospace; text-align: center;">
+                                        <div id="cliver"></div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-primary" id="updateButton">Update to Latest Version</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Sing-box Core Version</h3>
+                                    <div class="form-control text-center">
+                                        <div id="singBoxCorever">
+                                            <?php echo htmlspecialchars($singBoxVersion); ?>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-pink" id="updateSingboxButton">Update Singbox Core</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Mihomo Core Version</h3>
+                                    <div class="form-control text-center">
+                                        <div id="corever">-</div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-success" id="updateCoreButton">Switch to Mihomo Core</button>
+                                        <button class="btn btn-info" id="updateNekoButton">Switch to NeKo Core</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <div id="logOutput" class="mt-3"></div>
+
         <style>
             .table-container {
                 overflow-x: auto;
@@ -177,16 +190,16 @@ $singBoxVersion = getSingboxVersion();
 
             .table td {
                 padding: 10px;
-                word-wrap: break-word; 
+                word-wrap: break-word;
             }
 
             .form-control {
-                width: 100%; 
+                width: 100%;
             }
 
             .btn {
-                white-space: nowrap; 
-                flex: 1; 
+                white-space: nowrap;
+                flex: 1;
             }
 
             @media (max-width: 767px) {
@@ -201,104 +214,104 @@ $singBoxVersion = getSingboxVersion();
                 }
 
                 .btn-group {
-                    flex-direction: column; 
+                    flex-direction: column;
                 }
-            }  
+            }
 
             #updateButton:hover {
-                background-color: #20B2AA; 
+                background-color: #20B2AA;
             }
 
             #updateSingboxButton:hover {
-                background-color: #FF69B4; 
+                background-color: #FF69B4;
             }
 
             #updateCoreButton:hover {
-                background-color: #90EE90; 
+                background-color: #90EE90;
             }
 
             #updateNekoButton:hover {
-                background-color: #87CEFA; 
+                background-color: #87CEFA;
             }
         </style>
 
-<script>
-    document.getElementById('updateButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_script.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        <script>
+            document.getElementById('updateButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'update_script.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = 'Starting to download updates...';
+                document.getElementById('logOutput').innerHTML = 'Starting to download updates...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nUpdate completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\nUpdate completed!';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\nError occurred：' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
+                xhr.send();
+            });
 
-    document.getElementById('updateSingboxButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'singbox.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            document.getElementById('updateSingboxButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'singbox.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
+                document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nCore update completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\nCore update completed!';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\\nError occurred: ' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
+                xhr.send();
+            });
 
-    document.getElementById('updateCoreButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'core.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            document.getElementById('updateCoreButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'core.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
+                document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nCore update completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\nCore update completed!';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
+                xhr.send();
+            });
 
-    document.getElementById('updateNekoButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'neko.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            document.getElementById('updateNekoButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'neko.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
+                document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nCore update completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
-            }
-        };
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\nCore update completed!';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\nError occurred：' + xhr.statusText;
+                    }
+                };
 
-        xhr.send(); 
-    });
-</script>
+                xhr.send();
+            });
+        </script>
 <!DOCTYPE html>
 <html lang="zh">
 <head>

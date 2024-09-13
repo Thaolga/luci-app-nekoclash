@@ -111,10 +111,10 @@ include './cfg.php';
                 </div>
             </form>
         </div>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
+    <div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
     <ul class="nav text-center justify-content-md-center">
         <li class="nav-item">
-            <a class="col btn btn-lg active" data-bs-toggle="tab" href="#info">Configuration</a>
+            <a class="col btn btn-lg active" data-bs-toggle="tab" href="#info">Info</a>
         </li>
         <li class="nav-item">
             <a class="col btn btn-lg" data-bs-toggle="tab" href="#proxy">Proxy</a>
@@ -137,12 +137,61 @@ include './cfg.php';
 <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active">
-            <h2 class="text-center p-2">Configuration Information</h2>
-            <table class="table table-borderless callout mb-5">
-                <!-- Table content remains unchanged -->
-            </table>
-            <h2 class="text-center p-2">Configuration</h2>
-            <div class="container h-100 mb-5">
+                    <h2 class="text-center p-2">Config Information</h2>
+                    <table class="table table-borderless callout mb-5">
+                        <tbody>
+                            <tr class="text-center">
+                                <td class="col-2">PORT</td>
+                                <td class="col-2">REDIR</td>
+                                <td class="col-2">SOCKS</td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="port" type="text" placeholder="<?php echo $neko_cfg['port'] ?>" disabled>
+                                </td>
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="redir" type="text" placeholder="<?php echo $neko_cfg['redir'] ?>" disabled>
+                                </td>
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="socks" type="text" placeholder="<?php echo $neko_cfg['socks'] ?>" disabled>
+                                </td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="col-2">MIXED</td>
+                                <td class="col-2">TPROXY</td>
+                                <td class="col-2">MODE</td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="mixed" type="text" placeholder="<?php echo $neko_cfg['mixed'] ?>" disabled>
+                                </td>
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="tproxy" type="text" placeholder="<?php echo $neko_cfg['tproxy'] ?>" disabled>
+                                </td>
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $neko_cfg['mode'] ?>" disabled>
+                                </td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="col-2">ENHANCED</td>
+                                <td class="col-2">SECRET</td>
+                                <td class="col-2">CONTROLLER</td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="ech" type="text" placeholder="<?php echo $neko_cfg['echanced'] ?>" disabled>
+                                </td>
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="sec" type="text" placeholder="<?php echo $neko_cfg['secret'] ?>" disabled>
+                                </td>
+                                <td class="col-2">
+                                    <input class="form-control text-center" name="ext" type="text" placeholder="<?php echo $neko_cfg['ext_controller'] ?>" disabled>
+                                </td>
+                            </tr>
+                         </tbody>
+                      </table>
+                    <h2 class="text-center p-2">Configs</h2>
+                 <div class="container h-100 mb-5">
                 <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./configconf.php" title="yacd" allowfullscreen></iframe>
             </div>
         </div>
@@ -184,8 +233,7 @@ include './cfg.php';
                         <strong>1. Song Push and Control:</strong><br>
                         &emsp; 1 The player pushes songs via GitHub playlists.<br>
                         &emsp; 2 Use the keyboard arrow keys to switch songs.<br>
-                        &emsp; 3 Enter <code>nekoclash</code> in the terminal to update the client and core.<br>
-                        &emsp; 4 Sing-box has a built-in intelligent conversion mechanism that automatically adapts to any subscription obtained from any provider, without additional configuration.<br><br>
+                        &emsp; 3 Enter <code>nekoclash</code> in the terminal to update the client and core.<br><br>
 
                         <strong>2. Playback Function:</strong><br>
                         &emsp; 1 Auto-play the next song: If playback is enabled, the next song will automatically play. When the song list reaches the end, it will loop back to the first song.<br>

@@ -594,7 +594,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                                 echo "<button type=\"button\" class=\"btn btn-outline-danger\">Mihomo is not running</button>\n";
                             }
 
-                            echo "<button type=\"button\" class=\"btn btn-warning d-grid\">$str_cfg</button>\n";
+                            echo "<button type=\"button\" class=\"btn btn-deepskyblue d-grid\">$str_cfg</button>\n";
 
                             if ($singbox_status == 1) {
                                 echo "<button type=\"button\" class=\"btn btn-success\">Sing-box is running</button>\n";
