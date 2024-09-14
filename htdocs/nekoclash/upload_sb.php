@@ -268,6 +268,7 @@ if (isset($_POST['update_index'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sing-box File Manager</title>
     <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #87ceeb;
@@ -302,24 +303,25 @@ if (isset($_POST['update_index'])) {
         }
         .btn-danger {
             background-color: #CF6679; 
-            color: #121212;
+            color: #FFFFFF;
         }
         .btn-danger:hover {
             background-color: #B00020; 
         }
         .btn-success {
             background-color: #03DAC6; 
-            color: #121212;
+            color: #FFFFFF;
         }
         .btn-success:hover {
             background-color: #018786; 
         }
         .btn-warning {
             background-color: #F4B400; 
-            color: #121212;
+            color: #FFFFFF;
         }
         .btn-warning:hover {
             background-color: #C79400; 
+             color: #FFFFFF;
         }
         .btn-primary {
             background-color: #03DAC6;
@@ -400,29 +402,27 @@ if (isset($_POST['update_index'])) {
             cursor: pointer;
         }
         .btn-group .btn-rename {
-            max-width: 60px; 
+            max-width: 80px; 
             padding: 2px 6px; 
             font-size: 0.875rem; 
             width: auto; 
             white-space: nowrap; 
+            border-radius: 4px !important;
+            color: #FFFFFF;
         }
-
         @media (max-width: 768px) {
             .btn-group {
                 flex-direction: column;
             }
-
             .btn-group .btn {
                 width: 100%;
                 margin-bottom: 5px;
             }
-
             .nav-buttons {
                 display: flex;
                 flex-direction: column; 
                 align-items: center;    
             }
-
             .nav-buttons .btn {
                 width: 100%;            
                 margin-bottom: 10px;   
@@ -455,18 +455,18 @@ if (isset($_POST['update_index'])) {
                             <div class="btn-group">
                                 <form action="" method="post" class="d-inline">
                                     <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');">Delete</button>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');"><i class="fas fa-trash"></i>Delete</button>
                                 </form>
-                                <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>">Rename</button>
+                                <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i class="fas fa-edit"></i> Rename</button>
 
                                 <form action="" method="post" class="d-inline">
                                     <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                                     <input type="hidden" name="fileType" value="config">
-                                    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+                                    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i>Edit</button>
                                 </form>
                                 <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                                     <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();">Upload</button>
+                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i>Upload</button>
                                 </form>
                             </div>
                         </td>
@@ -485,7 +485,7 @@ if (isset($_POST['update_index'])) {
                         <textarea name="saveContent" id="editor" class="editor"><?php echo $fileContent; ?></textarea><br>
                         <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
                         <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                        <button type="submit" class="btn btn-primary mt-2" onclick="checkJsonSyntax()">Save Content</button>
+                        <button type="submit" class="btn btn-primary mt-2" onclick="checkJsonSyntax()"><i class="fas fa-save"></i>Save Content</button>
                     </form>
                 </div>
             <?php endif; ?>
@@ -509,7 +509,7 @@ if (isset($_POST['update_index'])) {
                                     <label for="custom_file_name_<?php echo $i; ?>">Custom File Name <?php echo ($i === 0) ? '(Fixed as config.json)' : ''; ?></label>
                                     <input type="text" name="custom_file_name_<?php echo $i; ?>" id="custom_file_name_<?php echo $i; ?>" class="form-control form-control-sm" value="<?php echo htmlspecialchars($subscriptionData['subscriptions'][$i]['file_name'] ?? ($i === 0 ? 'config.json' : '')); ?>" <?php echo ($i === 0) ? 'readonly' : ''; ?> >
                                 </div>
-                                <button type="submit" name="update_index" value="<?php echo $i; ?>" class="btn btn-info btn-sm">Update Subscription <?php echo $i + 1; ?></button>
+                                <button type="submit" name="update_index" value="<?php echo $i; ?>" class="btn btn-info btn-sm"><i class="fas fa-sync-alt"></i>Update Subscription <?php echo $i + 1; ?></button>
                             </div>
                         </div>
                     </div>

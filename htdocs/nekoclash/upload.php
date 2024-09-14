@@ -114,28 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo '<p>File content updated: ' . htmlspecialchars(basename($fileToSave)) . '</p>';
     }
 
-    if (isset($_FILES['customFileInput']) && isset($_POST['customDir'])) {
-        $customDir = rtrim($_POST['customDir'], '/') . '/';
-        if (!is_dir($customDir)) {
-            if (!mkdir($customDir, 0755, true)) {
-                echo 'Custom directory creation failed!';
-            }
-        }
-
-        $file = $_FILES['customFileInput'];
-        $uploadFilePath = $customDir . basename($file['name']);
-
-        if ($file['error'] === UPLOAD_ERR_OK) {
-            if (move_uploaded_file($file['tmp_name'], $uploadFilePath)) {
-                echo 'File uploaded to custom directory successfully: ' . htmlspecialchars(basename($file['name']));
-            } else {
-                echo 'File upload to custom directory failed!';
-            }
-        } else {
-            echo 'Upload error: ' . $file['error'];
-        }
-    }
-
     if (isset($_GET['customFile'])) {
         $customDir = rtrim($_GET['customDir'], '/') . '/';
         $customFilePath = $customDir . basename($_GET['customFile']);
@@ -521,119 +499,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>File Upload and Management</title>
+    <title>Mihomo File Manager</title>
+    <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            margin: 0;
-            min-height: 100vh;
-            align-items: center;
-            justify-content: flex-start;
-            color: #E0E0E0; 
-            background-color: red;
-            font-family: Arial, sans-serif;
             background-color: #87ceeb;
             background-size: cover; 
+            color: #E0E0E0; 
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            width: 90%;
-            max-width: 900px; 
-            padding: 20px;
-            box-sizing: border-box;
-            align-items: center;
-            text-align: center;
             background: rgba(30, 30, 30, 0.8); 
             border-radius: 10px;
+            padding: 20px;
             margin-top: 50px; 
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
         }
-        h1, h2, .help-text {
+        h1, h2 {
             color: #00FF7F; 
         }
-        .form-inline {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .form-inline .form-control-file {
-            flex: 1;
-        }
-        .file-upload-button {
-            padding: 10px 20px;
-            background-color: #03DAC6; 
-            color: #121212;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .file-upload-button:hover {
-            background-color: #018786; 
-        }
-        .list-group {
-            width: 100%;
-            margin-top: 20px;
-            padding: 0;
-            list-style: none;
-        }
-        .list-group-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: #2C2C2C; 
-            border-bottom: 1px solid #444;
-        }
-        .list-group-item a {
-            color: #BB86FC; 
-            text-decoration: none;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        .button-group form {
-            display: inline;
-        }
-        .button-group .btn {
-            margin-left: 5px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-        }
-        .btn-danger {
-            background-color: #CF6679; 
-            color: #121212;
-        }
-        .btn-danger:hover {
-            background-color: #B00020; 
-        }
-        .btn-success {
-            background-color: #03DAC6; 
-            color: #121212;
-        }
-        .btn-success:hover {
-            background-color: #018786; 
-        }
-        .btn-warning {
-            background-color: #F4B400; 
-            color: #121212;
-        }
-        .btn-warning:hover {
-            background-color: #C79400; 
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
         }
         .editor {
             height: 300px; 
-            width: 90%; 
-            min-width: 800px; 
-            max-width: 800px; 
+            width: 100%; 
             background-color: #2C2C2C; 
             color: #E0E0E0; 
             padding: 15px; 
@@ -643,236 +539,295 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 20px;
             overflow: auto; 
         }
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+        .btn-danger {
+            background-color: #CF6679; 
+            color: #FFFFFF;
         }
-        .nav-buttons .btn {
-            padding: 10px 20px;
+        .btn-danger:hover {
+            background-color: #B00020; 
+        }
+        .btn-success {
             background-color: #03DAC6; 
-            color: #121212;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
+            color: #FFFFFF;
         }
-        .nav-buttons .btn:hover {
+        .btn-success:hover {
             background-color: #018786; 
         }
-        .input-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
+        .btn-warning {
+            background-color: #F4B400; 
+            color: #FFFFFF;
         }
-        .input-group label {
-            margin-right: 10px;
-            white-space: nowrap;
-            color: #00FF7F;
+        .btn-warning:hover {
+            background-color: #C79400; 
+             color: #FFFFFF;
         }
-        .input-group input {
-            flex: 1;
-            padding: 5px;
-            border: 1px solid #444;
-            border-radius: 5px;
+        .btn-primary {
+            background-color: #03DAC6;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #018786;
+        }
+        .modal-header, .modal-body, .modal-footer {
+            background: #f8f9fa;
+            color: #333;
+        }
+        .modal-content {
+            background: #ffffff;
+            border: 1px solid #ced4da;
+        }
+        .modal-body {
+            overflow-y: auto; 
+        }
+        .form-control {
             background-color: #2C2C2C;
             color: #E0E0E0;
+            border: 1px solid #444;
         }
-        button[name="update"] {
-            background-color: #FF6347;
-            color: white;
-            padding: 5px 10px;
-            border: none;
+        .form-control:focus {
+            border-color: #03DAC6;
+            box-shadow: 0 0 0 0.2rem rgba(3, 218, 198, 0.25);
+        }
+        .log-output {
+            background-color: #2C2C2C; 
+            border: 1px solid #444;
             border-radius: 5px;
+            color: #E0E0E0;
+            padding: 10px;
+            margin-top: 20px;
+            height: 200px; 
+            overflow-y: scroll; 
+            white-space: pre-wrap; 
+        }
+        .subscription-card {
+            background: #3C3C3C;
+            border: 1px solid #444;
+            color: #E0E0E0;
+            margin-bottom: 20px;
+        }
+        .subscription-card .card-body {
+            padding: 10px;
+        }
+        .custom-file-name {
+            background-color: #2C2C2C; 
+            color: #E0E0E0; 
+            border: 1px solid #444;
+        }
+        .card .form-control {
+            background-color: #2C2C2C; 
+            color: #E0E0E0; 
+            border: 1px solid #444;
+        }
+        .card .form-control:focus {
+            border-color: #03DAC6;
+            box-shadow: 0 0 0 0.2rem rgba(3, 218, 198, 0.25);
+        }
+        .form-inline .form-control-file {
+            display: none; 
+        }
+        .btn-group {
+            display: flex; 
+            justify-content: center;
+            gap: 10px; 
+        }
+        .btn-group .btn {
+            height: 38px; 
+            line-height: 1.5; 
+            padding: 0 10px; 
+            text-align: center;
+        }
+        .upload-btn {
             cursor: pointer;
-            margin-top: 10px;
         }
-        button[name="update"]:hover {
-            background-color: darkgreen;
+        .btn-group .btn-rename {
+            max-width: 80px; 
+            padding: 2px 6px; 
+            font-size: 0.875rem; 
+            width: auto; 
+            white-space: nowrap; 
+            border-radius: 4px !important;
+            color: #FFFFFF;
         }
-        .form-spacing {
-            margin-bottom: 30px;
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .nav-buttons {
+                display: flex;
+                flex-direction: column; 
+                align-items: center;    
+            }
+            .nav-buttons .btn {
+                width: 100%;            
+                margin-bottom: 10px;   
+            }
         }
-        button {
-            background-color: #4CAF50; 
-            color: white;
-            border: none;
-            padding: 5px 10px; 
-            text-align: center; 
-            text-decoration: none; 
-            display: inline-block; 
-            cursor: pointer; 
-            border-radius: 4px; 
-        }
-        button:hover {
-            background-color: darkgreen; 
-        }
-
-       .navigation {
-           display: flex;
-           justify-content: center; 
-           gap: 10px; 
-           margin-top: 20px;
-       }
-
-       .navigation .btn {
-           padding: 12px 24px; 
-           background-color: #03DAC6; 
-           color: #121212; 
-           border: none; 
-           border-radius: 8px; 
-           cursor: pointer; 
-           text-decoration: none; 
-           font-size: 16px; 
-           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
-           display: inline-flex; 
-           align-items: center; 
-           justify-content: center; 
-       }
-
-       .navigation .btn:hover {
-           background-color: #018786; 
-           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); 
-       }
     </style>
 </head>
 <body>
     <div class="container text-center">
-        <h1 class="text-primary">Mihomo File Manager</h1>
-
-        <section id="proxy-management" class="section-gap">
-            <h2 class="text-success">Proxy File Management</h2>
-            <form action="" method="post" enctype="multipart/form-data" class="upload-form mb-3">
-                <div class="input-group">
-                    <input type="file" name="fileInput" id="fileInput" class="form-control-file">
-                    <button type="submit" class="btn btn-primary btn-custom">Upload</button>
-                </div>
-            </form>
-            <ul class="list-group list-group-flush">
+        <h1 style="margin-top: 40px; margin-bottom: 20px;">Mihomo File Manager</h1>
+        <h2>Proxy File Management</h2>
+        <table class="table table-dark table-bordered">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Modification Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
                 <?php foreach ($proxyFiles as $file): ?>
                     <?php $filePath = $uploadDir . $file; ?>
-                    <li class="list-group-item">
-                        <a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a>
-                        <span class="file-size">(Size: <?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : 'File does not exist'; ?>)</span>
-                        <div class="button-group">
-                            <form action="" method="post">
-                                <input type="hidden" name="deleteFile" value="<?php echo htmlspecialchars($file); ?>">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this file?');">Delete</button>
-                            </form>
-                            <form action="" method="post">
-                                <input type="hidden" name="oldFileName" value="<?php echo htmlspecialchars($file); ?>">
-                                <input type="text" name="newFileName" class="form-control form-control-sm" placeholder="New File Name" required>
-                                <input type="hidden" name="fileType" value="proxy">
-                                <button type="submit" class="btn btn-warning">Rename</button>
-                            </form>
-                            <form action="" method="post">
-                                <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
-                                <input type="hidden" name="fileType" value="proxy">
-                                <button type="submit" class="btn btn-success">Edit</button>
-                            </form>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </section>
+                    <tr>
+                        <td><a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a></td>
+                        <td><?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : 'File not found'; ?></td>
+                        <td><?php echo htmlspecialchars(date('Y-m-d H:i:s', filemtime($filePath))); ?></td>
+                        <td>
+                            <div class="btn-group">
+                                <form action="" method="post" class="d-inline">
+                                    <input type="hidden" name="deleteFile" value="<?php echo htmlspecialchars($file); ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                                
+                                <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>">
+                                    <i class="fas fa-edit"></i> Rename
+                                </button>
+                                
+                                <form action="" method="post" class="d-inline">
+                                    <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
+                                    <input type="hidden" name="fileType" value="proxy"> 
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-pen"></i> Edit
+                                    </button>
+                                </form>
 
-        <section id="config-management" class="section-gap">
-            <h2 class="text-success">Configuration File Management</h2>
-            <form action="" method="post" enctype="multipart/form-data" class="upload-form mb-3">
-                <div class="input-group">
-                    <input type="file" name="configFileInput" id="configFileInput" class="form-control-file">
-                    <button type="submit" class="btn btn-primary btn-custom">Upload</button>
+                                <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
+                                    <input type="file" name="fileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
+                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();">
+                                        <i class="fas fa-upload"></i> Upload
+                                    </button>  
+
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+
+    <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="renameModalLabel">Rename File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </form>
-            <ul class="list-group list-group-flush">
+                <div class="modal-body">
+                    <form id="renameForm" action="" method="post">
+                        <input type="hidden" name="oldFileName" id="oldFileName">
+                        <div class="form-group">
+                            <label for="newFileName">New File Name</label>
+                            <input type="text" class="form-control" id="newFileName" name="newFileName" required>
+                        </div>
+                        <p>Are you sure you want to rename this file?</p>
+                        <input type="hidden" name="fileType" value="proxy"> 
+                        <div class="form-group text-right">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <h2>Configuration File Management</h2>
+        <table class="table table-dark table-bordered">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Modification Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
                 <?php foreach ($configFiles as $file): ?>
                     <?php $filePath = $configDir . $file; ?>
-                    <li class="list-group-item">
-                        <a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a>
-                        <span class="file-size">(Size: <?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : 'File does not exist'; ?>)</span>
-                        <div class="button-group">
-                            <form action="" method="post">
-                                <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this file?');">Delete</button>
-                            </form>
-                            <form action="" method="post">
-                                <input type="hidden" name="oldFileName" value="<?php echo htmlspecialchars($file); ?>">
-                                <input type="text" name="newFileName" class="form-control form-control-sm" placeholder="New File Name" required>
-                                <input type="hidden" name="fileType" value="config">
-                                <button type="submit" class="btn btn-warning">Rename</button>
-                            </form>
-                            <form action="" method="post">
-                                <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
-                                <input type="hidden" name="fileType" value="config">
-                                <button type="submit" class="btn btn-success">Edit</button>
-                            </form>
-                        </div>
-                    </li>
+                    <tr>
+                        <td><a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a></td>
+                        <td><?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : 'File not found'; ?></td>
+                        <td><?php echo htmlspecialchars(date('Y-m-d H:i:s', filemtime($filePath))); ?></td>
+                        <td>
+                            <div class="btn-group">
+                                <form action="" method="post" class="d-inline">
+                                    <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');"><i class="fas fa-trash"></i> Delete</button>                                     
+                                </form>
+                                <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i class="fas fa-edit"></i> Rename</button>
+                                   
+                                <form action="" method="post" class="d-inline">
+                                    <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
+                                    <input type="hidden" name="fileType" value="config">
+                                    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> Edit</button>    
+                                </form>
+                                <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
+                                    <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
+                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> Upload</button>                                  
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
-            </ul>
-        </section>
+            </tbody>
+        </table>
 
-        <div class="navigation">
-            <a href="javascript:history.back()" class="btn">Return to Previous Menu</a>
-            <a href="/nekoclash/upload.php" class="btn">Return to Current Menu</a>
-            <a href="/nekoclash/configs.php" class="btn">Return to Configuration Menu</a>
-            <a href="/nekoclash" class="btn">Return to Main Menu</a>
-        </div>
-
-        <section id="custom-dir-upload" class="section-gap">
-            <h2 class="text-success">Custom Directory File Upload</h2>
-            <form action="" method="post" enctype="multipart/form-data" class="upload-form mb-3">
-                <div class="input-group">
-                    <input type="text" name="customDir" id="customDir" class="form-control" placeholder="Custom Directory" required>
-                    <input type="file" name="customFileInput" id="customFileInput" class="form-control-file ml-2" required>
-                    <button type="submit" class="btn btn-primary btn-custom">Upload to Custom Directory</button>
-                </div>
-            </form>
-            <?php
-            if (isset($_GET['customDir'])) {
-                $customDir = rtrim($_GET['customDir'], '/') . '/';
-                if (is_dir($customDir)) {
-                    $customFiles = array_diff(scandir($customDir), array('.', '..'));
-                    echo '<ul class="list-group list-group-flush">';
-                    foreach ($customFiles as $file) {
-                        echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-                        echo '<a href="?customDir=' . urlencode($customDir) . '&customFile=' . urlencode($file) . '">' . htmlspecialchars($file) . '</a>';
-                        echo ' (Size: ' . formatSize(filesize($customDir . $file)) . ')';
-                        echo '</li>';
-                    }
-                    echo '</ul>';
-                } else {
-                    echo '<div class="alert alert-danger" role="alert">Directory does not exist!</div>';
-                }
-            }
-            ?>
-            <?php if (isset($fileContent)): ?>
+        <?php if (isset($fileContent)): ?>
+            <?php if (isset($_POST['editFile'])): ?>
                 <?php $fileToEdit = ($_POST['fileType'] === 'proxy') ? $uploadDir . basename($_POST['editFile']) : $configDir . basename($_POST['editFile']); ?>
-                <h2 style="color: #00FF7F;">Editing File: <?php echo $editingFileName; ?></h2>
-                <p>Last Updated: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
-                <form action="" method="post">
-                    <textarea name="saveContent" rows="15" cols="150" class="editor"><?php echo $fileContent; ?></textarea><br>
-                    <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
-                    <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                    <input type="submit" value="Save Content">
-                </form>
+                <h2 class="mt-5">Edit File: <?php echo $editingFileName; ?></h2>
+                <p>Last Updated Date: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
+                <div class="editor-container">
+                    <form action="" method="post">
+                        <textarea name="saveContent" id="editor" class="editor"><?php echo $fileContent; ?></textarea><br>
+                        <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
+                        <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
+                        <button type="submit" class="btn btn-primary mt-2" onclick="checkJsonSyntax()"><i class="fas fa-save"></i> Save Content</button>
+                    </form>
+                </div>
             <?php endif; ?>
+        <?php endif; ?>
         </section>
-
+<div class="navigation">
+    <a href="javascript:history.back()" class="btn btn-success">Return to Previous Menu</a>
+    <a href="/nekoclash/upload.php" class="btn btn-success">Return to Current Menu</a>
+    <a href="/nekoclash/configs.php" class="btn btn-success">Return to Configuration Menu</a>
+    <a href="/nekoclash" class="btn btn-success">Return to Main Menu</a>
+</div>
         <section id="subscription-management" class="section-gap">
-            <h2 class="text-success">Subscription Management</h2>
-            <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
-                <strong>1. Note:</strong> The universal template (<code>tuanbe.yaml</code>) supports up to <strong>7</strong> subscription links. Please do not change the default names.
-            </p>
+            <h2 class="text-success"  style="margin-top: 20px; margin-bottom: 20px;">Subscription Management</h2>
+                   <button id="pasteButton" class="btn btn-primary">Generate Subscription Link Website</button>
+                   <button id="base64Button" class="btn btn-primary">Base64 Online Encoder and Decoder</button>
+                <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
+                <strong>1. Note:</strong> The universal template (<code>mihomo.yaml</code>) supports up to <strong>7</strong> subscription links. Please do not change the default names.   
+                </p>
 
-            <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
+                <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
                 <strong>2. Save and Update:</strong> After filling out, please click the “Update Configuration” button to save.
             </p>
 
-            <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
+                <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
                 <strong>3. Node Conversion and Manual Modification:</strong> This template supports all formats of subscription links without additional conversion. Individual nodes can be converted using the node conversion tool below and automatically saved as proxies, or the proxy directory file can be manually modified to add nodes via link format.
             </p>
             <div class="form-spacing"></div>
@@ -886,28 +841,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="subscription_url" id="subscription_url_<?php echo $i; ?>" value="<?php echo htmlspecialchars($subscriptions[$i]['url']); ?>" required class="form-control">
                         <input type="text" name="custom_file_name" id="custom_file_name_<?php echo $i; ?>" value="<?php echo htmlspecialchars($subscriptions[$i]['file_name']); ?>" class="form-control ml-2" placeholder="Custom File Name">
                         <input type="hidden" name="index" value="<?php echo $i; ?>">
-                        <button type="submit" name="update" class="btn btn-primary btn-custom ml-2">Update Configuration</button>
+                        <button type="submit" name="update" class="btn btn-primary btn-custom ml-2"><i class="fas fa-sync-alt"></i>Update Configuration</button>
                     </div>
                 </form>
             <?php endfor; ?>
         </section>
 
-        <section id="base64-conversion" class="section-gap">
+      <section id="base64-conversion" class="section-gap">
             <h2 class="text-success">Base64 Node Information Conversion</h2>
             <form method="post">
-                <div class="input-group form-spacing">
-                    <label for="base64_content" class="sr-only">Base64 Content:</label>
-                    <textarea name="base64_content" id="base64_content" rows="4" class="form-control" required></textarea>
-                    <button type="submit" name="convert_base64" class="btn btn-primary btn-custom ml-2">Generate Node Information</button>
+                <div class="form-group">
+                    <textarea name="base64_content" id="base64_content" rows="4" class="form-control" placeholder="Paste Base64 content..." required></textarea>
                 </div>
+                <button type="submit" name="convert_base64" class="btn btn-primary btn-custom">Generate Node Information</button>
             </form>
         </section>
-        
-        <h1 style="color: #00FF7F;">Node Conversion Tool</h1>
-        <form method="post">
-            <textarea name="input" rows="10" cols="50" placeholder="Paste ss//vless//vmess//trojan//hysteria2 node information..."></textarea>
-            <button type="submit" name="convert">Convert</button>
-        </form>
+
+        <section id="node-conversion" class="section-gap">
+            <h1 class="text-success">Node Conversion Tool</h1>
+            <form method="post">
+                <div class="form-group">
+                    <textarea name="input" rows="10" class="form-control" placeholder="Paste ss//vless//vmess//trojan//hysteria2 node information..."></textarea>
+                </div>
+                <button type="submit" name="convert" class="btn btn-primary">Convert</button>
+            </form>
+        </section>
     </div>
+
+    <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="renameModalLabel">Rename File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="renameForm" action="" method="post">
+                        <input type="hidden" name="oldFileName" id="oldFileName">
+                        <div class="form-group">
+                            <label for="newFileName">Rename File</label>
+                            <input type="text" class="form-control" id="newFileName" name="newFileName" required>
+                        </div>
+                        <p>Are you sure you want to rename this file?</p>
+                        <input type="hidden" name="fileType" value="config">
+                        <div class="form-group text-right">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
+    <script src="./assets/bootstrap/popper.min.js"></script>
+    <script src="./assets/bootstrap/bootstrap.min.js"></script>
+        <script>
+             document.getElementById('pasteButton').onclick = function() {
+                 window.open('https://paste.gg', '_blank');
+             }
+             document.getElementById('base64Button').onclick = function() {
+                 window.open('https://base64.us', '_blank');
+             }
+        </script>
+    <script>
+        $('#renameModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); 
+            var oldFileName = button.data('filename'); 
+            var modal = $(this);
+            modal.find('#oldFileName').val(oldFileName); 
+            modal.find('#newFileName').val(oldFileName); 
+        });
+    </script>
 </body>
 </html>
