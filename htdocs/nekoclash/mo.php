@@ -1,14 +1,13 @@
 <?php
-
 ob_start();
 include './cfg.php';
 $subscriptionPath = '/etc/neko/proxy_provider/';
 $subscriptionFile = $subscriptionPath . 'subscriptions.json';
-$autoUpdateConfigFile = $subscriptionPath . 'auto_update_config.json';
+$clashFile = $subscriptionPath . 'clash_config.yaml';
 
 $message = "";
+$decodedContent = ""; 
 $subscriptions = [];
-$autoUpdateConfig = ['auto_update_enabled' => false, 'update_time' => '00:00'];
 
 if (!file_exists($subscriptionPath)) {
     mkdir($subscriptionPath, 0755, true);
@@ -18,13 +17,8 @@ if (!file_exists($subscriptionFile)) {
     file_put_contents($subscriptionFile, json_encode([]));
 }
 
-if (!file_exists($autoUpdateConfigFile)) {
-    file_put_contents($autoUpdateConfigFile, json_encode($autoUpdateConfig));
-}
-
 $subscriptions = json_decode(file_get_contents($subscriptionFile), true);
 if (!$subscriptions) {
-    $subscriptions = [];
     for ($i = 0; $i < 7; $i++) {
         $subscriptions[$i] = [
             'url' => '',
@@ -32,8 +26,6 @@ if (!$subscriptions) {
         ];
     }
 }
-
-$autoUpdateConfig = json_decode(file_get_contents($autoUpdateConfigFile), true);
 
 if (isset($_POST['update'])) {
     $index = intval($_POST['index']);
@@ -60,18 +52,6 @@ if (isset($_POST['update'])) {
     file_put_contents($subscriptionFile, json_encode($subscriptions));
 }
 
-if (isset($_POST['set_auto_update'])) {
-    $updateTime = $_POST['update_time'] ?? '00:00';
-    $autoUpdateEnabled = isset($_POST['auto_update_enabled']);
-
-    $autoUpdateConfig = [
-        'auto_update_enabled' => $autoUpdateEnabled,
-        'update_time' => $updateTime
-    ];
-
-    file_put_contents($autoUpdateConfigFile, json_encode($autoUpdateConfig));
-    $message = "Auto-update settings have been saved!";
-}
 ?>
 <!DOCTYPE html>
 <html lang="zh-EN" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
