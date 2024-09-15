@@ -272,160 +272,169 @@ if (isset($_POST['update_index'])) {
     <style>
         body {
             background-color: #87ceeb;
-            background-size: cover; 
-            color: #E0E0E0; 
+            background-size: cover;
+            color: #E0E0E0;
         }
+
         .container {
-            background: rgba(30, 30, 30, 0.8); 
+            background: rgba(30, 30, 30, 0.8);
             border-radius: 10px;
             padding: 20px;
-            margin-top: 50px; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+            margin-top: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-        h1, h2 {
-            color: #00FF7F; 
+
+        h1,
+        h2 {
+            color: #00FF7F;
         }
-        .table th, .table td {
+
+        .table th,
+        .table td {
             text-align: center;
             vertical-align: middle;
         }
+
         .editor {
-            height: 300px; 
-            width: 100%; 
-            background-color: #2C2C2C; 
-            color: #E0E0E0; 
-            padding: 15px; 
+            height: 300px;
+            width: 100%;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            padding: 15px;
             border: 1px solid #444;
             border-radius: 5px;
             font-family: monospace;
             margin-top: 20px;
-            overflow: auto; 
+            overflow: auto;
         }
-        .btn-danger {
-            background-color: #CF6679; 
-            color: #FFFFFF;
-        }
-        .btn-danger:hover {
-            background-color: #B00020; 
-        }
-        .btn-success {
-            background-color: #03DAC6; 
-            color: #FFFFFF;
-        }
-        .btn-success:hover {
-            background-color: #018786; 
-        }
+
         .btn-warning {
-            background-color: #F4B400; 
+            background-color: #F4B400;
             color: #FFFFFF;
         }
+
         .btn-warning:hover {
-            background-color: #C79400; 
-             color: #FFFFFF;
+            background-color: #C79400;
+            color: #FFFFFF;
         }
-        .btn-primary {
-            background-color: #03DAC6;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #018786;
-        }
-        .modal-header, .modal-body, .modal-footer {
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
             background: #f8f9fa;
             color: #333;
         }
+
         .modal-content {
             background: #ffffff;
             border: 1px solid #ced4da;
         }
+
         .modal-body {
-            overflow-y: auto; 
+            overflow-y: auto;
         }
+
         .form-control {
             background-color: #2C2C2C;
             color: #E0E0E0;
             border: 1px solid #444;
         }
+
         .form-control:focus {
             border-color: #03DAC6;
             box-shadow: 0 0 0 0.2rem rgba(3, 218, 198, 0.25);
         }
+
         .log-output {
-            background-color: #2C2C2C; 
+            background-color: #2C2C2C;
             border: 1px solid #444;
             border-radius: 5px;
             color: #E0E0E0;
             padding: 10px;
             margin-top: 20px;
-            height: 200px; 
-            overflow-y: scroll; 
-            white-space: pre-wrap; 
+            height: 200px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
         }
+
         .subscription-card {
             background: #3C3C3C;
             border: 1px solid #444;
             color: #E0E0E0;
             margin-bottom: 20px;
         }
+
         .subscription-card .card-body {
             padding: 10px;
         }
+
         .custom-file-name {
-            background-color: #2C2C2C; 
-            color: #E0E0E0; 
+            background-color: #2C2C2C;
+            color: #E0E0E0;
             border: 1px solid #444;
         }
+
         .card .form-control {
-            background-color: #2C2C2C; 
-            color: #E0E0E0; 
+            background-color: #2C2C2C;
+            color: #E0E0E0;
             border: 1px solid #444;
         }
+
         .card .form-control:focus {
             border-color: #03DAC6;
             box-shadow: 0 0 0 0.2rem rgba(3, 218, 198, 0.25);
         }
+
         .form-inline .form-control-file {
-            display: none; 
+            display: none;
         }
+
         .btn-group {
-            display: flex; 
+            display: flex;
             justify-content: center;
-            gap: 10px; 
+            gap: 10px;
         }
+
         .btn-group .btn {
-            height: 38px; 
-            line-height: 1.5; 
-            padding: 0 10px; 
+            height: 38px;
+            line-height: 1.5;
+            padding: 0 10px;
             text-align: center;
         }
+
         .upload-btn {
             cursor: pointer;
         }
+
         .btn-group .btn-rename {
-            max-width: 80px; 
-            padding: 2px 6px; 
-            font-size: 0.875rem; 
-            width: auto; 
-            white-space: nowrap; 
+            max-width: 80px;
+            padding: 2px 6px;
+            font-size: 0.875rem;
+            width: auto;
+            white-space: nowrap;
             border-radius: 4px !important;
             color: #FFFFFF;
         }
+
         @media (max-width: 768px) {
             .btn-group {
                 flex-direction: column;
             }
+
             .btn-group .btn {
                 width: 100%;
                 margin-bottom: 5px;
             }
+
             .nav-buttons {
                 display: flex;
-                flex-direction: column; 
-                align-items: center;    
+                flex-direction: column;
+                align-items: center;
             }
+
             .nav-buttons .btn {
-                width: 100%;            
-                margin-bottom: 10px;   
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
     </style>
