@@ -3,7 +3,13 @@ $configDir = '/etc/neko/config/';
 
 ini_set('memory_limit', '256M');
 
-date_default_timezone_set('Asia/Shanghai');
+$enable_timezone = isset($_GET['enable_timezone']) && $_GET['enable_timezone'] == '1';
+
+if ($enable_timezone) {
+    date_default_timezone_set('Asia/Shanghai');
+}
+
+echo "当前时间: " . date('Y-m-d H:i:s');
 
 if (!is_dir($configDir)) {
     mkdir($configDir, 0755, true);
@@ -442,7 +448,11 @@ if (isset($_POST['update_index'])) {
     <div class="container text-center">
         <h1 style="margin-top: 40px; margin-bottom: 20px;">Sing-box 文件管理</h1>
         <h2>配置文件管理</h2>
-        
+        <form action="upload_sb.php" method="get">
+        <label for="enable_timezone">启用时区设置:</label>
+        <input type="checkbox" id="enable_timezone" name="enable_timezone" value="1">
+        <button type="submit" style="background-color: #4CAF50; color: white; border: none; cursor: pointer;"> 提交</button>
+        </form>
         <table class="table table-dark table-bordered">
             <thead>
                 <tr>

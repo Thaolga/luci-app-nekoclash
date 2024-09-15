@@ -4,7 +4,13 @@ $configDir = '/etc/neko/config/';
 
 ini_set('memory_limit', '256M');
 
-date_default_timezone_set('Asia/Shanghai');
+$enable_timezone = isset($_GET['enable_timezone']) && $_GET['enable_timezone'] == '1';
+
+if ($enable_timezone) {
+    date_default_timezone_set('Asia/Shanghai');
+}
+
+echo "当前时间: " . date('Y-m-d H:i:s');
 
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -750,6 +756,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="table-wrapper">
             <h2>代理文件管理</h2>
+        <form action="upload.php" method="get">
+        <label for="enable_timezone">启用时区设置:</label>
+        <input type="checkbox" id="enable_timezone" name="enable_timezone" value="1">
+        <button type="submit" style="background-color: #4CAF50; color: white; border: none; cursor: pointer;"> 提交</button>
+        </form>
             <table class="table table-dark table-bordered table-custom">
                 <thead>
                     <tr>
