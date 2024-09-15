@@ -507,164 +507,239 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Mihomo 文件管理</title>
     <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-
     <style>
         body {
             background-color: #87ceeb;
-            background-size: cover; 
-            color: #E0E0E0; 
+            background-size: cover;
+            color: #E0E0E0;
         }
+
         .container {
-            background: rgba(30, 30, 30, 0.8); 
+            background: rgba(30, 30, 30, 0.8);
             border-radius: 10px;
             padding: 20px;
-            margin-top: 50px; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+            margin-top: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-        h1, h2 {
-            color: #00FF7F; 
+
+        h1,
+        h2 {
+            color: #00FF7F;
         }
-        .table th, .table td {
+
+        .table th,
+        .table td {
             text-align: center;
             vertical-align: middle;
         }
+
         .editor {
-            height: 300px; 
-            width: 100%; 
-            background-color: #2C2C2C; 
-            color: #E0E0E0; 
-            padding: 15px; 
+            height: 300px;
+            width: 100%;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            padding: 15px;
             border: 1px solid #444;
             border-radius: 5px;
             font-family: monospace;
             margin-top: 20px;
-            overflow: auto; 
+            overflow: auto;
         }
-        .btn-danger {
-            background-color: #CF6679; 
-            color: #FFFFFF;
-        }
-        .btn-danger:hover {
-            background-color: #B00020; 
-        }
-        .btn-success {
-            background-color: #03DAC6; 
-            color: #FFFFFF;
-        }
-        .btn-success:hover {
-            background-color: #018786; 
-        }
+
         .btn-warning {
-            background-color: #F4B400; 
+            background-color: #F4B400;
             color: #FFFFFF;
         }
+
         .btn-warning:hover {
-            background-color: #C79400; 
-             color: #FFFFFF;
+            background-color: #C79400;
+            color: #FFFFFF;
         }
-        .btn-primary {
-            background-color: #03DAC6;
-            border: none;
+
+        .table-custom th,
+        .table-custom td {
+            padding: 10px;
         }
-        .btn-primary:hover {
-            background-color: #018786;
+
+        .table-custom .file-name-col {
+            width: 40%;
         }
-        .modal-header, .modal-body, .modal-footer {
+
+        .table-custom .size-col {
+            width: 20%;
+        }
+
+        .table-custom .date-col {
+            width: 20%;
+        }
+
+        .table-custom .actions-col {
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .table-custom {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .size-column {
+            width: 100px;
+            text-align: center;
+        }
+
+        .action-column {
+            width: 400px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .btn-group form,
+        .btn-group button {
+            margin: 0;
+        }
+
+        .table-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            margin-bottom: 40px;
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
             background: #f8f9fa;
             color: #333;
         }
+
         .modal-content {
             background: #ffffff;
             border: 1px solid #ced4da;
         }
+
         .modal-body {
-            overflow-y: auto; 
+            overflow-y: auto;
         }
+
         .form-control {
             background-color: #2C2C2C;
             color: #E0E0E0;
             border: 1px solid #444;
         }
+
         .form-control:focus {
             border-color: #03DAC6;
             box-shadow: 0 0 0 0.2rem rgba(3, 218, 198, 0.25);
         }
+
         .log-output {
-            background-color: #2C2C2C; 
+            background-color: #2C2C2C;
             border: 1px solid #444;
             border-radius: 5px;
             color: #E0E0E0;
             padding: 10px;
             margin-top: 20px;
-            height: 200px; 
-            overflow-y: scroll; 
-            white-space: pre-wrap; 
+            height: 200px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
         }
+
         .subscription-card {
             background: #3C3C3C;
             border: 1px solid #444;
             color: #E0E0E0;
             margin-bottom: 20px;
         }
+
         .subscription-card .card-body {
             padding: 10px;
         }
+
         .custom-file-name {
-            background-color: #2C2C2C; 
-            color: #E0E0E0; 
+            background-color: #2C2C2C;
+            color: #E0E0E0;
             border: 1px solid #444;
         }
+
         .card .form-control {
-            background-color: #2C2C2C; 
-            color: #E0E0E0; 
+            background-color: #2C2C2C;
+            color: #E0E0E0;
             border: 1px solid #444;
         }
+
         .card .form-control:focus {
             border-color: #03DAC6;
             box-shadow: 0 0 0 0.2rem rgba(3, 218, 198, 0.25);
         }
+
         .form-inline .form-control-file {
-            display: none; 
+            display: none;
         }
+
         .btn-group {
-            display: flex; 
+            display: flex;
             justify-content: center;
-            gap: 10px; 
+            gap: 10px;
         }
+
         .btn-group .btn {
-            height: 38px; 
-            line-height: 1.5; 
-            padding: 0 10px; 
+            height: 38px;
+            line-height: 1.5;
+            padding: 0 10px;
             text-align: center;
         }
+
         .upload-btn {
             cursor: pointer;
         }
+
         .btn-group .btn-rename {
-            max-width: 80px; 
-            padding: 2px 6px; 
-            font-size: 0.875rem; 
-            width: auto; 
-            white-space: nowrap; 
+            max-width: 80px;
+            padding: 2px 6px;
+            font-size: 0.875rem;
+            width: auto;
+            white-space: nowrap;
             border-radius: 4px !important;
             color: #FFFFFF;
         }
+
         @media (max-width: 768px) {
             .btn-group {
                 flex-direction: column;
             }
+
             .btn-group .btn {
                 width: 100%;
                 margin-bottom: 5px;
             }
+
             .nav-buttons {
                 display: flex;
-                flex-direction: column; 
-                align-items: center;    
+                flex-direction: column;
+                align-items: center;
             }
+
             .nav-buttons .btn {
-                width: 100%;            
-                margin-bottom: 10px;   
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -672,144 +747,146 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container text-center">
         <h1 style="margin-top: 40px; margin-bottom: 20px;">Mihomo 文件管理</h1>
-        <h2>代理文件管理</h2>
-        <table class="table table-dark table-bordered">
-            <thead>
-                <tr>
-                    <th>文件名</th>
-                    <th>大小</th>
-                    <th>修改时间</th>
-                    <th>执行操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($proxyFiles as $file): ?>
-                    <?php $filePath = $uploadDir . $file; ?>
+
+        <div class="table-wrapper">
+            <h2>代理文件管理</h2>
+            <table class="table table-dark table-bordered table-custom">
+                <thead>
                     <tr>
-                        <td><a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a></td>
-                        <td><?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : '文件不存在'; ?></td>
-                        <td><?php echo htmlspecialchars(date('Y-m-d H:i:s', filemtime($filePath))); ?></td>
-                        <td>
-                            <div class="btn-group">
-                                <form action="" method="post" class="d-inline">
-                                    <input type="hidden" name="deleteFile" value="<?php echo htmlspecialchars($file); ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');">
-                                        <i class="fas fa-trash"></i> 删除
-                                    </button>
-                                </form>
-                                
-                                <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>">
-                                    <i class="fas fa-edit"></i> 重命名
-                                </button>
-                                
-                                <form action="" method="post" class="d-inline">
-                                    <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
-                                    <input type="hidden" name="fileType" value="proxy"> 
-                                    <button type="submit" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-pen"></i> 编辑
-                                    </button>
-                                </form>
-
-                                <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
-                                    <input type="file" name="fileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();">
-                                        <i class="fas fa-upload"></i> 上传
-                                    </button>  
-
-                                </form>
-                            </div>
-                        </td>
+                        <th>文件名</th>
+                        <th class="size-column">大小</th>
+                        <th>修改时间</th>
+                        <th class="action-column">执行操作</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </section>
+                </thead>
+                <tbody>
+                    <?php foreach ($proxyFiles as $file): ?>
+                        <?php $filePath = $uploadDir . $file; ?>
+                        <tr>
+                            <td><a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a></td>
+                            <td class="size-column"><?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : '文件不存在'; ?></td>
+                            <td><?php echo htmlspecialchars(date('Y-m-d H:i:s', filemtime($filePath))); ?></td>
+                            <td class="action-column">
+                                <div class="btn-group">
+                                    <form action="" method="post" class="d-inline">
+                                        <input type="hidden" name="deleteFile" value="<?php echo htmlspecialchars($file); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');">
+                                            <i class="fas fa-trash"></i> 删除
+                                        </button>
+                                    </form>
+                                    
+                                    <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>" data-filetype="proxy">
+                                        <i class="fas fa-edit"></i> 重命名
+                                    </button>
+                                    
+                                    <form action="" method="post" class="d-inline">
+                                        <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
+                                        <input type="hidden" name="fileType" value="proxy"> 
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-pen"></i> 编辑
+                                        </button>
+                                    </form>
 
-    <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="renameModalLabel">重命名文件</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="renameForm" action="" method="post">
-                        <input type="hidden" name="oldFileName" id="oldFileName">
-                        <div class="form-group">
-                            <label for="newFileName">新文件名</label>
-                            <input type="text" class="form-control" id="newFileName" name="newFileName" required>
-                        </div>
-                        <p>是否确定要重命名这个文件?</p>
-                        <input type="hidden" name="fileType" value="proxy"> 
-                        <div class="form-group text-right">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="submit" class="btn btn-primary">确定</button>
-                        </div>
-                    </form>
+                                    <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
+                                        <input type="file" name="fileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
+                                        <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();">
+                                            <i class="fas fa-upload"></i> 上传
+                                        </button>  
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="renameModalLabel">重命名文件</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="renameForm" action="" method="post">
+                            <input type="hidden" name="oldFileName" id="oldFileName">
+                            <input type="hidden" name="fileType" id="fileType">
+                            <div class="form-group">
+                                <label for="newFileName">新文件名</label>
+                                <input type="text" class="form-control" id="newFileName" name="newFileName" required>
+                            </div>
+                            <p>是否确定要重命名这个文件?</p>
+                            <div class="form-group text-right">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-primary">确定</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-        <h2>配置文件管理</h2>
-        <table class="table table-dark table-bordered">
-            <thead>
-                <tr>
-                    <th>文件名</th>
-                    <th>大小</th>
-                    <th>修改时间</th>
-                    <th>执行操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($configFiles as $file): ?>
-                    <?php $filePath = $configDir . $file; ?>
+        <div class="table-wrapper">
+            <h2>配置文件管理</h2>
+            <table class="table table-dark table-bordered table-custom">
+                <thead>
                     <tr>
-                        <td><a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a></td>
-                        <td><?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : '文件不存在'; ?></td>
-                        <td><?php echo htmlspecialchars(date('Y-m-d H:i:s', filemtime($filePath))); ?></td>
-                        <td>
-                            <div class="btn-group">
-                                <form action="" method="post" class="d-inline">
-                                    <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');"><i class="fas fa-trash"></i> 删除</button>                                     
-                                </form>
-                                <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i class="fas fa-edit"></i> 重命名</button>
-                                   
-                                <form action="" method="post" class="d-inline">
-                                    <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
-                                    <input type="hidden" name="fileType" value="config">
-                                    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> 编辑</button>    
-                                </form>
-                                <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
-                                    <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> 上传</button>                                  
-                                </form>
-                            </div>
-                        </td>
+                        <th>文件名</th>
+                        <th class="size-column">大小</th>
+                        <th>修改时间</th>
+                        <th class="action-column">执行操作</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($configFiles as $file): ?>
+                        <?php $filePath = $configDir . $file; ?>
+                        <tr>
+                            <td><a href="download.php?file=<?php echo urlencode($file); ?>"><?php echo htmlspecialchars($file); ?></a></td>
+                            <td class="size-column"><?php echo file_exists($filePath) ? formatSize(filesize($filePath)) : '文件不存在'; ?></td>
+                            <td><?php echo htmlspecialchars(date('Y-m-d H:i:s', filemtime($filePath))); ?></td>
+                            <td class="action-column">
+                                <div class="btn-group">
+                                    <form action="" method="post" class="d-inline">
+                                        <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');"><i class="fas fa-trash"></i> 删除</button>                                     
+                                    </form>
+                                    <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>" data-filetype="config"><i class="fas fa-edit"></i> 重命名</button>
+                                   
+                                    <form action="" method="post" class="d-inline">
+                                        <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
+                                        <input type="hidden" name="fileType" value="config">
+                                        <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> 编辑</button>    
+                                    </form>
+                                    <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
+                                        <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
+                                        <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> 上传</button>                                  
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
-        <?php if (isset($fileContent)): ?>
-            <?php if (isset($_POST['editFile'])): ?>
-                <?php $fileToEdit = ($_POST['fileType'] === 'proxy') ? $uploadDir . basename($_POST['editFile']) : $configDir . basename($_POST['editFile']); ?>
-                <h2 class="mt-5">编辑文件: <?php echo $editingFileName; ?></h2>
-                <p>最后更新日期: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
-                <div class="editor-container">
-                    <form action="" method="post">
-                        <textarea name="saveContent" id="editor" class="editor"><?php echo $fileContent; ?></textarea><br>
-                        <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
-                        <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                        <button type="submit" class="btn btn-primary mt-2" onclick="checkJsonSyntax()"><i class="fas fa-save"></i> 保存内容</button>
-                    </form>
-                </div>
+            <?php if (isset($fileContent)): ?>
+                <?php if (isset($_POST['editFile'])): ?>
+                    <?php $fileToEdit = ($_POST['fileType'] === 'proxy') ? $uploadDir . basename($_POST['editFile']) : $configDir . basename($_POST['editFile']); ?>
+                    <h2 class="mt-5">编辑文件: <?php echo $editingFileName; ?></h2>
+                    <p>最后更新日期: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
+                    <div class="editor-container">
+                        <form action="" method="post">
+                            <textarea name="saveContent" id="editor" class="editor"><?php echo $fileContent; ?></textarea><br>
+                            <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
+                            <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
+                            <button type="submit" class="btn btn-primary mt-2" onclick="checkJsonSyntax()"><i class="fas fa-save"></i> 保存内容</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
-        <?php endif; ?>
-        </section>
+        </div>
 <div class="navigation">
     <a href="javascript:history.back()" class="btn btn-success">返回上一级菜单</a>
     <a href="/nekoclash/upload.php" class="btn btn-success">返回当前菜单</a>
@@ -869,34 +946,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </section>
     </div>
 
-    <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="renameModalLabel">重命名文件</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="renameForm" action="" method="post">
-                        <input type="hidden" name="oldFileName" id="oldFileName">
-                        <div class="form-group">
-                            <label for="newFileName">新文件名</label>
-                            <input type="text" class="form-control" id="newFileName" name="newFileName" required>
-                        </div>
-                        <p>是否确定要重命名这个文件?</p>
-                        <input type="hidden" name="fileType" value="config">
-                        <div class="form-group text-right">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="submit" class="btn btn-primary">确定</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
     <script src="./assets/bootstrap/popper.min.js"></script>
     <script src="./assets/bootstrap/bootstrap.min.js"></script>
@@ -908,14 +957,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  window.open('https://base64.us', '_blank');
              }
         </script>
-    <script>
-        $('#renameModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); 
-            var oldFileName = button.data('filename'); 
-            var modal = $(this);
-            modal.find('#oldFileName').val(oldFileName); 
-            modal.find('#newFileName').val(oldFileName); 
-        });
-    </script>
+        <script>
+            $('#renameModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); 
+                var oldFileName = button.data('filename'); 
+                var fileType = button.data('filetype');
+                var modal = $(this);
+                modal.find('#oldFileName').val(oldFileName); 
+                modal.find('#fileType').val(fileType);
+                modal.find('#newFileName').val(oldFileName); 
+            });
+        </script>
 </body>
 </html>
