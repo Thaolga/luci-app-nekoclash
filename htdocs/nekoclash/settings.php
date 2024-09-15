@@ -456,7 +456,7 @@ $singBoxVersion = getSingboxVersion();
                     <tr class="text-center">
                         <td>
                             <div class="link-box">
-                                <a href="https://github.com/nosignals/neko" target="_blank">nosignals</a>
+                                <a href="https://github.com/Thaolga/luci-app-nekoclash/issues" target="_blank">Issues</a>
                             </div>
                         </td>
                         <td>
@@ -483,31 +483,6 @@ $singBoxVersion = getSingboxVersion();
                     </tr>
                 </tbody>
             </table>
-        </div>
-        <h5 class="text-center mb-4">Sing-box Subscription Template Collection</h5>
-        <div class="d-flex justify-content-center">
-            <div class="table-container">
-                <table class="table table-borderless mb-5">
-                    <tbody>
-                        <tr class="text-center">
-                            <td>Github</td>
-                            <td>NeKoClash</td>
-                        </tr>
-                        <tr class="text-center">
-                            <td>
-                                <div class="link-box">
-                                    <a href="https://github.com/Thaolga/Sing-box" target="_blank">Sing-box</a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="link-box">
-                                    <a href="https://github.com/Thaolga/luci-app-nekoclash/issues" target="_blank">Issues</a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
         <footer class="text-center">
             <p><?php echo $footer ?></p>
