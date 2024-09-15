@@ -4,7 +4,7 @@ $configDir = '/etc/neko/config/';
 
 ini_set('memory_limit', '256M');
 
-$enable_timezone = isset($_GET['enable_timezone']) && $_GET['enable_timezone'] == '1';
+$enable_timezone = isset($_COOKIE['enable_timezone']) && $_COOKIE['enable_timezone'] == '1';
 
 if ($enable_timezone) {
     date_default_timezone_set('Asia/Shanghai');
@@ -753,14 +753,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container text-center">
         <h1 style="margin-top: 40px; margin-bottom: 20px;">Mihomo 文件管理</h1>
-
         <div class="table-wrapper">
             <h2>代理文件管理</h2>
-        <form action="upload.php" method="get">
+    <form action="upload.php" method="get" onsubmit="saveSettings()">
         <label for="enable_timezone">启用时区设置:</label>
         <input type="checkbox" id="enable_timezone" name="enable_timezone" value="1">
-        <button type="submit" style="background-color: #4CAF50; color: white; border: none; cursor: pointer;"> 提交</button>
-        </form>
+        <button type="submit" style="background-color: #4CAF50; color: white; border: none; cursor: pointer;"> 提交 </button>
+       </form>
+    <script>
+        function saveSettings() {
+            const enableTimezone = document.getElementById('enable_timezone').checked;
+            document.cookie = "enable_timezone=" + (enableTimezone ? '1' : '0') + "; path=/";
+        }
+
+        function loadSettings() {
+            const cookies = document.cookie.split('; ');
+            let enableTimezone = '0';
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.split('=');
+                if (name === 'enable_timezone') enableTimezone = value;
+            });
+            document.getElementById('enable_timezone').checked = (enableTimezone === '1');
+        }
+
+        window.onload = loadSettings;
+    </script>
             <table class="table table-dark table-bordered table-custom">
                 <thead>
                     <tr>
