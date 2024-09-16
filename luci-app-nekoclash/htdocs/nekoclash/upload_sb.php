@@ -9,8 +9,6 @@ if ($enable_timezone) {
     date_default_timezone_set('Asia/Shanghai');
 }
 
-echo "当前时间: " . date('Y-m-d H:i:s');
-
 if (!is_dir($configDir)) {
     mkdir($configDir, 0755, true);
 }
@@ -315,12 +313,12 @@ if (isset($_POST['update_index'])) {
 
         .btn-warning {
             background-color: #F4B400;
-            color: #FFFFFF;
+            color: #FFFFFF !important;
         }
 
         .btn-warning:hover {
             background-color: #C79400;
-            color: #FFFFFF;
+            color: #FFFFFF !important;
         }
 
         .modal-header,
@@ -445,7 +443,7 @@ if (isset($_POST['update_index'])) {
     </style>
 </head>
 <body>
-    <div class="container text-center">
+<div class="container text-center">
         <h1 style="margin-top: 40px; margin-bottom: 20px;">Sing-box 文件管理</h1>
         <h2>配置文件管理</h2>
         <form action="upload_sb.php" method="get" onsubmit="saveSettings()">
@@ -491,18 +489,17 @@ if (isset($_POST['update_index'])) {
                             <div class="btn-group">
                                 <form action="" method="post" class="d-inline">
                                     <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');"><i class="fas fa-trash"></i> 删除</button>                                     
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');"><i class="fas fa-trash"></i> 删除</button>
                                 </form>
                                 <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i class="fas fa-edit"></i> 重命名</button>
-                                   
                                 <form action="" method="post" class="d-inline">
                                     <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                                     <input type="hidden" name="fileType" value="config">
-                                    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> 编辑</button>    
+                                    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> 编辑</button>
                                 </form>
                                 <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                                     <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> 上传</button>                                  
+                                    <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> 上传</button>
                                 </form>
                             </div>
                         </td>
@@ -516,12 +513,22 @@ if (isset($_POST['update_index'])) {
                 <?php $fileToEdit = $configDir . basename($_POST['editFile']); ?>
                 <h2 class="mt-5">编辑文件: <?php echo $editingFileName; ?></h2>
                 <p>最后更新日期: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
+
+                <div class="btn-group mb-3">
+                    <button type="button" class="btn btn-primary" id="toggleBasicEditor">普通编辑器</button>
+                    <button type="button" class="btn btn--warning" id="toggleAceEditor">高级编辑器</button>
+                    <button type="button" class="btn btn-info" id="toggleFullScreenEditor">全屏编辑</button>
+                </div>
+
                 <div class="editor-container">
                     <form action="" method="post">
-                        <textarea name="saveContent" id="editor" class="editor"><?php echo $fileContent; ?></textarea><br>
+                        <textarea name="saveContent" id="basicEditor" class="editor"><?php echo $fileContent; ?></textarea><br>
+
+                        <div id="aceEditorContainer" class="d-none resizable" style="height: 400px; width: 100%;"></div>
+
                         <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
                         <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                        <button type="submit" class="btn btn-primary mt-2" onclick="checkJsonSyntax()"><i class="fas fa-save"></i> 保存内容</button>
+                        <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> 保存内容</button>
                     </form>
                 </div>
             <?php endif; ?>
@@ -592,6 +599,8 @@ if (isset($_POST['update_index'])) {
     <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
     <script src="./assets/bootstrap/popper.min.js"></script>
     <script src="./assets/bootstrap/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+
     <script>
         $('#renameModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget); 
@@ -601,5 +610,130 @@ if (isset($_POST['update_index'])) {
             modal.find('#newFileName').val(oldFileName); 
         });
     </script>
+
+    <script>
+        var aceEditor = ace.edit("aceEditorContainer");
+        aceEditor.setTheme("ace/theme/monokai");
+        aceEditor.session.setMode("ace/mode/json"); 
+        aceEditor.setValue(document.getElementById('basicEditor').value); 
+
+        aceEditor.session.setUseWorker(true);
+        aceEditor.getSession().setUseWrapMode(true);
+        aceEditor.getSession().on('changeAnnotation', function(e) {
+            var annotations = aceEditor.getSession().getAnnotations();
+            var errorMessage = annotations.length ? annotations[0].text : '';
+            if (errorMessage) {
+                document.getElementById('aceEditorError').innerText = 'JSON 语法错误: ' + errorMessage;
+            } else {
+                document.getElementById('aceEditorError').innerText = '';
+            }
+        });
+
+        document.getElementById('toggleBasicEditor').addEventListener('click', function() {
+            document.getElementById('basicEditor').classList.remove('d-none');
+            document.getElementById('aceEditorContainer').classList.add('d-none');
+        });
+
+        document.getElementById('toggleAceEditor').addEventListener('click', function() {
+            document.getElementById('basicEditor').classList.add('d-none');
+            document.getElementById('aceEditorContainer').classList.remove('d-none');
+            aceEditor.setValue(document.getElementById('basicEditor').value); 
+        });
+
+        document.getElementById('toggleFullScreenEditor').addEventListener('click', function() {
+            var editorContainer = document.getElementById('aceEditorContainer');
+            if (!document.fullscreenElement) {
+                editorContainer.requestFullscreen().then(function() {
+                    aceEditor.resize(); 
+                });
+            } else {
+                document.exitFullscreen().then(function() {
+                    aceEditor.resize(); 
+                });
+            }
+        });
+
+        function syncEditorContent() {
+            if (!document.getElementById('basicEditor').classList.contains('d-none')) {
+                aceEditor.setValue(document.getElementById('basicEditor').value); 
+            } else {
+                document.getElementById('basicEditor').value = aceEditor.getValue(); 
+            }
+        }
+
+        (function() {
+            const resizable = document.querySelector('.resizable');
+            if (!resizable) return;
+            
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle';
+            resizable.appendChild(handle);
+
+            handle.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            function onMouseMove(e) {
+                resizable.style.width = e.clientX - resizable.getBoundingClientRect().left + 'px';
+                resizable.style.height = e.clientY - resizable.getBoundingClientRect().top + 'px';
+                aceEditor.resize(); 
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        })();
+    </script>
+    <style>
+        .btn--warning {
+            background-color: #ff9800;
+            color: white; !important; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-family: Arial, sans-serif; 
+            font-weight: bold; 
+        }
+ 
+        .btn--warning:hover {
+            background-color: 
+        }
+
+        .resizable {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resizable .resize-handle {
+            width: 10px;
+            height: 10px;
+            background: #ddd;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            cursor: nwse-resize;
+            z-index: 10;
+        }
+
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            background-color: #1a1a1a;
+        }
+
+        #aceEditorError {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
 </body>
 </html>
