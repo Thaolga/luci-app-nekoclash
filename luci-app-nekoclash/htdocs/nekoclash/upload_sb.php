@@ -526,10 +526,12 @@ if (isset($_POST['update_index'])) {
                 <select id="fontSize" class="form-control">
                     <option value="12px">12px</option>
                     <option value="14px">14px</option>
-                    <option value="16px" selected>16px</option>
+                    <option value="16px">16px</option>
                     <option value="18px">18px</option>
-                    <option value="20px">20px</option>
+                    <option value="20px" selected>20px</option>                             
                     <option value="22px">22px</option>
+                   <option value="24px">24px</option>
+                   <option value="26px">26px</option>
                 </select>
             </div>
             <form action="" method="post">
