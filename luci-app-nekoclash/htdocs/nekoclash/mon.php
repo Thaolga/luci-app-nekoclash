@@ -23,9 +23,11 @@
             margin: 0;
             display: flex;
             justify-content: center;
+            position: relative;
         }
         nav ul li {
             margin: 0 15px;
+            position: relative;
         }
         nav ul li a {
             text-decoration: none;
@@ -45,6 +47,33 @@
             color: #ffffff;
             font-weight: bold;
         }
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px 0;
+        }
+        .submenu li {
+            margin: 0;
+            padding: 0;
+        }
+        .submenu li a {
+            font-size: 14px;
+            padding: 10px 20px;
+            width: 100%;
+            display: block;
+            white-space: nowrap;
+        }
+        .submenu li a:hover {
+            background-color: #0056b3;
+        }
+        nav ul li:hover .submenu {
+            display: block;
+        }
         .content {
             padding: 20px;
         }
@@ -56,7 +85,14 @@
     <ul>
         <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>
         <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
-        <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">转换模板</a></li>
+        <li>
+            <a href="?page=box" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'box' || $_GET['page'] == 'personal')) ? 'active' : '' ?>">转换模板</a>
+            <!-- Second-level menu -->
+            <ul class="submenu">
+                <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">Box</a></li>
+                <li><a href="?page=personal" class="<?= (isset($_GET['page']) && $_GET['page'] == 'personal') ? 'active' : '' ?>">Personal</a></li>
+            </ul>
+        </li>
     </ul>
 </nav>
 
@@ -78,6 +114,10 @@
                 include 'box.php';
                 break;
 
+            case 'personal':
+                include 'personal.php';
+                break;
+
             default:
                 echo "<p>页面未找到。</p>";
                 break;
@@ -89,4 +129,4 @@
 </div>
 
 </body>
-</html>
+</html>  
