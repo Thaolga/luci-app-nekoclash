@@ -323,7 +323,7 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #87ceeb;
             margin: 0;
             padding: 20px;
         }
