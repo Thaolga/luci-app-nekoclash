@@ -4,7 +4,12 @@ $configDir = '/etc/neko/config/';
 
 ini_set('memory_limit', '256M');
 
-date_default_timezone_set('Asia/Shanghai');
+$enable_timezone = isset($_COOKIE['enable_timezone']) && $_COOKIE['enable_timezone'] == '1';
+$timezone = isset($_COOKIE['timezone']) ? $_COOKIE['timezone'] : 'Asia/Singapore';
+
+if ($enable_timezone) {
+    date_default_timezone_set($timezone);
+}
 
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -839,6 +844,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="table-wrapper">
             <h2>Proxy File Management</h2>
+    <form action="upload.php" method="get" onsubmit="saveSettings()">
+        <label for="enable_timezone">Enable time zone settings:</label>
+        <input type="checkbox" id="enable_timezone" name="enable_timezone" value="1">
+        
+        <label for="timezone">Select time zone:</label>
+        <select id="timezone" name="timezone">
+            <option value="Asia/Singapore" selected>Singapore</option>
+            <option value="Asia/Shanghai">Shanghai</option>
+            <option value="America/New_York">New York</option>
+            <option value="Asia/Tokyo">Tokyo</option>
+            <option value="America/Los_Angeles">Los Angeles</option>
+            <option value="America/Chicago">Chicago</option>
+            <option value="Asia/Hong_Kong">Hong Kong</option>
+            <option value="Asia/Seoul">Seoul</option>
+            <option value="Asia/Bangkok">Bangkok</option>
+            <option value="America/Sao_Paulo">Sao Paulo</option>
+        </select>
+        
+        <button type="submit" style="background-color: #4CAF50; color: white; border: none; cursor: pointer;">Submit</button>
+    </form>
+
+    <script>
+        function saveSettings() {
+            const enableTimezone = document.getElementById('enable_timezone').checked;
+            const timezone = document.getElementById('timezone').value;
+            document.cookie = "enable_timezone=" + (enableTimezone ? '1' : '0') + "; path=/";
+            document.cookie = "timezone=" + timezone + "; path=/";
+        }
+
+        function loadSettings() {
+            const cookies = document.cookie.split('; ');
+            let enableTimezone = '0';
+            let timezone = 'Asia/Singapore'; 
+
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.split('=');
+                if (name === 'enable_timezone') enableTimezone = value;
+                if (name === 'timezone') timezone = value;
+            });
+
+            document.getElementById('enable_timezone').checked = (enableTimezone === '1');
+            document.getElementById('timezone').value = timezone;
+        }
+
+        window.onload = loadSettings;
+    </script>
             <table class="table table-dark table-bordered table-custom">
                 <thead>
                     <tr>
