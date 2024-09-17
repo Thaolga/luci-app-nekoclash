@@ -323,96 +323,121 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #87ceeb;
-            color: #333;
+            background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            padding: 20px;
         }
+
         .container {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px; 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
             box-sizing: border-box;
         }
+
         h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
             text-align: center;
+            color: #333;
         }
-        .result {
-            display: <?php echo $result || $cron_result ? 'block' : 'none'; ?>;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #eaf7e3;
-            border: 1px solid #d4edda;
-            border-radius: 4px;
-            color: #155724;
-            text-align: center;
-        }
-        .help {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f0f9ff;
-            border: 1px solid #d1ecf1;
-            border-radius: 4px;
-            color: #0c5460;
-            text-align: left;
-        }
-        .help h2 {
-            font-size: 20px;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        .help p {
-            margin: 0 0 10px 0;
-        }
-        .help ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .help li {
-            margin-bottom: 5px;
-        }
+
         label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #333;
         }
+
         input[type="text"] {
-            width: calc(100% - 22px); 
+            width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 4px;
-            margin-bottom: 10px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
+
         button {
-            width: 100%; 
-            padding: 10px;
+            width: 100%;
+            padding: 12px;
             border: none;
             border-radius: 4px;
             background-color: #007bff;
             color: #fff;
             font-size: 16px;
             cursor: pointer;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         .back-button {
             background-color: #6c757d;
         }
+
         .back-button:hover {
             background-color: #5a6268;
         }
+
         .form-section {
-            margin-bottom: 20px; 
+            margin-bottom: 20px;
+        }
+
+        .help {
+            margin-top: 30px;
+        }
+
+        .help h2 {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .help p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .help ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        .help ul li {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .result {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            input[type="text"], button {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .help ul li {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -425,13 +450,13 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
                 <label for="subscription_url">输入订阅链接:</label>
                 <input type="text" id="subscription_url" name="subscription_url" 
                        value="<?php echo htmlspecialchars($current_subscription_url); ?>" 
-                       required><br>
-                
+                       required>
+
                 <label for="filename">输入保存文件名 (默认: config.yaml):</label>
                 <input type="text" id="filename" name="filename" 
                        value="<?php echo htmlspecialchars(isset($_POST['filename']) ? $_POST['filename'] : ''); ?>" 
-                       placeholder="config.yaml"><br>
-                
+                       placeholder="config.yaml">
+
                 <button type="submit" name="action" value="update_subscription">更新订阅</button>
             </form>
         </div>
@@ -441,17 +466,17 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
                 <label for="cron_time">设置 Cron 时间 (例如: 0 3 * * *):</label>
                 <input type="text" id="cron_time" name="cron_time" 
                        value="<?php echo htmlspecialchars(isset($_POST['cron_time']) ? $_POST['cron_time'] : '0 3 * * *'); ?>" 
-                       placeholder="0 3 * * *"><br>
+                       placeholder="0 3 * * *">
                 
                 <button type="submit" name="action" value="update_cron">更新 Cron 作业</button>
             </form>
         </div>
 
         <div class="help">
-            <h2 style="text-align: center;">帮助说明</h2>
+            <h2>帮助说明</h2>
             <p>欢迎使用 Mihomo 订阅程序！请按照以下步骤进行操作：</p>
             <ul>
-                <li><strong>输入订阅链接:</strong> 在文本框中输入您的Clash订阅链接。</li>
+                <li><strong>输入订阅链接:</strong> 在文本框中输入您的 Clash 订阅链接。</li>
                 <li><strong>输入保存文件名:</strong> 指定保存配置文件的文件名，默认为 "config.yaml"。</li>
                 <li>点击 "更新订阅" 按钮，系统将下载订阅内容，并进行转换和保存。</li>
                 <li><strong>设置 Cron 时间:</strong> 指定 Cron 作业的执行时间。</li>
