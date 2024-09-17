@@ -959,7 +959,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
         <div class="nav-buttons text-center" style="height: 100%;">
             <a href="/nekoclash/mon.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/mon.php'); return false;">打开Mihomo 管理面板</a>
-            <a href="/nekoclash/personal.php" class="current-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 个人版', '/nekoclash/personal.php'); return false;">打开Mihomo 个人版</a>
         </div>
     </div>
 
