@@ -851,11 +851,8 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
 
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
         <div class="nav-buttons text-center" style="height: 100%;">
-            <a href="/nekoclash/upload.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/upload.php'); return false;">Open Mihomo Management Panel</a>
-            <a href="/nekoclash/upload_sb.php" class="monitoring-button d-block mb-2" onclick="speakAndNavigate('Open Sing-box Management Panel', '/nekoclash/upload_sb.php'); return false;">Open Sing-box Management Panel</a>
-            <a href="/nekoclash/box.php" class="box-menu-button d-block mb-2" onclick="speakAndNavigate('Open Sing-box Conversion Template', '/nekoclash/box.php'); return false;">Open Sing-box Conversion Template</a>
+            <a href="/nekoclash/mon.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;">Open Mihomo Management Panel</a>
             <a href="/nekoclash/personal.php" class="current-menu-button d-block mb-2" onclick="speakAndNavigate('Open Mihomo Personal Edition', '/nekoclash/personal.php'); return false;">Open Mihomo Personal Edition</a>
-            <a href="/nekoclash/mon.php" class="main-menu-button d-block mb-2" onclick="speakAndNavigate('Open Sing-box Monitoring Panel', '/nekoclash/mon.php'); return false;">Open Sing-box Monitoring Panel</a>
         </div>
     </div>
 

@@ -960,31 +960,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </tbody>
             </table>
 
-            <?php if (isset($fileContent)): ?>
-                <?php if (isset($_POST['editFile'])): ?>
-                    <?php $fileToEdit = ($_POST['fileType'] === 'proxy') ? $uploadDir . basename($_POST['editFile']) : $configDir . basename($_POST['editFile']); ?>
-                    <h2 class="mt-5">Edit File: <?php echo $editingFileName; ?></h2>
-                    <p>Last Updated Date: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
+ <?php if (isset($fileContent)): ?>
+    <?php if (isset($_POST['editFile'])): ?>
+        <?php $fileToEdit = ($_POST['fileType'] === 'proxy') ? $uploadDir . basename($_POST['editFile']) : $configDir . basename($_POST['editFile']); ?>
+        <h2 class="mt-5">Edit File: <?php echo $editingFileName; ?></h2>
+        <p>Last Updated Date: <?php echo date('Y-m-d H:i:s', filemtime($fileToEdit)); ?></p>
 
-                <div class="btn-group mb-3">
-                    <button type="button" class="btn btn-primary" id="toggleBasicEditor">Plain text editor</button>
-                    <button type="button" class="btn btn-warning" id="toggleAceEditor">Advanced editor</button>
-                    <button type="button" class="btn btn-info" id="toggleFullScreenEditor">Fullscreen editing</button>
+        <div class="btn-group mb-3">
+            <button type="button" class="btn btn-primary" id="toggleBasicEditor">Standard Edito</button>
+            <button type="button" class="btn btn-warning" id="toggleAceEditor">Advanced Editor</button>
+            <button type="button" class="btn btn-info" id="toggleFullScreenEditor">Full Screen Editing</button>
+        </div>
+
+        <div class="editor-container">
+            <form action="" method="post">
+                <textarea name="saveContent" id="basicEditor" class="editor"><?php echo $fileContent; ?></textarea><br>
+
+                <div id="aceEditorContainer" class="d-none resizable" style="height: 400px; width: 100%;"></div>
+
+                <div id="fontSizeContainer" class="d-none mb-3">
+                    <label for="fontSizeSelector">Font Size:</label>
+                    <select id="fontSizeSelector" class="form-control" style="width: auto; display: inline-block;">
+                        <option value="18px">18px</option>
+                        <option value="20px">20px</option>
+                        <option value="24px">24px</option>
+                        <option value="26px">26px</option>
+                    </select>
                 </div>
 
-                <div class="editor-container">
-                    <form action="" method="post">
-                        <textarea name="saveContent" id="basicEditor" class="editor"><?php echo $fileContent; ?></textarea><br>
+                <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
+                <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
+                <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i>  Save Content</button>
+            </form>
 
-                        <div id="aceEditorContainer" class="d-none resizable" style="height: 400px; width: 100%;"></div>
+            <div id="aceEditorError" style="color: red; font-weight: bold; margin-top: 10px;"></div>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
 
-                        <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
-                        <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                        <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> Save Content</button>
-                    </form>
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
 <div class="navigation">
     <a href="javascript:history.back()" class="btn btn-success">Return to Previous Menu</a>
     <a href="/nekoclash/upload.php" class="btn btn-success">Return to Current Menu</a>
@@ -1044,150 +1057,161 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </section>
     </div>
 
-    <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
-    <script src="./assets/bootstrap/popper.min.js"></script>
-    <script src="./assets/bootstrap/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
+<script src="./assets/bootstrap/popper.min.js"></script>
+<script src="./assets/bootstrap/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 
-        <script>
-             document.getElementById('pasteButton').onclick = function() {
-                 window.open('https://paste.gg', '_blank');
-             }
-             document.getElementById('base64Button').onclick = function() {
-                 window.open('https://base64.us', '_blank');
-             }
-        </script>
+<script>
+    document.getElementById('pasteButton').onclick = function() {
+        window.open('https://paste.gg', '_blank');
+    }
+    document.getElementById('base64Button').onclick = function() {
+        window.open('https://base64.us', '_blank');
+    }
+</script>
 
-        <script>
-            $('#renameModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget); 
-                var oldFileName = button.data('filename'); 
-                var fileType = button.data('filetype');
-                var modal = $(this);
-                modal.find('#oldFileName').val(oldFileName); 
-                modal.find('#fileType').val(fileType);
-                modal.find('#newFileName').val(oldFileName); 
-            });
-        </script>
+<script>
+    $('#renameModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); 
+        var oldFileName = button.data('filename'); 
+        var fileType = button.data('filetype');
+        var modal = $(this);
+        modal.find('#oldFileName').val(oldFileName); 
+        modal.find('#fileType').val(fileType);
+        modal.find('#newFileName').val(oldFileName); 
+    });
+</script>
 
-    <script>
-        var aceEditor = ace.edit("aceEditorContainer");
-        aceEditor.setTheme("ace/theme/monokai");
-        aceEditor.session.setMode("ace/mode/yaml");
+<script>
+    var aceEditor = ace.edit("aceEditorContainer");
+    aceEditor.setTheme("ace/theme/monokai");
+    aceEditor.session.setMode("ace/mode/yaml");
 
+    aceEditor.setValue(document.getElementById('basicEditor').value); 
+
+    aceEditor.session.on('change', function() {
+        try {
+            jsyaml.load(aceEditor.getValue()); 
+            document.getElementById('aceEditorError').innerText = ''; 
+        } catch (e) {
+            var errorLine = e.mark ? e.mark.line + 1 : 'unknown'; 
+            document.getElementById('aceEditorError').innerText = 'YAML syntax error (line ' + errorLine + '): ' + e.message;
+        }
+    });
+
+    document.getElementById('toggleBasicEditor').addEventListener('click', function() {
+        document.getElementById('basicEditor').classList.remove('d-none');
+        document.getElementById('aceEditorContainer').classList.add('d-none');
+        document.getElementById('fontSizeContainer').classList.remove('d-none'); 
+    });
+
+    document.getElementById('toggleAceEditor').addEventListener('click', function() {
+        document.getElementById('basicEditor').classList.add('d-none');
+        document.getElementById('aceEditorContainer').classList.remove('d-none');
+        document.getElementById('fontSizeContainer').classList.remove('d-none'); 
         aceEditor.setValue(document.getElementById('basicEditor').value); 
+    });
 
-        aceEditor.session.on('change', function() {
-            try {
-                jsyaml.load(aceEditor.getValue()); 
-                document.getElementById('aceEditorError').innerText = ''; 
-            } catch (e) {
-                document.getElementById('aceEditorError').innerText = 'YAML syntax error: ' + e.message;
-            }
-        });
-
-        document.getElementById('toggleBasicEditor').addEventListener('click', function() {
-            document.getElementById('basicEditor').classList.remove('d-none');
-            document.getElementById('aceEditorContainer').classList.add('d-none');
-        });
-
-        document.getElementById('toggleAceEditor').addEventListener('click', function() {
-            document.getElementById('basicEditor').classList.add('d-none');
-            document.getElementById('aceEditorContainer').classList.remove('d-none');
-            aceEditor.setValue(document.getElementById('basicEditor').value); 
-        });
-
-        document.getElementById('toggleFullScreenEditor').addEventListener('click', function() {
-            var editorContainer = document.getElementById('aceEditorContainer');
-            if (!document.fullscreenElement) {
-                editorContainer.requestFullscreen().then(function() {
-                    aceEditor.resize(); 
-                });
-            } else {
-                document.exitFullscreen().then(function() {
-                    aceEditor.resize(); 
-                });
-            }
-        });
-
-        function syncEditorContent() {
-            if (!document.getElementById('basicEditor').classList.contains('d-none')) {
-                aceEditor.setValue(document.getElementById('basicEditor').value); 
-            } else {
-                document.getElementById('basicEditor').value = aceEditor.getValue(); 
-            }
-        }
-
-        (function() {
-            const resizable = document.querySelector('.resizable');
-            if (!resizable) return;
-            
-            const handle = document.createElement('div');
-            handle.className = 'resize-handle';
-            resizable.appendChild(handle);
-
-            handle.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-
-            function onMouseMove(e) {
-                resizable.style.width = e.clientX - resizable.getBoundingClientRect().left + 'px';
-                resizable.style.height = e.clientY - resizable.getBoundingClientRect().top + 'px';
+    document.getElementById('toggleFullScreenEditor').addEventListener('click', function() {
+        var editorContainer = document.getElementById('aceEditorContainer');
+        if (!document.fullscreenElement) {
+            editorContainer.requestFullscreen().then(function() {
                 aceEditor.resize(); 
-            }
+            });
+        } else {
+            document.exitFullscreen().then(function() {
+                aceEditor.resize(); 
+            });
+        }
+    });
 
-            function onMouseUp() {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            }
-        })();
-    </script>
-    <style>
-        .btn--warning {
-            background-color: #ff9800;
-            color: white; !important; 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-family: Arial, sans-serif; 
-            font-weight: bold; 
+    function syncEditorContent() {
+        if (!document.getElementById('basicEditor').classList.contains('d-none')) {
+            aceEditor.setValue(document.getElementById('basicEditor').value); 
+        } else {
+            document.getElementById('basicEditor').value = aceEditor.getValue(); 
+        }
+    }
+
+    document.getElementById('fontSizeSelector').addEventListener('change', function() {
+        var newFontSize = this.value;
+        aceEditor.setFontSize(newFontSize);
+        document.getElementById('basicEditor').style.fontSize = newFontSize;
+    });
+
+    (function() {
+        const resizable = document.querySelector('.resizable');
+        if (!resizable) return;
+        
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        resizable.appendChild(handle);
+
+        handle.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            resizable.style.width = e.clientX - resizable.getBoundingClientRect().left + 'px';
+            resizable.style.height = e.clientY - resizable.getBoundingClientRect().top + 'px';
+            aceEditor.resize(); 
         }
 
-        .resizable {
-            position: relative;
-            overflow: hidden;
+        function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
         }
+    })();
+</script>
 
-        .resizable .resize-handle {
-            width: 10px;
-            height: 10px;
-            background: #ddd;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            cursor: nwse-resize;
-            z-index: 10;
-        }
+<style>
+    .btn--warning {
+        background-color: #ff9800;
+        color: white; !important; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 5px; 
+        cursor: pointer; 
+        font-family: Arial, sans-serif; 
+        font-weight: bold; 
+    }
 
-        .fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 9999;
-            background-color: #1a1a1a;
-        }
+    .resizable {
+        position: relative;
+        overflow: hidden;
+    }
 
-        #aceEditorError {
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-    </style>
+    .resizable .resize-handle {
+        width: 10px;
+        height: 10px;
+        background: #ddd;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: nwse-resize;
+        z-index: 10;
+    }
+
+    .fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        background-color: #1a1a1a;
+    }
+
+    #aceEditorError {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+</style>
 </body>
-</html>l>
+</html>
+
