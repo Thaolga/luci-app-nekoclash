@@ -314,7 +314,6 @@ function getSubscriptionUrlFromFile($file) {
 
 $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
 ?>
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -339,7 +338,7 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 600px; 
             box-sizing: border-box;
         }
         h1 {
@@ -386,14 +385,14 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
             margin-bottom: 8px;
         }
         input[type="text"] {
-            width: calc(100% - 22px);
+            width: calc(100% - 22px); 
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             margin-bottom: 10px;
         }
         button {
-            width: 100%;
+            width: 100%; 
             padding: 10px;
             border: none;
             border-radius: 4px;
@@ -412,32 +411,42 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
         .back-button:hover {
             background-color: #5a6268;
         }
+        .form-section {
+            margin-bottom: 20px; 
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Mihomo 订阅程序（个人版）</h1>
-        <form method="post" action="">
-            <label for="subscription_url">输入订阅链接:</label>
-            <input type="text" id="subscription_url" name="subscription_url" 
-                   value="<?php echo htmlspecialchars($current_subscription_url); ?>" 
-                   required><br>
-            
-            <label for="filename">输入保存文件名 (默认: config.yaml):</label>
-            <input type="text" id="filename" name="filename" 
-                   value="<?php echo htmlspecialchars(isset($_POST['filename']) ? $_POST['filename'] : ''); ?>" 
-                   placeholder="config.yaml"><br>
-            
-            <button type="submit" name="action" value="update_subscription">更新订阅</button>
-        </form>
-        <form method="post" action="">
-            <label for="cron_time">设置 Cron 时间 (例如: 0 3 * * *):</label>
-            <input type="text" id="cron_time" name="cron_time" 
-                   value="<?php echo htmlspecialchars(isset($_POST['cron_time']) ? $_POST['cron_time'] : '0 3 * * *'); ?>" 
-                   placeholder="0 3 * * *"><br>
-            
-            <button type="submit" name="action" value="update_cron">更新 Cron 作业</button>
-        </form>
+
+        <div class="form-section">
+            <form method="post" action="">
+                <label for="subscription_url">输入订阅链接:</label>
+                <input type="text" id="subscription_url" name="subscription_url" 
+                       value="<?php echo htmlspecialchars($current_subscription_url); ?>" 
+                       required><br>
+                
+                <label for="filename">输入保存文件名 (默认: config.yaml):</label>
+                <input type="text" id="filename" name="filename" 
+                       value="<?php echo htmlspecialchars(isset($_POST['filename']) ? $_POST['filename'] : ''); ?>" 
+                       placeholder="config.yaml"><br>
+                
+                <button type="submit" name="action" value="update_subscription">更新订阅</button>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <form method="post" action="">
+                <label for="cron_time">设置 Cron 时间 (例如: 0 3 * * *):</label>
+                <input type="text" id="cron_time" name="cron_time" 
+                       value="<?php echo htmlspecialchars(isset($_POST['cron_time']) ? $_POST['cron_time'] : '0 3 * * *'); ?>" 
+                       placeholder="0 3 * * *"><br>
+                
+                <button type="submit" name="action" value="update_cron">更新 Cron 作业</button>
+            </form>
+        </div>
+
         <div class="help">
             <h2 style="text-align: center;">帮助说明</h2>
             <p>欢迎使用 Mihomo 订阅程序！请按照以下步骤进行操作：</p>
@@ -449,12 +458,14 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
                 <li>点击 "更新 Cron 作业" 按钮，系统将设置或更新 Cron 作业。</li>
             </ul>
         </div>
+
         <div class="result">
             <?php echo nl2br(htmlspecialchars($result)); ?>
         </div>
         <div class="result">
             <?php echo nl2br(htmlspecialchars($cron_result)); ?>
         </div>
+
         <button class="back-button" onclick="history.back()">返回上一级</button>
     </div>
 </body>

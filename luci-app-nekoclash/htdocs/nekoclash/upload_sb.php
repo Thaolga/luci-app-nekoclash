@@ -552,7 +552,6 @@ if (isset($_POST['update_index'])) {
     <a href="javascript:history.back()" class="btn btn-success">返回上一级菜单</a>
     <a href="/nekoclash/upload_sb.php" class="btn btn-success">返回当前菜单</a>
     <a href="/nekoclash" class="btn btn-success">返回主菜单</a>
-    <a href="/nekoclash/box.php" class="btn btn-success">打开订阅转换模板</a>
 </div>
 
         <h1 style="margin-top: 20px; margin-bottom: 20px;">Sing-box 订阅</h1>
