@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        html, body {
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
         }
         nav {
             background-color: #007bff;
@@ -16,6 +22,7 @@
             width: 100%;
             z-index: 1000;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
         }
         nav ul {
             list-style-type: none;
@@ -75,7 +82,26 @@
             display: block;
         }
         .content {
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .cbi-map {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+            position: relative;
+        }
+        .cbi-map iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -87,10 +113,16 @@
         <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
         <li>
             <a href="?page=box" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'box' || $_GET['page'] == 'personal')) ? 'active' : '' ?>">转换模板</a>
-            <!-- Second-level menu -->
             <ul class="submenu">
                 <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">Box</a></li>
                 <li><a href="?page=personal" class="<?= (isset($_GET['page']) && $_GET['page'] == 'personal') ? 'active' : '' ?>">Personal</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'neko_yacd' || $_GET['page'] == 'neko_meta')) ? 'active' : '' ?>">Meta 面板</a>
+            <ul class="submenu">
+                <li><a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_yacd') ? 'active' : '' ?>">Meta-Yacd</a></li>
+                <li><a href="?page=neko_meta" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_meta') ? 'active' : '' ?>">MetaCubeXD</a></li>
             </ul>
         </li>
     </ul>
@@ -118,8 +150,40 @@
                 include 'personal.php';
                 break;
 
+            case 'neko_yacd':
+                echo '<div class="cbi-map">
+                        <iframe id="neko"></iframe>
+                      </div>
+                      <script type="text/javascript">
+                          fetch("/nekoclash/lib/log.php?data=url_dash")
+                              .then(response => response.json())
+                              .then(data => {
+                                  document.getElementById("neko").src = data.yacd;
+                              })
+                              .catch(error => {
+                                  console.error("Error fetching URL data:", error);
+                              });
+                      </script>';
+                break;
+
+            case 'neko_meta':
+                echo '<div class="cbi-map">
+                        <iframe id="neko"></iframe>
+                      </div>
+                      <script type="text/javascript">
+                          fetch("/nekoclash/lib/log.php?data=url_dash")
+                              .then(response => response.json())
+                              .then(data => {
+                                  document.getElementById("neko").src = data.meta;
+                              })
+                              .catch(error => {
+                                  console.error("Error fetching URL data:", error);
+                              });
+                      </script>';
+                break;
+
             default:
-                echo "<p>页面未找到。</p>";
+                include 'upload.php';
                 break;
         }
     } else {
@@ -129,4 +193,4 @@
 </div>
 
 </body>
-</html>  
+</html>
