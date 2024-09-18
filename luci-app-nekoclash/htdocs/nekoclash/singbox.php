@@ -1,4 +1,7 @@
 <?php
+
+ini_set('memory_limit', '128M'); 
+
 function logMessage($message) {
     $logFile = '/var/log/sing-box_update.log'; 
     $timestamp = date('Y-m-d H:i:s');
@@ -7,16 +10,45 @@ function logMessage($message) {
 
 function writeVersionToFile($version) {
     $versionFile = '/etc/neko/core/version.txt';
-    $result = file_put_contents($versionFile, $version);
-    if ($result === false) {
-        logMessage("无法写入版本文件: $versionFile");
-        logMessage("检查路径是否存在，并确认 PHP 进程具有写权限。");
-    } else {
-        logMessage("成功写入版本文件: $versionFile");
+    file_put_contents($versionFile, $version);
+}
+
+$repo_owner = "SagerNet";
+$repo_name = "sing-box";
+$api_url = "https://api.github.com/repos/$repo_owner/$repo_name/releases";
+
+$curl_command = "curl -s -H 'User-Agent: PHP' --connect-timeout 10 " . escapeshellarg($api_url);
+$response = shell_exec($curl_command);
+
+if ($response === false || empty($response)) {
+    logMessage("GitHub API 请求失败，可能是网络问题或 GitHub API 限制。");
+    die("GitHub API 请求失败。请检查网络连接或稍后重试。");
+}
+
+logMessage("GitHub API 响应: " . substr($response, 0, 200) . "...");  
+
+$data = json_decode($response, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    logMessage("解析 GitHub API 响应时出错: " . json_last_error_msg());
+    die("解析 GitHub API 响应时出错: " . json_last_error_msg());
+}
+
+$latest_beta_version = '';
+if (is_array($data)) {
+    foreach ($data as $release) {
+        if (isset($release['tag_name']) && strpos($release['tag_name'], 'beta') !== false) {
+            $latest_beta_version = $release['tag_name'];
+            break;
+        }
     }
 }
 
-$latest_version = '1.10.0-beta.8'; 
+if (empty($latest_beta_version)) {
+    logMessage("未找到 beta 版本信息。");
+    die("未找到 beta 版本信息。");
+}
+
 $current_version = ''; 
 $install_path = '/usr/bin/sing-box'; 
 $temp_file = '/tmp/sing-box.tar.gz'; 
@@ -24,100 +56,51 @@ $temp_dir = '/tmp/singbox_temp';
 
 if (file_exists($install_path)) {
     $current_version = trim(shell_exec("{$install_path} --version"));
-    logMessage("当前版本: $current_version");
-} else {
-    logMessage("当前版本文件不存在，将视为未安装。");
 }
 
 $current_arch = trim(shell_exec("uname -m"));
-
+$base_version = ltrim($latest_beta_version, 'v');
 $download_url = '';
+
 switch ($current_arch) {
     case 'aarch64':
-        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.8/sing-box-1.10.0-beta.8-linux-arm64.tar.gz';
+        $download_url = "https://github.com/SagerNet/sing-box/releases/download/$latest_beta_version/sing-box-$base_version-linux-arm64.tar.gz";
         break;
     case 'x86_64':
-        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.8/sing-box-1.10.0-beta.8-linux-amd64.tar.gz';
+        $download_url = "https://github.com/SagerNet/sing-box/releases/download/$latest_beta_version/sing-box-$base_version-linux-amd64.tar.gz";
         break;
     default:
-        logMessage("未找到适合架构的下载链接: $current_arch");
-        echo "未找到适合架构的下载链接: $current_arch";
-        exit;
+        die("未找到适合架构的下载链接: $current_arch");
 }
 
-logMessage("最新版本: $latest_version");
-logMessage("当前架构: $current_arch");
-logMessage("下载链接: $download_url");
-
-if (trim($current_version) === trim($latest_version)) {
-    logMessage("当前版本已是最新版本，无需更新。");
-    echo "当前版本已是最新版本。";
-    exit;
+if (trim($current_version) === trim($latest_beta_version)) {
+    die("当前版本已是最新版本。");
 }
 
-logMessage("开始下载核心更新...");
 exec("wget -O '$temp_file' '$download_url'", $output, $return_var);
-logMessage("wget 返回值: $return_var");
+if ($return_var !== 0) {
+    die("下载失败！");
+}
 
-if ($return_var === 0) {
-    if (!is_dir($temp_dir)) {
-        logMessage("创建临时解压目录: $temp_dir");
-        mkdir($temp_dir, 0755, true);
-    } else {
-        logMessage("临时解压目录已存在: $temp_dir");
-    }
+if (!is_dir($temp_dir)) {
+    mkdir($temp_dir, 0755, true);
+}
 
-    logMessage("解压命令: tar -xzf '$temp_file' -C '$temp_dir'");
-    exec("tar -xzf '$temp_file' -C '$temp_dir'", $output, $return_var);
-    logMessage("解压返回值: $return_var");
+exec("tar -xzf '$temp_file' -C '$temp_dir'", $output, $return_var);
+if ($return_var !== 0) {
+    die("解压失败！");
+}
 
-    if ($return_var === 0) {
-        logMessage("解压后的文件列表:");
-        exec("ls -lR '$temp_dir'", $output);
-        logMessage(implode("\n", $output));
-
-        $extracted_file = glob("$temp_dir/sing-box-*/*sing-box")[0] ?? '';
-        if ($extracted_file && file_exists($extracted_file)) {
-            logMessage("移动文件命令: cp -f '$extracted_file' '$install_path'");
-            exec("cp -f '$extracted_file' '$install_path'", $output, $return_var);
-            logMessage("替换文件返回值: $return_var");
-
-            if ($return_var === 0) {
-                exec("chmod 0755 '$install_path'", $output, $return_var);
-                logMessage("设置权限命令: chmod 0755 '$install_path'");
-                logMessage("设置权限返回值: $return_var");
-
-                if ($return_var === 0) {
-                    logMessage("核心更新完成！当前版本: $latest_version");
-                    writeVersionToFile($latest_version); 
-                    echo "更新完成！当前版本: $latest_version";
-                } else {
-                    logMessage("设置权限失败！");
-                    echo "设置权限失败！";
-                }
-            } else {
-                logMessage("替换文件失败，返回值: $return_var");
-                echo "替换文件失败！";
-            }
-        } else {
-            logMessage("解压后的文件 'sing-box' 不存在。");
-            echo "解压后的文件 'sing-box' 不存在。";
-        }
-    } else {
-        logMessage("解压失败，返回值: $return_var");
-        echo "解压失败！";
-    }
+$extracted_file = glob("$temp_dir/sing-box-*/*sing-box")[0] ?? '';
+if ($extracted_file && file_exists($extracted_file)) {
+    exec("cp -f '$extracted_file' '$install_path'");
+    exec("chmod 0755 '$install_path'");
+    writeVersionToFile($latest_beta_version); 
+    echo "更新完成！当前版本: $latest_beta_version";
 } else {
-    logMessage("下载失败，返回值: $return_var");
-    echo "下载失败！";
+    die("解压后的文件 'sing-box' 不存在。");
 }
 
-if (file_exists($temp_file)) {
-    unlink($temp_file);
-    logMessage("清理临时文件: $temp_file");
-}
-if (is_dir($temp_dir)) {
-    exec("rm -r '$temp_dir'");
-    logMessage("清理临时解压目录: $temp_dir");
-}
+unlink($temp_file);
+exec("rm -r '$temp_dir'");
 ?>

@@ -167,7 +167,7 @@ $singBoxVersion = getSingboxVersion();
                                         </div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-pink" id="updateSingboxButton">更新Singbox内核</button>
+                                        <button class="btn btn-pink" id="updateSingboxButton">更新 Singbox 内核</button>
                                     </div>
                                 </div>
                             </div>
@@ -178,8 +178,7 @@ $singBoxVersion = getSingboxVersion();
                                         <div id="corever">-</div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-success" id="updateCoreButton">切换Mihomo内核</button>
-                                        <button class="btn btn-info" id="updateNekoButton">切换NeKo内核</button>
+                                        <button class="btn btn-success" id="updateCoreButton">更新 Mihomo 内核</button>
                                     </div>
                                 </div>
                             </div>
@@ -290,25 +289,6 @@ $singBoxVersion = getSingboxVersion();
             document.getElementById('updateCoreButton').addEventListener('click', function() {
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'core.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
-
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
-                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
-                    } else {
-                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
-                    }
-                };
-
-                xhr.send();
-            });
-
-            document.getElementById('updateNekoButton').addEventListener('click', function() {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'neko.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
                 document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
