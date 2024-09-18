@@ -1,4 +1,7 @@
 <?php
+
+ini_set('memory_limit', '128M'); 
+
 function logMessage($message) {
     $logFile = '/var/log/sing-box_update.log'; 
     $timestamp = date('Y-m-d H:i:s');
@@ -7,16 +10,45 @@ function logMessage($message) {
 
 function writeVersionToFile($version) {
     $versionFile = '/etc/neko/core/version.txt';
-    $result = file_put_contents($versionFile, $version);
-    if ($result === false) {
-        logMessage("Unable to write to version file: $versionFile");
-        logMessage("Check if the path exists and ensure the PHP process has write permissions.");
-    } else {
-        logMessage("Successfully wrote to version file: $versionFile");
+    file_put_contents($versionFile, $version);
+}
+
+$repo_owner = "SagerNet";
+$repo_name = "sing-box";
+$api_url = "https://api.github.com/repos/$repo_owner/$repo_name/releases";
+
+$curl_command = "curl -s -H 'User-Agent: PHP' --connect-timeout 10 " . escapeshellarg($api_url);
+$response = shell_exec($curl_command);
+
+if ($response === false || empty($response)) {
+    logMessage("GitHub API request failed, possibly due to network issues or GitHub API restrictions.");
+    die("GitHub API request failed. Please check your network connection or try again later.");
+}
+
+logMessage("GitHub API response: " . substr($response, 0, 200) . "...");  
+
+$data = json_decode($response, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    logMessage("Error parsing GitHub API response: " . json_last_error_msg());
+    die("Error parsing GitHub API response: " . json_last_error_msg());
+}
+
+$latest_beta_version = '';
+if (is_array($data)) {
+    foreach ($data as $release) {
+        if (isset($release['tag_name']) && strpos($release['tag_name'], 'beta') !== false) {
+            $latest_beta_version = $release['tag_name'];
+            break;
+        }
     }
 }
 
-$latest_version = '1.10.0-beta.8'; 
+if (empty($latest_beta_version)) {
+    logMessage("No beta version information found.");
+    die("No beta version information found.");
+}
+
 $current_version = ''; 
 $install_path = '/usr/bin/sing-box'; 
 $temp_file = '/tmp/sing-box.tar.gz'; 
@@ -24,100 +56,51 @@ $temp_dir = '/tmp/singbox_temp';
 
 if (file_exists($install_path)) {
     $current_version = trim(shell_exec("{$install_path} --version"));
-    logMessage("Current version: $current_version");
-} else {
-    logMessage("Current version file does not exist, assuming not installed.");
 }
 
 $current_arch = trim(shell_exec("uname -m"));
-
+$base_version = ltrim($latest_beta_version, 'v');
 $download_url = '';
+
 switch ($current_arch) {
     case 'aarch64':
-        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.8/sing-box-1.10.0-beta.8-linux-arm64.tar.gz';
+        $download_url = "https://github.com/SagerNet/sing-box/releases/download/$latest_beta_version/sing-box-$base_version-linux-arm64.tar.gz";
         break;
     case 'x86_64':
-        $download_url = 'https://github.com/SagerNet/sing-box/releases/download/v1.10.0-beta.8/sing-box-1.10.0-beta.8-linux-amd64.tar.gz';
+        $download_url = "https://github.com/SagerNet/sing-box/releases/download/$latest_beta_version/sing-box-$base_version-linux-amd64.tar.gz";
         break;
     default:
-        logMessage("No suitable download link found for architecture: $current_arch");
-        echo "No suitable download link found for architecture: $current_arch";
-        exit;
+        die("No suitable download link found for architecture: $current_arch");
 }
 
-logMessage("Latest version: $latest_version");
-logMessage("Current architecture: $current_arch");
-logMessage("Download link: $download_url");
-
-if (trim($current_version) === trim($latest_version)) {
-    logMessage("The current version is already the latest, no update needed.");
-    echo "The current version is already the latest.";
-    exit;
+if (trim($current_version) === trim($latest_beta_version)) {
+    die("The current version is already up to date.");
 }
 
-logMessage("Starting core update download...");
 exec("wget -O '$temp_file' '$download_url'", $output, $return_var);
-logMessage("wget return value: $return_var");
+if ($return_var !== 0) {
+    die("Download failed!");
+}
 
-if ($return_var === 0) {
-    if (!is_dir($temp_dir)) {
-        logMessage("Creating temporary extraction directory: $temp_dir");
-        mkdir($temp_dir, 0755, true);
-    } else {
-        logMessage("Temporary extraction directory already exists: $temp_dir");
-    }
+if (!is_dir($temp_dir)) {
+    mkdir($temp_dir, 0755, true);
+}
 
-    logMessage("Extraction command: tar -xzf '$temp_file' -C '$temp_dir'");
-    exec("tar -xzf '$temp_file' -C '$temp_dir'", $output, $return_var);
-    logMessage("Extraction return value: $return_var");
+exec("tar -xzf '$temp_file' -C '$temp_dir'", $output, $return_var);
+if ($return_var !== 0) {
+    die("Extraction failed!");
+}
 
-    if ($return_var === 0) {
-        logMessage("List of extracted files:");
-        exec("ls -lR '$temp_dir'", $output);
-        logMessage(implode("\n", $output));
-
-        $extracted_file = glob("$temp_dir/sing-box-*/*sing-box")[0] ?? '';
-        if ($extracted_file && file_exists($extracted_file)) {
-            logMessage("Move file command: cp -f '$extracted_file' '$install_path'");
-            exec("cp -f '$extracted_file' '$install_path'", $output, $return_var);
-            logMessage("File replacement return value: $return_var");
-
-            if ($return_var === 0) {
-                exec("chmod 0755 '$install_path'", $output, $return_var);
-                logMessage("Permission setting command: chmod 0755 '$install_path'");
-                logMessage("Permission setting return value: $return_var");
-
-                if ($return_var === 0) {
-                    logMessage("Core update complete! Current version: $latest_version");
-                    writeVersionToFile($latest_version); 
-                    echo "Update complete! Current version: $latest_version";
-                } else {
-                    logMessage("Failed to set permissions!");
-                    echo "Failed to set permissions!";
-                }
-            } else {
-                logMessage("File replacement failed, return value: $return_var");
-                echo "File replacement failed!";
-            }
-        } else {
-            logMessage("Extracted file 'sing-box' does not exist.");
-            echo "Extracted file 'sing-box' does not exist.";
-        }
-    } else {
-        logMessage("Extraction failed, return value: $return_var");
-        echo "Extraction failed!";
-    }
+$extracted_file = glob("$temp_dir/sing-box-*/*sing-box")[0] ?? '';
+if ($extracted_file && file_exists($extracted_file)) {
+    exec("cp -f '$extracted_file' '$install_path'");
+    exec("chmod 0755 '$install_path'");
+    writeVersionToFile($latest_beta_version); 
+    echo "Update completed! Current version: $latest_beta_version";
 } else {
-    logMessage("Download failed, return value: $return_var");
-    echo "Download failed!";
+    die("Extracted file 'sing-box' does not exist.");
 }
 
-if (file_exists($temp_file)) {
-    unlink($temp_file);
-    logMessage("Cleaning up temporary file: $temp_file");
-}
-if (is_dir($temp_dir)) {
-    exec("rm -r '$temp_dir'");
-    logMessage("Cleaning up temporary extraction directory: $temp_dir");
-}
+unlink($temp_file);
+exec("rm -r '$temp_dir'");
 ?>
