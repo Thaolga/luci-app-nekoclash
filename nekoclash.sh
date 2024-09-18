@@ -303,7 +303,7 @@ install_singbox() {
     local install_path='/usr/bin/sing-box'
     local temp_dir='/tmp/singbox_temp'
     local temp_file='/tmp/sing-box.tar.gz'
-    local latest_version='1.10.0-beta.8'
+    local latest_version='1.10.0-beta.9'
 
     local current_arch=$(uname -m)
     local download_url
