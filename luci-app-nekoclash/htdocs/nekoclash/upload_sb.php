@@ -516,34 +516,35 @@ if (isset($_POST['update_index'])) {
 
         <div class="btn-group mb-3">
             <button type="button" class="btn btn-primary" id="toggleBasicEditor">普通编辑器</button>
-            <button type="button" class="btn btn--warning" id="toggleAceEditor">高级编辑器</button>
+            <button type="button" class="btn btn-warning" id="toggleAceEditor">高级编辑器</button>
             <button type="button" class="btn btn-info" id="toggleFullScreenEditor">全屏编辑</button>
         </div>
 
         <div class="editor-container">
-            <div class="form-group d-none" id="fontSizeContainer">
-                <label for="fontSize">字体大小</label>
-                <select id="fontSize" class="form-control">
-                    <option value="12px">12px</option>
-                    <option value="14px">14px</option>
-                    <option value="16px">16px</option>
-                    <option value="18px">18px</option>
-                    <option value="20px" selected>20px</option>                             
-                    <option value="22px">22px</option>
-                   <option value="24px">24px</option>
-                   <option value="26px">26px</option>
-                </select>
-            </div>
             <form action="" method="post">
                 <textarea name="saveContent" id="basicEditor" class="editor"><?php echo $fileContent; ?></textarea><br>
 
                 <div id="aceEditorContainer" class="d-none resizable" style="height: 400px; width: 100%;"></div>
 
+                <div id="fontSizeContainer" class="d-none mb-3">
+                    <label for="fontSizeSelector">字体大小:</label>
+                    <select id="fontSizeSelector" class="form-control" style="width: auto; display: inline-block;">
+                        <option value="18px">18px</option>
+                        <option value="20px">20px</option>
+                        <option value="24px">24px</option>
+                        <option value="26px">26px</option>
+                    </select>
+                </div>
+
                 <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
                 <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
                 <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> 保存内容</button>
             </form>
-            <div id="aceEditorError"></div>
+
+            <div id="aceEditorError" class="error-popup d-none">
+                <span id="aceEditorErrorMessage"></span>
+                <button id="closeErrorPopup">关闭</button>
+            </div>
         </div>
     <?php endif; ?>
 <?php endif; ?>
@@ -553,7 +554,6 @@ if (isset($_POST['update_index'])) {
     <a href="/nekoclash/upload_sb.php" class="btn btn-success">返回当前菜单</a>
     <a href="/nekoclash" class="btn btn-success">返回主菜单</a>
 </div>
-
         <h1 style="margin-top: 20px; margin-bottom: 20px;">Sing-box 订阅</h1>
         <?php if ($message): ?>
             <p><?php echo nl2br(htmlspecialchars($message)); ?></p>
@@ -624,69 +624,105 @@ if (isset($_POST['update_index'])) {
 
     var aceEditor = ace.edit("aceEditorContainer");
     aceEditor.setTheme("ace/theme/monokai");
-    aceEditor.session.setMode("ace/mode/json"); 
-    aceEditor.setValue(document.getElementById('basicEditor').value); 
-
+    aceEditor.session.setMode("ace/mode/json");
     aceEditor.session.setUseWorker(true);
     aceEditor.getSession().setUseWrapMode(true);
 
-    aceEditor.session.on('changeAnnotation', function(e) {
+    function setDefaultFontSize() {
+        var defaultFontSize = '20px';
+        document.getElementById('basicEditor').style.fontSize = defaultFontSize;
+        aceEditor.setFontSize(defaultFontSize);
+    }
+
+    document.addEventListener('DOMContentLoaded', setDefaultFontSize);
+
+    aceEditor.setValue(document.getElementById('basicEditor').value);
+
+    aceEditor.session.on('changeAnnotation', function() {
         var annotations = aceEditor.getSession().getAnnotations();
-        var errorMessage = annotations.length ? annotations[0].text : '';
-        if (errorMessage) {
-            var errorLine = annotations[0].row + 1; 
-            document.getElementById('aceEditorError').innerText = 'JSON 语法错误: 行 ' + errorLine + ': ' + errorMessage;
+        if (annotations.length > 0) {
+            var errorMessage = annotations[0].text;
+            var errorLine = annotations[0].row + 1;
+            showErrorPopup('JSON 语法错误: 行 ' + errorLine + ': ' + errorMessage);
         } else {
-            document.getElementById('aceEditorError').innerText = '';
+            hideErrorPopup();
         }
     });
 
     document.getElementById('toggleBasicEditor').addEventListener('click', function() {
         document.getElementById('basicEditor').classList.remove('d-none');
         document.getElementById('aceEditorContainer').classList.add('d-none');
-        document.getElementById('fontSizeContainer').classList.remove('d-none'); 
+        document.getElementById('fontSizeContainer').classList.remove('d-none');
     });
 
     document.getElementById('toggleAceEditor').addEventListener('click', function() {
         document.getElementById('basicEditor').classList.add('d-none');
         document.getElementById('aceEditorContainer').classList.remove('d-none');
-        document.getElementById('fontSizeContainer').classList.add('d-none'); 
-        aceEditor.setValue(document.getElementById('basicEditor').value); 
-    });
-
-    document.getElementById('fontSize').addEventListener('change', function() {
-        var selectedSize = this.value;
-        document.getElementById('basicEditor').style.fontSize = selectedSize;
-        aceEditor.setOptions({
-            fontSize: selectedSize
-        });
+        document.getElementById('fontSizeContainer').classList.remove('d-none');
+        aceEditor.setValue(document.getElementById('basicEditor').value);
     });
 
     document.getElementById('toggleFullScreenEditor').addEventListener('click', function() {
         var editorContainer = document.getElementById('aceEditorContainer');
         if (!document.fullscreenElement) {
             editorContainer.requestFullscreen().then(function() {
-                aceEditor.resize(); 
+                aceEditor.resize();
+                enableFullScreenMode();
             });
         } else {
             document.exitFullscreen().then(function() {
-                aceEditor.resize(); 
+                aceEditor.resize();
+                disableFullScreenMode();
             });
         }
     });
 
     function syncEditorContent() {
         if (!document.getElementById('basicEditor').classList.contains('d-none')) {
-            aceEditor.setValue(document.getElementById('basicEditor').value); 
+            aceEditor.setValue(document.getElementById('basicEditor').value);
         } else {
-            document.getElementById('basicEditor').value = aceEditor.getValue(); 
+            document.getElementById('basicEditor').value = aceEditor.getValue();
         }
     }
+
+    document.getElementById('fontSizeSelector').addEventListener('change', function() {
+        var newFontSize = this.value;
+        aceEditor.setFontSize(newFontSize);
+        document.getElementById('basicEditor').style.fontSize = newFontSize;
+    });
+
+    function enableFullScreenMode() {
+        document.getElementById('aceEditorContainer').classList.add('fullscreen');
+        document.getElementById('aceEditorError').classList.add('fullscreen-popup');
+        document.getElementById('fullscreenCancelButton').classList.remove('d-none');
+    }
+
+    function disableFullScreenMode() {
+        document.getElementById('aceEditorContainer').classList.remove('fullscreen');
+        document.getElementById('aceEditorError').classList.remove('fullscreen-popup');
+        document.getElementById('fullscreenCancelButton').classList.add('d-none');
+    }
+
+    function showErrorPopup(message) {
+        var errorPopup = document.getElementById('aceEditorError');
+        var errorMessage = document.getElementById('aceEditorErrorMessage');
+        errorMessage.innerText = message;
+        errorPopup.classList.remove('d-none');
+    }
+
+    function hideErrorPopup() {
+        var errorPopup = document.getElementById('aceEditorError');
+        errorPopup.classList.add('d-none');
+    }
+
+    document.getElementById('closeErrorPopup').addEventListener('click', function() {
+        hideErrorPopup();
+    });
 
     (function() {
         const resizable = document.querySelector('.resizable');
         if (!resizable) return;
-        
+
         const handle = document.createElement('div');
         handle.className = 'resize-handle';
         resizable.appendChild(handle);
@@ -700,7 +736,7 @@ if (isset($_POST['update_index'])) {
         function onMouseMove(e) {
             resizable.style.width = e.clientX - resizable.getBoundingClientRect().left + 'px';
             resizable.style.height = e.clientY - resizable.getBoundingClientRect().top + 'px';
-            aceEditor.resize(); 
+            aceEditor.resize();
         }
 
         function onMouseUp() {
@@ -709,6 +745,7 @@ if (isset($_POST['update_index'])) {
         }
     })();
 </script>
+
 <style>
     .btn--warning {
         background-color: #ff9800;
@@ -719,10 +756,6 @@ if (isset($_POST['update_index'])) {
         cursor: pointer; 
         font-family: Arial, sans-serif; 
         font-weight: bold; 
-    }
-
-    .btn--warning:hover {
-        background-color: #e68900;
     }
 
     .resizable {
@@ -756,6 +789,36 @@ if (isset($_POST['update_index'])) {
         font-weight: bold;
         margin-top: 10px;
     }
+
+    .fullscreen-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        z-index: 9999;
+    }
+
+    #aceEditorError button {
+        margin-top: 10px;
+        padding: 5px 10px;
+        background-color: #ff6666;
+        border: none;
+        cursor: pointer;
+    }
+
+    textarea.editor {
+        font-size: 20px;
+    }
+
+    .ace_editor {
+        font-size: 20px;
+    }
 </style>
 </body>
-</html>

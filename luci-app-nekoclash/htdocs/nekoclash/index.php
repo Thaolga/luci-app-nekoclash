@@ -169,6 +169,7 @@ $lang = $_GET['lang'] ?? 'en';
             justify-content: center; 
             text-align: center; 
             flex-direction: column; 
+            height: 70px;
         }
 
         .img-con {
@@ -578,8 +579,9 @@ function stopSingbox() {
     return false;
 }
 
+
 function logToFile($filePath, $message) {
-    $timestamp = date('Y-m-d H:i:s');
+    $timestamp = date('H:i:s');
     file_put_contents($filePath, "[$timestamp] $message\n", FILE_APPEND);
 }
 
@@ -655,7 +657,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function readLogFile($filePath) {
     if (file_exists($filePath)) {
-        return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000)));
+        return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000), ENT_NOQUOTES));
     } else {
         return '日志文件不存在。';
     }
@@ -667,8 +669,8 @@ $singboxLogContent = readLogFile($singBoxLogFile);
 $singboxStartLogContent = readLogFile($singboxStartLogFile); 
 ?>
 
-<div class="container container-bg border border-3 col-12 mb-4">
-    <h2 class="text-center p-2">NekoClash 控制面板</h2>
+<div class="container container-bg border border-3 col-12 mb-4 p-1">
+    <h2 class="text-center p-1">NekoClash 控制面板</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
@@ -816,22 +818,33 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .log-section {
+            border: 2px solid #c0c0c0; 
+            padding: 10px; 
+            border-radius: 8px;
+            flex: 1;
+            min-width: 0; 
+            margin-bottom: 20px; 
+        }
         .log-container {
             display: flex;
             flex-direction: column;
             height: 100%;
-            min-width: 0; 
         }
         .log-header {
             text-align: center;
             margin-bottom: 10px;
             font-size: 1.1rem; 
-        }
-        .log-footer {
-            display: flex;
-            justify-content: center; 
-            margin-top: auto;
         }
         pre.form-control {
             height: 300px; 
@@ -844,15 +857,13 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             border: 1px solid #ccc; 
             border-radius: 4px; 
         }
-        .log-section {
-            margin-bottom: 20px;
-            border: 2px solid #c0c0c0; 
-            padding: 10px; 
-            border-radius: 8px;
+        .log-footer {
+            display: flex;
+            justify-content: center; 
+            margin-top: auto;
         }
         .nav-buttons {
             display: flex;
-            flex-wrap: wrap; 
             justify-content: center;
             gap: 10px; 
             margin-top: 20px;
@@ -913,13 +924,18 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             border-color: #bd2130;
         }
         footer {
+            text-align: center;
             margin-top: 20px;
         }
 
         @media (max-width: 768px) {
-            .nav-buttons a {
-                display: block; 
-                width: 100%; 
+            .log-section {
+                margin-bottom: 20px; 
+                margin-right: 0; 
+                flex: 1 0 100%; 
+            }
+            .d-flex {
+                flex-direction: column; 
             }
         }
     </style>
@@ -927,42 +943,45 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
 <body>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
         <h2 class="text-center p-2">日志</h2>
-        <div class="log-section">
-            <div class="log-container">
-                <h4 class="log-header">插件日志</h4>
-                <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
-                <form action="index.php" method="post" class="mt-3 log-footer">
-                    <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">清空插件日志</button>
-                </form>
+        <div class="d-flex flex-wrap">
+            <div class="log-section">
+                <div class="log-container">
+                    <h4 class="log-header">插件日志</h4>
+                    <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <form action="index.php" method="post" class="mt-3 log-footer">
+                        <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">清空插件日志</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div class="log-section">
-            <div class="log-container">
-                <h4 class="log-header">Mihomo 日志</h4>
-                <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
-                <form action="index.php" method="post" class="mt-3 log-footer">
-                    <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">清空 Mihomo 日志</button>
-                </form>
+            <div class="log-section">
+                <div class="log-container">
+                    <h4 class="log-header">Mihomo 日志</h4>
+                    <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <form action="index.php" method="post" class="mt-3 log-footer">
+                        <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">清空 Mihomo 日志</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div class="log-section">
-            <div class="log-container">
-                <h4 class="log-header">Sing-box 日志</h4>
-                <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
-                <form action="index.php" method="post" class="mt-3 log-footer">
-                    <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">清空 Sing-box 日志</button>
-                </form>
+            <div class="log-section">
+                <div class="log-container">
+                    <h4 class="log-header">Sing-box 日志</h4>
+                    <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <form action="index.php" method="post" class="mt-3 log-footer">
+                        <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">清空 Sing-box 日志</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
-        <div class="nav-buttons text-center" style="height: 100%;">
-            <a href="/nekoclash/mon.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/mon.php'); return false;">打开Mihomo 管理面板</a>
-        </div>
+<div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex justify-content-center" style="height: 60px;">
+    <div class="nav-buttons d-flex justify-content-center align-items-center" style="height: 100%;">
+        <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" style="height: 40px; line-height: 40px; margin-top: -28px;" onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/mon.php'); return false;">
+            打开Mihomo 管理面板
+        </a>
     </div>
+</div>
 
-    <script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
