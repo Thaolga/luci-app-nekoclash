@@ -1011,7 +1011,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </tbody>
             </table>
 
- <?php if (isset($fileContent)): ?>
+<?php if (isset($fileContent)): ?>
     <?php if (isset($_POST['editFile'])): ?>
         <?php $fileToEdit = ($_POST['fileType'] === 'proxy') ? $uploadDir . basename($_POST['editFile']) : $configDir . basename($_POST['editFile']); ?>
         <h2 class="mt-5">Edit File: <?php echo $editingFileName; ?></h2>
@@ -1044,7 +1044,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i>  Save Content</button>
             </form>
 
-            <div id="aceEditorError" style="color: red; font-weight: bold; margin-top: 10px;"></div>
+            <div id="aceEditorError" class="error-popup d-none">
+                <span id="aceEditorErrorMessage"></span>
+                <button id="closeErrorPopup">Close</button>
+            </div>
         </div>
     <?php endif; ?>
 <?php endif; ?>
@@ -1140,15 +1143,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     aceEditor.setTheme("ace/theme/monokai");
     aceEditor.session.setMode("ace/mode/yaml");
 
-    aceEditor.setValue(document.getElementById('basicEditor').value); 
+    function setDefaultFontSize() {
+        var defaultFontSize = '20px';
+        document.getElementById('basicEditor').style.fontSize = defaultFontSize;
+        aceEditor.setFontSize(defaultFontSize);
+    }
+
+    document.addEventListener('DOMContentLoaded', setDefaultFontSize);
+
+    aceEditor.setValue(document.getElementById('basicEditor').value);
 
     aceEditor.session.on('change', function() {
         try {
-            jsyaml.load(aceEditor.getValue()); 
-            document.getElementById('aceEditorError').innerText = ''; 
+            jsyaml.load(aceEditor.getValue());
+            hideErrorPopup();
         } catch (e) {
-            var errorLine = e.mark ? e.mark.line + 1 : 'unknown'; 
-            document.getElementById('aceEditorError').innerText = 'YAML syntax error (line ' + errorLine + '): ' + e.message;
+            var errorLine = e.mark ? e.mark.line + 1 : 'unknown';
+            showErrorPopup('YAML syntax error (line ' + errorLine + '): ' + e.message);
         }
     });
 
@@ -1169,11 +1180,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         var editorContainer = document.getElementById('aceEditorContainer');
         if (!document.fullscreenElement) {
             editorContainer.requestFullscreen().then(function() {
-                aceEditor.resize(); 
+                aceEditor.resize();
+                enableFullScreenMode();
             });
         } else {
             document.exitFullscreen().then(function() {
-                aceEditor.resize(); 
+                aceEditor.resize();
+                disableFullScreenMode();
             });
         }
     });
@@ -1192,6 +1205,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('basicEditor').style.fontSize = newFontSize;
     });
 
+    function enableFullScreenMode() {
+        document.getElementById('aceEditorContainer').classList.add('fullscreen');
+        document.getElementById('aceEditorError').classList.add('fullscreen-popup');
+        document.getElementById('fullscreenCancelButton').classList.remove('d-none');
+    }
+
+    function disableFullScreenMode() {
+        document.getElementById('aceEditorContainer').classList.remove('fullscreen');
+        document.getElementById('aceEditorError').classList.remove('fullscreen-popup');
+        document.getElementById('fullscreenCancelButton').classList.add('d-none');
+    }
+
+    function showErrorPopup(message) {
+        var errorPopup = document.getElementById('aceEditorError');
+        var errorMessage = document.getElementById('aceEditorErrorMessage');
+        errorMessage.innerText = message;
+        errorPopup.classList.remove('d-none');
+    }
+
+    function hideErrorPopup() {
+        var errorPopup = document.getElementById('aceEditorError');
+        errorPopup.classList.add('d-none');
+    }
+
+    document.getElementById('closeErrorPopup').addEventListener('click', function() {
+        hideErrorPopup();
+    });
+
+
     (function() {
         const resizable = document.querySelector('.resizable');
         if (!resizable) return;
@@ -1209,7 +1251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function onMouseMove(e) {
             resizable.style.width = e.clientX - resizable.getBoundingClientRect().left + 'px';
             resizable.style.height = e.clientY - resizable.getBoundingClientRect().top + 'px';
-            aceEditor.resize(); 
+            aceEditor.resize();
         }
 
         function onMouseUp() {
@@ -1222,7 +1264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <style>
     .btn--warning {
         background-color: #ff9800;
-        color: white; !important; 
+        color: white !important; 
         border: none; 
         padding: 10px 20px; 
         border-radius: 5px; 
@@ -1262,7 +1304,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-weight: bold;
         margin-top: 10px;
     }
+
+    .fullscreen-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        z-index: 9999;
+    }
+
+    #aceEditorError button {
+        margin-top: 10px;
+        padding: 5px 10px;
+        background-color: #ff6666;
+        border: none;
+        cursor: pointer;
+    }
+
+    textarea.editor {
+            font-size: 20px;
+    }
+
+    .ace_editor {
+        font-size: 20px;
+    }
 </style>
 </body>
-</html>
-
+</html> 

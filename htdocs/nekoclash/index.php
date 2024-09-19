@@ -77,6 +77,7 @@ $lang = $_GET['lang'] ?? 'en';
             justify-content: center; 
             text-align: center; 
             flex-direction: column; 
+            height: 70px;
         }
 
         .img-con {
@@ -487,7 +488,7 @@ function stopSingbox() {
 }
 
 function logToFile($filePath, $message) {
-    $timestamp = date('Y-m-d H:i:s');
+    $timestamp = date('H:i:s');
     file_put_contents($filePath, "[$timestamp] $message\n", FILE_APPEND);
 }
 
@@ -563,7 +564,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function readLogFile($filePath) {
     if (file_exists($filePath)) {
-        return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000)));
+        return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000), ENT_NOQUOTES));
     } else {
         return 'Log file does not exist.';
     }
@@ -574,8 +575,9 @@ $kernelLogContent = readLogFile($kernelLogFile);
 $singboxLogContent = readLogFile($singBoxLogFile);
 $singboxStartLogContent = readLogFile($singboxStartLogFile);
 ?>
-<div class="container container-bg border border-3 col-12 mb-4">
-    <h2 class="text-center p-2">NekoClash Control Panel</h2>
+
+<div class="container container-bg border border-3 col-12 mb-4 p-1">
+    <h2 class="text-center p-1">NekoClash Control Panel</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
@@ -705,157 +707,170 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-    .log-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        min-width: 0;
-    }
-    .log-header {
-        text-align: center;
-        margin-bottom: 10px;
-        font-size: 1.1rem;
-    }
-    .log-footer {
-        display: flex;
-        justify-content: center;
-        margin-top: auto;
-    }
-    pre.form-control {
-        height: 300px;
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-        white-space: pre-wrap;
-        overflow-x: hidden;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    .log-section {
-        margin-bottom: 20px;
-        border: 2px solid #c0c0c0;
-        padding: 10px;
-        border-radius: 8px;
-    }
-    .nav-buttons {
-        display: flex;
-        flex-wrap: nowrap; 
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
-        overflow-x: auto; 
-    }
-    .nav-buttons a {
-        display: inline-block;
-        text-decoration: none;
-        color: #ffffff;
-        border: 1px solid;
-        border-radius: 4px;
-        padding: 10px 20px;
-        text-align: center;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    .nav-buttons a:hover {
-        opacity: 0.9;
-    }
-    .current-menu-button {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-    .current-menu-button:hover {
-        background-color: #0056b3;
-        border-color: #004085;
-    }
-    .config-menu-button {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
-    .config-menu-button:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-    }
-    .monitoring-button {
-        background-color: #ffc107;
-        border-color: #ffc107;
-    }
-    .monitoring-button:hover {
-        background-color: #e0a800;
-        border-color: #d39e00;
-    }
-    .box-menu-button {
-        background-color: #ff69b4;
-        border-color: #ff1493;
-        color: white;
-    }
-    .box-menu-button:hover {
-        background-color: #ff69b4;
-        border-color: #ff1493;
-    }
-    .main-menu-button {
-        background-color: #dc3545;
-        border-color: #dc3545;
-    }
-    .main-menu-button:hover {
-        background-color: #c82333;
-        border-color: #bd2130;
-    }
-    footer {
-        margin-top: 20px;
-    }
 
-    @media (max-width: 768px) {
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .log-section {
+            border: 2px solid #c0c0c0; 
+            padding: 10px; 
+            border-radius: 8px;
+            flex: 1;
+            min-width: 0; 
+            margin-bottom: 20px; 
+        }
+        .log-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .log-header {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem; 
+        }
+        pre.form-control {
+            height: 300px; 
+            width: 100%; 
+            padding: 10px;
+            box-sizing: border-box;
+            white-space: pre-wrap; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        .log-footer {
+            display: flex;
+            justify-content: center; 
+            margin-top: auto;
+        }
         .nav-buttons {
-            flex-wrap: wrap; 
+            display: flex;
+            justify-content: center;
+            gap: 10px; 
+            margin-top: 20px;
         }
         .nav-buttons a {
-            display: block;
-            width: 100%;
+            display: inline-block;
+            text-decoration: none;
+            color: #ffffff;
+            border: 1px solid;
+            border-radius: 4px;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-    }
-</style>
+        .nav-buttons a:hover {
+            opacity: 0.9;
+        }
+        .current-menu-button {
+            background-color: #007bff; 
+            border-color: #007bff;
+        }
+        .current-menu-button:hover {
+            background-color: #0056b3; 
+            border-color: #004085;
+        }
+        .config-menu-button {
+            background-color: #28a745; 
+            border-color: #28a745;
+        }
+        .config-menu-button:hover {
+            background-color: #218838; 
+            border-color: #1e7e34;
+        }
+        .monitoring-button {
+            background-color: #ffc107; 
+            border-color: #ffc107;
+        }
+        .monitoring-button:hover {
+            background-color: #e0a800; 
+            border-color: #d39e00;
+        }
+        .box-menu-button {
+            background-color: #ff69b4; 
+            border-color: #ff1493;     
+            color: white;              
+        }
+        .box-menu-button:hover {
+            background-color: #ff69b4; 
+            border-color: #ff1493;    
+        }
+        .main-menu-button {
+            background-color: #dc3545; 
+            border-color: #dc3545;
+        }
+        .main-menu-button:hover {
+            background-color: #c82333; 
+            border-color: #bd2130;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .log-section {
+                margin-bottom: 20px; 
+                margin-right: 0; 
+                flex: 1 0 100%; 
+            }
+            .d-flex {
+                flex-direction: column; 
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
         <h2 class="text-center p-2">Logs</h2>
-        <div class="log-section">
-            <div class="log-container">
-                <h4 class="log-header">Plugin Logs</h4>
-                <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
-                <form action="index.php" method="post" class="mt-3 log-footer">
-                    <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">Clear Plugin Logs</button>
-                </form>
+        <div class="d-flex flex-wrap">
+            <div class="log-section">
+                <div class="log-container">
+                    <h4 class="log-header">Plugin Logs</h4>
+                    <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <form action="index.php" method="post" class="mt-3 log-footer">
+                        <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">Clear Plugin Logs</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div class="log-section">
-            <div class="log-container">
-                <h4 class="log-header">Mihomo Logs</h4>
-                <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
-                <form action="index.php" method="post" class="mt-3 log-footer">
-                    <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">Clear Mihomo Logs</button>
-                </form>
+            <div class="log-section">
+                <div class="log-container">
+                    <h4 class="log-header">Mihomo Logs</h4>
+                    <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <form action="index.php" method="post" class="mt-3 log-footer">
+                        <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">Clear Mihomo Logs</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div class="log-section">
-            <div class="log-container">
-                <h4 class="log-header">Sing-box Logs</h4>
-                <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
-                <form action="index.php" method="post" class="mt-3 log-footer">
-                    <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">Clear Sing-box Logs</button>
-                </form>
+            <div class="log-section">
+                <div class="log-container">
+                    <h4 class="log-header">Sing-box Logs</h4>
+                    <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <form action="index.php" method="post" class="mt-3 log-footer">
+                        <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">Clear Sing-box Logs</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex align-items-center justify-content-center" style="height: 100%;">
-        <div class="nav-buttons text-center" style="height: 100%;">
-            <a href="/nekoclash/mon.php" class="config-menu-button d-block mb-2" onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;">Open Mihomo Management Panel</a>
-        </div>
+<div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex justify-content-center" style="height: 60px;">
+    <div class="nav-buttons d-flex justify-content-center align-items-center" style="height: 100%;">
+        <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" style="height: 40px; line-height: 40px; margin-top: -28px;" onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;">
+            Open Mihomo Management Panel
+        </a>
     </div>
+</div>
 
-    <script src="/www/nekoclash/assets/js/bootstrap.bundle.min.js"></script>
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
@@ -870,3 +885,4 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     </footer>
 </body>
 </html>
+
