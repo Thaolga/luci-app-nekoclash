@@ -1054,7 +1054,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="navigation">
     <a href="javascript:history.back()" class="btn btn-success">Return to Previous Menu</a>
-    <a href="/nekoclash/upload.php" class="btn btn-success">Return to Current Menu</a>
+    <a href="/nekoclash/mon.php?page=upload" class="btn btn-success">Return to Current Menu</a>
     <a href="/nekoclash/configs.php" class="btn btn-success">Return to Configuration Menu</a>
     <a href="/nekoclash" class="btn btn-success">Return to Main Menu</a>
 </div>
