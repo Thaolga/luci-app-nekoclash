@@ -576,7 +576,7 @@ if (isset($_POST['update_index'])) {
 
         <div class="nav-buttons mt-4">
             <a href="javascript:history.back()" class="btn btn-success">Return to Previous Menu</a>
-            <a href="/nekoclash/upload_sb.php" class="btn btn-success">Back to Current Menu</a>
+            <a href="/nekoclash/mon.php?page=upload_sb" class="btn btn-success">Back to Current Menu</a>
             <a href="/nekoclash" class="btn btn-success">Return to Main Menu</a>
         </div>
 
