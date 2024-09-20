@@ -565,7 +565,7 @@ if (isset($_POST['update_index'])) {
                 <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
                 <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> Save Content</button>
             </form>
-
+            <button id="closeEditorButton" class="close-fullscreen" onclick="closeEditor()">X</button>
             <div id="aceEditorError" class="error-popup d-none">
                 <span id="aceEditorErrorMessage"></span>
                 <button id="closeErrorPopup">Close</button>
@@ -647,6 +647,10 @@ if (isset($_POST['update_index'])) {
         modal.find('#oldFileName').val(oldFileName); 
         modal.find('#newFileName').val(oldFileName); 
     });
+
+    function closeEditor() {
+        window.location.href = window.location.href; 
+    }
 
     var aceEditor = ace.edit("aceEditorContainer");
     aceEditor.setTheme("ace/theme/monokai");
@@ -829,6 +833,24 @@ if (isset($_POST['update_index'])) {
         justify-content: center;
         font-size: 18px;
         z-index: 9999;
+    }
+
+    .close-fullscreen {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 10000;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
     }
 
     #aceEditorError button {
