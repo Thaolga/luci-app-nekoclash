@@ -78,7 +78,7 @@ $lang = $_GET['lang'] ?? 'en';
             justify-content: center; 
             text-align: center; 
             flex-direction: column; 
-            height: 75px;
+            height: 80px;
         }
 
         .img-con {
@@ -593,7 +593,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                 <form action="index.php" method="post">
                     <td class="d-grid">
                         <div class="btn-group col" role="group" aria-label="ctrl">
-                            <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-info <?php if ($neko_status == 1) echo "disabled" ?> d-grid">Enable Mihomo</button>
+                            <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-success <?php if ($neko_status == 1) echo "disabled" ?> d-grid">Enable Mihomo</button>
                             <button type="submit" name="neko" value="disable" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-danger <?php if ($neko_status == 0) echo "disabled" ?> d-grid">Disable Mihomo</button>
                             <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">Restart Mihomo</button>
                         </div>
@@ -811,31 +811,33 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     </style>
 </head>
 <body>
-    <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-        <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">Logs</h2>
+<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+        <h2 class="text-center p-2">Logs</h2>
         <div class="d-flex flex-wrap">
             <div class="log-section">
                 <div class="log-container">
                     <h4 class="log-header">Plugin Logs</h4>
-                    <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <pre id="plugin_log" class="form-control" style="overflow-y: scroll;"></pre>
                     <form action="index.php" method="post" class="mt-3 log-footer">
                         <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">Clear Log</button>
                     </form>
                 </div>
             </div>
+
             <div class="log-section">
                 <div class="log-container">
                     <h4 class="log-header">Mihomo Logs</h4>
-                    <pre id="bin_logs" class="form-control" rows="10" readonly></pre>
+                    <pre id="bin_logs" class="form-control" style="overflow-y: scroll;"></pre> 
                     <form action="index.php" method="post" class="mt-3 log-footer">
                         <button type="submit" name="neko" value="clear" class="btn btn-danger btn-clear-log">Clear Log</button>
                     </form>
                 </div>
             </div>
+
             <div class="log-section">
                 <div class="log-container">
                     <h4 class="log-header">Sing-box Logs</h4>
-                    <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <pre id="singbox_log" class="form-control" style="overflow-y: scroll;"></pre>
                     <form action="index.php" method="post" class="mt-3 log-footer">
                         <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">Clear Log</button>
                     </form>
@@ -843,6 +845,35 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             </div>
         </div>
     </div>
+
+    <script>
+        function scrollToBottom(elementId) {
+            var logElement = document.getElementById(elementId);
+            logElement.scrollTop = logElement.scrollHeight; 
+        }
+
+        function fetchLogs() {
+            Promise.all([
+                fetch('fetch_logs.php?file=plugin_log'),  
+                fetch('fetch_logs.php?file=mihomo_log'),  
+                fetch('fetch_logs.php?file=singbox_log')  
+            ])
+            .then(responses => Promise.all(responses.map(res => res.text()))) 
+            .then(data => {
+                document.getElementById('plugin_log').textContent = data[0]; 
+                document.getElementById('bin_logs').textContent = data[1];   
+                document.getElementById('singbox_log').textContent = data[2]; 
+
+                scrollToBottom('plugin_log');
+                scrollToBottom('bin_logs');   
+                scrollToBottom('singbox_log');
+            })
+            .catch(err => console.error('Error fetching logs:', err));
+        }
+
+        fetchLogs();
+        setInterval(fetchLogs, 5000);
+    </script>
 
 <div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex justify-content-center" style="height: 60px;">
     <div class="nav-buttons d-flex justify-content-center align-items-center" style="height: 100%;">
