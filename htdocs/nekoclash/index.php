@@ -10,6 +10,7 @@ if(isset($_POST['neko'])){
     if ($dt == 'start') shell_exec("$neko_dir/core/neko -s");
     if ($dt == 'disable') shell_exec("$neko_dir/core/neko -k");
     if ($dt == 'restart') shell_exec("$neko_dir/core/neko -r");
+    if ($dt == 'clear') shell_exec("echo \"Logs has been cleared...\" > $neko_dir/tmp/neko_log.txt");
 }
 $neko_status=exec("uci -q get neko.cfg.enabled");
 ?>
@@ -39,7 +40,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
     <div class="container text-left p-3">
        
         <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-    <h2 class="text-center p-2">Running Status</h2>
+    <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">Running Status</h2>
     <table class="table table-borderless mb-2">
         <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
    <br>
@@ -77,7 +78,7 @@ $lang = $_GET['lang'] ?? 'en';
             justify-content: center; 
             text-align: center; 
             flex-direction: column; 
-            height: 70px;
+            height: 75px;
         }
 
         .img-con {
@@ -222,16 +223,14 @@ $lang = $_GET['lang'] ?? 'en';
     <tr>
 <?php
 $singbox_status = 0;
-$neko_status = 0;
 
 $logDir = '/etc/neko/tmp/';
-$logFile = $logDir . 'log.txt';
-$kernelLogFile = $logDir . 'neko_log.txt';
-$singBoxLogFile = '/var/log/singbox_log.txt';
-$singboxStartLogFile = $logDir . 'singbox_start_log.txt';
+$logFile = $logDir . 'log.txt'; 
+$singBoxLogFile = '/var/log/singbox_log.txt'; 
+$singboxStartLogFile = $logDir . 'singbox_start_log.txt'; 
 
 $singBoxPath = '/usr/bin/sing-box';
-$configDir = '/etc/neko/config';
+$configDir = '/etc/neko/config'; 
 
 $start_script_template = <<<EOF
 #!/bin/bash
@@ -348,8 +347,8 @@ echo "Starting sing-box, using configuration file: %s"
 /usr/bin/sing-box run -c %s
 EOF;
 
-$maxFileSize = 1024 * 1024 * 5;
-$maxBackupFiles = 5;
+$maxFileSize = 1024 * 1024 * 5; 
+$maxBackupFiles = 5; 
 
 function getAvailableConfigFiles() {
     global $configDir;
@@ -365,8 +364,8 @@ function createStartScript($configFile) {
 
 function rotateLogFile($filePath) {
     $backupPath = $filePath . '-' . date('Y-m-d-H-i-s') . '.bak';
-    rename($filePath, $backupPath);
-    touch($filePath);
+    rename($filePath, $backupPath);  
+    touch($filePath);  
     cleanUpOldBackups(dirname($filePath), basename($filePath));
 }
 
@@ -403,12 +402,6 @@ function isSingboxRunning() {
     return !empty($output);
 }
 
-function isMihomoRunning() {
-    $command = "ps w | grep 'mihomo' | grep -v grep";
-    exec($command, $output);
-    return !empty($output);
-}
-
 function getRunningConfigFile() {
     global $singBoxPath;
     $command = "ps w | grep '$singBoxPath' | grep -v grep";
@@ -426,15 +419,9 @@ function getRunningConfigFile() {
 }
 
 if (isSingboxRunning()) {
-    $singbox_status = 1;
+    $singbox_status = 1; 
 } else {
-    $singbox_status = 0;
-}
-
-if (isMihomoRunning()) {
-    $neko_status = 1;
-} else {
-    $neko_status = 0;
+    $singbox_status = 0; 
 }
 
 if ($singbox_status == 1) {
@@ -453,7 +440,7 @@ function getSingboxVersion() {
     if ($returnVar === 0) {
         foreach ($output as $line) {
             if (strpos($line, 'version') !== false) {
-                return trim(substr($line, strpos($line, 'version') + 8));
+                return trim(substr($line, strpos($line, 'version') + 8)); 
             }
         }
     }
@@ -508,57 +495,52 @@ $currentConfigFile = isset($_POST['config_file']) ? $_POST['config_file'] : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['config_file']) && file_exists($_POST['config_file'])) {
-        $configFile = $_POST['config_file'];
+        $configFile = $_POST['config_file'];  
 
         if ($_POST['singbox'] === 'start') {
             checkLogFileSize($singBoxLogFile, $maxFileSize);
             applyFirewallRules();
-            createStartScript($configFile);
+            createStartScript($configFile); 
             exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
             $version = getSingboxVersion();
             $pid = getSingboxPID();
             $logMessage = $returnVar === 0 
-               ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";
-            logToFile($logFile, $logMessage);
+               ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";      
+            logToFile($logFile, $logMessage); 
             $singbox_status = $returnVar === 0 ? 1 : 0;
         } elseif ($_POST['singbox'] === 'disable') {
             $success = stopSingbox();
-            $logMessage = $success ? "Sing-box stopped" : "Failed to stop Sing-box";
-            logToFile($logFile, $logMessage);
+            $logMessage = $success ? "Sing-box has been stopped" : "Failed to stop Sing-box";
+            logToFile($logFile, $logMessage); 
             $singbox_status = $success ? 0 : $singbox_status;
         } elseif ($_POST['singbox'] === 'restart') {
             $success = stopSingbox();
             if ($success) {
-                checkLogFileSize($singBoxLogFile, $maxFileSize);
+                checkLogFileSize($singBoxLogFile, $maxFileSize); 
                 applyFirewallRules();
                 createStartScript($configFile);
                 exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
                 $version = getSingboxVersion();
                 $pid = getSingboxPID();
                 $logMessage = $returnVar === 0 
-                    ? "Sing-box restarted, version: $version, PID: $pid"
-                    : "Failed to start Sing-box";
-                logToFile($logFile, $logMessage);
+                    ? "Sing-box has been restarted，version: $version, PID: $pid" 
+                    : "Failed to start Sing-box";    
+                logToFile($logFile, $logMessage); 
                 $singbox_status = $returnVar === 0 ? 1 : 0;
             } else {
-                logToFile($logFile, "Failed to stop Sing-box");
+                logToFile($logFile, "Failed to stop Sing-box"); 
             }
         }
     }
 
     if (isset($_POST['clear_singbox_log'])) {
-        file_put_contents($singBoxLogFile, '');
+        file_put_contents($singBoxLogFile, ''); 
         $message = 'Sing-box runtime log cleared';
     }
 
     if (isset($_POST['clear_plugin_log'])) {
-        file_put_contents($logFile, '');
+        file_put_contents($logFile, ''); 
         $message = 'Plugin log cleared';
-    }
-
-    if (isset($_POST['clear_kernel_log'])) {
-        file_put_contents($kernelLogFile, '');
-        $message = 'Kernel log cleared';
     }
 }
 
@@ -570,10 +552,9 @@ function readLogFile($filePath) {
     }
 }
 
-$logContent = readLogFile($logFile);
-$kernelLogContent = readLogFile($kernelLogFile);
-$singboxLogContent = readLogFile($singBoxLogFile);
-$singboxStartLogContent = readLogFile($singboxStartLogFile);
+$logContent = readLogFile($logFile); 
+$singboxLogContent = readLogFile($singBoxLogFile); 
+$singboxStartLogContent = readLogFile($singboxStartLogFile); 
 ?>
 
 <div class="container container-bg border border-3 col-12 mb-4 p-1">
@@ -656,7 +637,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
 </div>
 
 <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-   <h2 class="text-center p-2">System Information</h2>
+   <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">System Information</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
@@ -831,23 +812,23 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
 </head>
 <body>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-        <h2 class="text-center p-2">Logs</h2>
+        <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">Logs</h2>
         <div class="d-flex flex-wrap">
             <div class="log-section">
                 <div class="log-container">
                     <h4 class="log-header">Plugin Logs</h4>
                     <pre class="form-control"><?php echo htmlspecialchars($logContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                     <form action="index.php" method="post" class="mt-3 log-footer">
-                        <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">Clear Plugin Logs</button>
+                        <button type="submit" name="clear_plugin_log" class="btn btn-danger btn-clear-log">Clear Log</button>
                     </form>
                 </div>
             </div>
             <div class="log-section">
                 <div class="log-container">
                     <h4 class="log-header">Mihomo Logs</h4>
-                    <pre class="form-control"><?php echo htmlspecialchars($kernelLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
+                    <pre id="bin_logs" class="form-control" rows="10" readonly></pre>
                     <form action="index.php" method="post" class="mt-3 log-footer">
-                        <button type="submit" name="clear_kernel_log" class="btn btn-danger btn-clear-log">Clear Mihomo Logs</button>
+                        <button type="submit" name="neko" value="clear" class="btn btn-danger btn-clear-log">Clear Log</button>
                     </form>
                 </div>
             </div>
@@ -856,7 +837,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                     <h4 class="log-header">Sing-box Logs</h4>
                     <pre class="form-control"><?php echo htmlspecialchars($singboxLogContent, ENT_QUOTES, 'UTF-8'); ?></pre>
                     <form action="index.php" method="post" class="mt-3 log-footer">
-                        <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">Clear Sing-box Logs</button>
+                        <button type="submit" name="clear_singbox_log" class="btn btn-danger btn-clear-log">Clear Log</button>
                     </form>
                 </div>
             </div>
