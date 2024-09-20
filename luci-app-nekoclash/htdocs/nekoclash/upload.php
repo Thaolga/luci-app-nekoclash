@@ -1019,7 +1019,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
                 <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> 保存内容</button>
             </form>
-
+            <button id="closeEditorButton" class="close-fullscreen" onclick="closeEditor()">X</button>
             <div id="aceEditorError" class="error-popup d-none">
                 <span id="aceEditorErrorMessage"></span>
                 <button id="closeErrorPopup">关闭</button>
@@ -1115,6 +1115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </script>
 
 <script>
+    function closeEditor() {
+        window.location.href = window.location.href; 
+    }
+
     var aceEditor = ace.edit("aceEditorContainer");
     aceEditor.setTheme("ace/theme/monokai");
     aceEditor.session.setMode("ace/mode/yaml");
@@ -1294,6 +1298,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         justify-content: center;
         font-size: 18px;
         z-index: 9999;
+    }
+
+    .close-fullscreen {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 10000;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
     }
 
     #aceEditorError button {
