@@ -1030,7 +1030,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="navigation">
     <a href="javascript:history.back()" class="btn btn-success">返回上一级菜单</a>
-    <a href="/nekoclash/upload.php" class="btn btn-success">返回当前菜单</a>
+    <a href="/nekoclash/mon.php?page=upload" class="btn btn-success">返回当前菜单</a>
     <a href="/nekoclash/configs.php" class="btn btn-success">返回配置菜单</a>
     <a href="/nekoclash" class="btn btn-success">返回主菜单</a>
 </div>
