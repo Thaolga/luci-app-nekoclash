@@ -2,7 +2,6 @@
 
 include './cfg.php';
 include './devinfo.php';
-include './video.php';
 $str_cfg=substr($selected_config, strlen("$neko_dir/config")+1);
 $_IMG = '/luci-static/ssr/';
 if(isset($_POST['neko'])){
@@ -779,23 +778,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         </tbody>
     </table>
 </div>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-    <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">语音播报系统</h2>
-    <table class="table table-borderless mb-2" style="margin-bottom: 5px;">
-        <tbody>
-            <tr>
-                <td>
-                    <div class="row mb-2" style="margin-bottom: 5px;">
-                        <div class="col">
-                            <input type="text" id="city-input" class="form-control" placeholder="如 Beijing" style="padding: 5px;">
-                        </div>
-                        <div class="col-auto">
-                            <button onclick="saveCity()" class="btn btn-success" style="padding: 5px 10px;">保存城市</button
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
