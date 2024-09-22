@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         html, body {
             margin: 0;
@@ -174,11 +175,37 @@
             padding: 0;
             box-sizing: border-box;
         }
+        .config-menu-button {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 5px solid;
+            color: white;
+            position: absolute;
+            right: 20px; 
+            text-align: center;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            animation: borderAnimation 3s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 20px; 
+         }
+
+        .button-top-60 {
+            top: 60px; 
+
+         }
     </style>
 </head>
 <body>
 
 <nav>
+    <a href="/nekoclash" class="config-menu-button button-top-60">
+        <i class="fas fa-home"></i>
+    </a>
     <ul>
         <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>
         <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
