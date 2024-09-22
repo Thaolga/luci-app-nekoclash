@@ -1,7 +1,7 @@
 <?php
 
 include './cfg.php';
-
+include './video.php';
 
 $themeDir = "$neko_www/assets/theme";
 $tmpPath = "$neko_www/lib/selected_config.txt";
@@ -58,49 +58,6 @@ $singBoxVersion = getSingboxVersion();
     <script type="text/javascript" src="./assets/js/neko.js"></script>
   </head>
   <body>
-<head>
-    <meta charset="UTF-8">
-   <head>
-    <meta charset="UTF-8">
-      <title>双击显示图标</title>
-    <style>
-        .container-sm {
-            margin: 20px auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-sm text-center col-8">
-        <img src="./assets/img/neko.png" class="img-fluid mb-5" style="display: none;">
-    </div>
-
-    <script>
-        function toggleImage() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'none') {
-                img.style.display = 'block';
-                btn.innerText = '隐藏图标';
-            } else {
-                img.style.display = 'none';
-                btn.innerText = '显示图标';
-            }
-        }
-
-        function hideIcon() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'block') {
-                img.style.display = 'none';
-                btn.innerText = '显示图标';
-            }
-        }
-
-        document.body.ondblclick = function() {
-            toggleImage();
-        };
-    </script>
-
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
             <a href="./" class="col btn btn-lg">首页</a>
@@ -129,7 +86,6 @@ $singBoxVersion = getSingboxVersion();
                 </div>
             </div>
         </form>
-
         <h2 class="text-center p-2 mb-3">软体资讯</h2>
         <table class="table table-borderless mb-3">
             <tbody>
@@ -326,6 +282,24 @@ $singBoxVersion = getSingboxVersion();
                 xhr.send();
             });
         </script>
+     <div class="feature-box text-center">
+      <h2>语音播报系统</h2>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="row mb-2" style="margin-bottom: 5px;">
+                        <div class="col">
+                            <input type="text" id="city-input" class="form-control" placeholder="如 Beijing" style="padding: 5px;">
+                        </div>
+                        <div class="col-auto">
+                            <button onclick="saveCity()" class="btn btn-success" style="padding: 5px 10px;">保存城市</button
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+ </div>
+     </div>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
