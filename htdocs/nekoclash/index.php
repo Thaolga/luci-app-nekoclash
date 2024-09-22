@@ -883,12 +883,52 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         setInterval(fetchLogs, 5000);
     </script>
 
-<a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
-   style="height: 50px; width: 50px; line-height: 50px; border-radius: 50%; background-color: #28a745; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: background-color 0.3s;" 
+<a href="/nekoclash/mon.php" id="move-button" class="config-menu-button d-flex justify-content-center align-items-center" 
+   style="height: 50px; width: 50px; line-height: 50px; border-radius: 50%; background-color: #28a745; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: background-color 0.3s, top 0.5s, left 0.5s;" 
    onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;"
    onmouseover="this.style.backgroundColor='#218838';" onmouseout="this.style.backgroundColor='#28a745';">
     Panel
 </a>
+
+<script>
+const button = document.getElementById('move-button');
+const originalPosition = { top: '20px', left: '20px' };
+let isDragging = false;
+let offsetX, offsetY;
+let returnTimeout;
+
+button.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - button.getBoundingClientRect().left;
+    offsetY = e.clientY - button.getBoundingClientRect().top;
+
+    clearTimeout(returnTimeout); 
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        button.style.left = `${e.clientX - offsetX}px`;
+        button.style.top = `${e.clientY - offsetY}px`;
+
+        clearTimeout(returnTimeout);
+        returnTimeout = setTimeout(() => {
+            returnToOriginalPosition();
+        }, 30000); 
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+function returnToOriginalPosition() {
+    button.style.top = originalPosition.top;
+    button.style.left = originalPosition.left;
+}
+
+button.style.top = originalPosition.top;
+button.style.left = originalPosition.left;
+</script>
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
