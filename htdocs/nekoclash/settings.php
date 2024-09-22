@@ -155,6 +155,7 @@ $singBoxVersion = getSingboxVersion();
                                     </div>
                                     <div class="text-center mt-2">
                                         <button class="btn btn-pink" id="updateSingboxButton">Update Singbox Core</button>
+                                         <button class="btn btn-info" id="updatePuernyaButton">Switch to Puernya Core</button>
                                     </div>
                                 </div>
                             </div>
@@ -165,7 +166,7 @@ $singBoxVersion = getSingboxVersion();
                                         <div id="corever">-</div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-success" id="updateCoreButton">Switch to Mihomo Core</button>
+                                        <button class="btn btn-success" id="updateCoreButton">Update Mihomo Core</button>
                                     </div>
                                 </div>
                             </div>
@@ -229,7 +230,7 @@ $singBoxVersion = getSingboxVersion();
                 background-color: #90EE90;
             }
 
-            #updateNekoButton:hover {
+            #updatePuernyaButton:hover {
                 background-color: #87CEFA;
             }
         </style>
@@ -257,6 +258,25 @@ $singBoxVersion = getSingboxVersion();
             document.getElementById('updateSingboxButton').addEventListener('click', function() {
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'singbox.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\nCore update completed!';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\\nError occurred: ' + xhr.statusText;
+                    }
+                };
+
+                xhr.send();
+            });
+
+            document.getElementById('updatePuernyaButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'puernya.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
                 document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
