@@ -1,7 +1,7 @@
 <?php
 
 include './cfg.php';
-
+include './video.php';
 $themeDir = "$neko_www/assets/theme";
 $tmpPath = "$neko_www/lib/selected_config.txt";
 $arrFiles = array();
