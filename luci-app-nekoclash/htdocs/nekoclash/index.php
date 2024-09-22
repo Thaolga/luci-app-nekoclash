@@ -969,13 +969,13 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         fetchLogs();
         setInterval(fetchLogs, 5000);
     </script>
-
 <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
-   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: #28a745; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: background-color 0.3s;" 
+   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
    onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/mon.php'); return false;"
-   onmouseover="this.style.backgroundColor='#218838';" onmouseout="this.style.backgroundColor='#28a745';">
-    面板
+   onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
+    <i class="fas fa-cog"></i>
 </a>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
