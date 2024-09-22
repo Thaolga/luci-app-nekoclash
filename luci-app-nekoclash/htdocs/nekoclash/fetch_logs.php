@@ -8,12 +8,20 @@ $allowed_files = [
 ];
 
 $file = $_GET['file'] ?? '';
+$max_lines = 100; 
 
 if (array_key_exists($file, $allowed_files)) {
     $file_path = $allowed_files[$file];
-    
+
     if (file_exists($file_path)) {
-        echo htmlspecialchars(file_get_contents($file_path));
+        $lines = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        
+        if (count($lines) > $max_lines) {
+            $lines = array_slice($lines, -$max_lines); 
+            file_put_contents($file_path, implode(PHP_EOL, $lines)); 
+        }
+
+        echo htmlspecialchars(implode(PHP_EOL, $lines));
     } else {
         http_response_code(404);
         echo "File not found.";
