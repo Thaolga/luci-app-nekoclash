@@ -235,8 +235,12 @@ $configDir = '/etc/neko/config';
 $start_script_template = <<<EOF
 #!/bin/bash
 
+exec >> $logFile 2>&1  
+exec 2>> $singBoxLogFile  
+
 if command -v fw4 > /dev/null; then
-    echo "Detected fw4, configuring nftables rules..."
+    echo "FW4 Detected."
+    echo "Starting nftables."
 
     echo '#!/usr/sbin/nft -f
 
@@ -303,7 +307,8 @@ table inet singbox {
     nft -f /etc/nftables.conf
 
     elif command -v fw3 > /dev/null; then
-    echo "Detected fw3, configuring iptables rules..."
+    echo "FW3 Detected."
+    echo "Starting iptables."
 
     iptables -t mangle -F
     iptables -t mangle -X
@@ -343,7 +348,8 @@ else
     exit 1
 fi
 
-echo "Starting sing-box, using configuration file: %s"
+echo "Configs : %s"
+exec >> $singBoxLogFile 2>&1  
 /usr/bin/sing-box run -c %s
 EOF;
 
@@ -504,8 +510,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
             $version = getSingboxVersion();
             $pid = getSingboxPID();
+            $currentTimestamp = date('H:i:s'); 
             $logMessage = $returnVar === 0 
-               ? "Sing-box has been started, version: $version" : "Failed to start Sing-box";      
+                ? "Sing-box started\n[$currentTimestamp] Core Detected : $version" 
+                : "Failed to start Sing-box\n[$currentTimestamp]";
             logToFile($logFile, $logMessage); 
             $singbox_status = $returnVar === 0 ? 1 : 0;
         } elseif ($_POST['singbox'] === 'disable') {
@@ -875,14 +883,12 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         setInterval(fetchLogs, 5000);
     </script>
 
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4 d-flex justify-content-center" style="height: 60px;">
-    <div class="nav-buttons d-flex justify-content-center align-items-center" style="height: 100%;">
-        <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" style="height: 40px; line-height: 40px; margin-top: -28px;" onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;">
-            Open Mihomo Management Panel
-        </a>
-    </div>
-</div>
-
+<a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
+   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: #28a745; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: background-color 0.3s;" 
+   onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;"
+   onmouseover="this.style.backgroundColor='#218838';" onmouseout="this.style.backgroundColor='#28a745';">
+    Panel
+</a>
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
