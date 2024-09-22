@@ -175,7 +175,7 @@ function formatSize($size) {
 <?php
 $subscriptionPath = '/etc/neko/proxy_provider/';
 $subscriptionFile = $subscriptionPath . 'subscriptions.json';
-$clashFile = $subscriptionPath . 'clash_config.yaml';
+$clashFile = $subscriptionPath . 'subscription_6.yaml';
 
 $message = "";
 $decodedContent = ""; 
