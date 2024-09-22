@@ -2,7 +2,6 @@
 
 include './cfg.php';
 include './devinfo.php';
-include './video.php';
 $str_cfg=substr($selected_config, strlen("$neko_dir/config")+1);
 $_IMG = '/luci-static/ssr/';
 if(isset($_POST['neko'])){
