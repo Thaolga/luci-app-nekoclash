@@ -168,6 +168,7 @@ $singBoxVersion = getSingboxVersion();
                                     </div>
                                     <div class="text-center mt-2">
                                         <button class="btn btn-pink" id="updateSingboxButton">更新 Singbox 内核</button>
+                                        <button class="btn btn-info" id="updatePuernyaButton">切换 Puernya 内核</button>
                                     </div>
                                 </div>
                             </div>
@@ -242,7 +243,7 @@ $singBoxVersion = getSingboxVersion();
                 background-color: #90EE90;
             }
 
-            #updateNekoButton:hover {
+            #updatePuernyaButton:hover {
                 background-color: #87CEFA;
             }
         </style>
@@ -285,6 +286,26 @@ $singBoxVersion = getSingboxVersion();
 
                 xhr.send();
             });
+
+            document.getElementById('updatePuernyaButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'puernya.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
+
+                xhr.send();
+            });
+
 
             document.getElementById('updateCoreButton').addEventListener('click', function() {
                 const xhr = new XMLHttpRequest();
