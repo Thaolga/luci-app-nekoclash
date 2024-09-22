@@ -884,7 +884,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     </script>
 
 <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
-   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: #28a745; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: background-color 0.3s;" 
+   style="height: 50px; width: 50px; line-height: 50px; border-radius: 50%; background-color: #28a745; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: background-color 0.3s;" 
    onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;"
    onmouseover="this.style.backgroundColor='#218838';" onmouseout="this.style.backgroundColor='#28a745';">
     Panel
