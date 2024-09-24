@@ -313,6 +313,7 @@ $lang = $_GET['lang'] ?? 'en';
 <tbody>
     <tr>
 <?php
+date_default_timezone_set('Asia/Shanghai'); 
 $singbox_status = 0;
 
 $logDir = '/etc/neko/tmp/';
@@ -459,6 +460,35 @@ function createStartScript($configFile) {
     chmod('/etc/neko/core/start.sh', 0755);
 }
 
+function createRestartFirewallScript() {
+    $scriptPath = '/etc/neko/core/restart_firewall.sh';
+    $scriptContent = <<<EOF
+#!/bin/bash
+
+service firewall restart
+if [ \$? -eq 0 ]; then
+    echo "[\$(date '+%H:%M:%S')] Restarting Firewall." >> /etc/neko/tmp/log.txt
+else
+    echo "[\$(date '+%H:%M:%S')] Firewall restart failed." >> /etc/neko/tmp/log.txt
+fi
+EOF;
+
+    $result = file_put_contents($scriptPath, $scriptContent);
+    if ($result === false) {
+        error_log("Failed to create script at $scriptPath");
+    } else {
+        chmod($scriptPath, 0755);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['singbox'])) {
+        if ($_POST['singbox'] === 'start') {
+            createRestartFirewallScript(); 
+      }
+    }
+}
+
 function rotateLogFile($filePath) {
     $backupPath = $filePath . '-' . date('Y-m-d-H-i-s') . '.bak';
     rename($filePath, $backupPath);  
@@ -558,18 +588,19 @@ function stopSingbox() {
         if ($returnVar !== 0) {
             exec("kill -9 $pid", $output, $returnVar);
         }
-        exec("service firewall restart", $output, $returnVar);
+        exec('/etc/neko/core/restart_firewall.sh', $output, $returnVar);
 
         if ($returnVar === 0) {
-            logToFile('/etc/neko/tmp/log.txt', "防火墙重启成功。");
+            logToFile('/etc/neko/tmp/log.txt', "Restarting Firewall.");
             return true;
         } else {
-            logToFile('/etc/neko/tmp/log.txt', "防火墙重启失败。");
+            logToFile('/etc/neko/tmp/log.txt', "Firewall restart failed.");
             error_log("Failed to stop Sing-box with PID $pid");
         }
     }
     return false;
 }
+
 
 function logToFile($filePath, $message) {
     $timestamp = date('H:i:s');
@@ -619,6 +650,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 applyFirewallRules();
                 createStartScript($configFile);
                 exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
+                exec('/etc/neko/core/restart_firewall.sh', $output, $returnVar); 
                 $version = getSingboxVersion();
                 $pid = getSingboxPID();
                 $logMessage = $returnVar === 0 
