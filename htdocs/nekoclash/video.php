@@ -197,11 +197,17 @@
         hidePlayerButton.addEventListener('click', function() {
             var player = document.getElementById('player');
             if (player.style.display === 'none') {
-                player.style.display = 'flex';
+                localStorage.setItem('playerVisible', 'true');
             } else {
                 player.style.display = 'none';
+                localStorage.setItem('playerVisible', 'false');
             }
         });
+
+        window.onload = function() {
+            const playerVisible = localStorage.getItem('playerVisible') === 'true';
+            document.getElementById('player').style.display = playerVisible ? 'flex' : 'none';
+        };
 
         function applyGradient(text, elementId) {
             const element = document.getElementById(elementId);
