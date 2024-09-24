@@ -7,6 +7,7 @@ date_default_timezone_set('Asia/Shanghai');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets/img/favicon.png">
     <style>
         .controls {
             display: flex;
@@ -560,9 +561,23 @@ date_default_timezone_set('Asia/Shanghai');
             var player = document.getElementById('player');
             if (player.style.display === 'none') {
                 player.style.display = 'flex';
+                localStorage.setItem('playerVisible', 'true');
             } else {
                 player.style.display = 'none';
+                localStorage.setItem('playerVisible', 'false');
             }
+        });
+
+        window.onload = function() {
+            const playerVisible = localStorage.getItem('playerVisible') === 'true';
+            document.getElementById('player').style.display = playerVisible ? 'flex' : 'none';
+        };
+
+        document.getElementById('hidePlayer').addEventListener('click', function() {
+            const player = document.getElementById('player');
+            const isVisible = player.style.display !== 'none';
+            player.style.display = isVisible ? 'none' : 'flex';
+            localStorage.setItem('playerVisible', !isVisible);
         });
 
         function applyGradient(text, elementId) {
