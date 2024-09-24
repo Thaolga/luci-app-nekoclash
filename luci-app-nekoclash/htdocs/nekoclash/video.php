@@ -560,7 +560,6 @@ date_default_timezone_set('Asia/Shanghai');
         hidePlayerButton.addEventListener('click', function() {
             var player = document.getElementById('player');
             if (player.style.display === 'none') {
-                player.style.display = 'flex';
                 localStorage.setItem('playerVisible', 'true');
             } else {
                 player.style.display = 'none';
@@ -572,13 +571,6 @@ date_default_timezone_set('Asia/Shanghai');
             const playerVisible = localStorage.getItem('playerVisible') === 'true';
             document.getElementById('player').style.display = playerVisible ? 'flex' : 'none';
         };
-
-        document.getElementById('hidePlayer').addEventListener('click', function() {
-            const player = document.getElementById('player');
-            const isVisible = player.style.display !== 'none';
-            player.style.display = isVisible ? 'none' : 'flex';
-            localStorage.setItem('playerVisible', !isVisible);
-        });
 
         function applyGradient(text, elementId) {
             const element = document.getElementById(elementId);
