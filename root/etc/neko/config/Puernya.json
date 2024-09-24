@@ -223,6 +223,22 @@
             ]
         },
         {
+            "tag": "🎵 TikTok",
+            "type": "selector",
+            "outbounds": [
+                "🚀 节点选择",
+                "🇭🇰 香港节点",
+                "🇹🇼 台湾节点",
+                "🇯🇵 日本节点",
+                "🇰🇷 韩国节点",
+                "🇸🇬 狮城节点",
+                "🇺🇸 美国节点",
+                "🌀 手动切换1",
+                "🌀 手动切换2",
+                "🐸 其他地区"
+            ]
+        },
+        {
             "tag": "🎥 Netflix",
             "type": "selector",
             "outbounds": [
@@ -404,7 +420,25 @@
                 "🇰🇷 韩国节点",
                 "🇸🇬 狮城节点",
                 "🇺🇸 美国节点",
-                "🐸 其他地区"
+                "📹 YouTube",
+                "🎵 TikTok",
+                "🎥 Netflix",
+                "🎬 迪士尼+",
+                "🤖 人工智能",
+                "📲 电报消息",
+                "🎮 游戏服务",
+                "🪟 微软服务",
+                "🇬 谷歌服务",
+                "🍎 苹果服务",
+                "🇨🇳 直连域名",
+                "🪜 代理域名",
+                "🇨🇳 直连 IP",
+                "🖥️ 直连软件",
+                "🔒 私有网络",
+                "📈 网络测试",
+                "🎯 全球直连",
+                "🛑 广告拦截",
+                "🐟 漏网之鱼"
             ]
         },
         {
@@ -495,8 +529,38 @@
             "excludes": "(?i)网站|地址|剩余|过期|时间|有效|套餐|到期",
             "healthcheck_url": "https://www.gstatic.com/generate_204",
             "healthcheck_interval": "10m"
+        },
+        {
+            "tag": "🛫. ",
+            "type": "remote",
+            "download_url": "https://example.com/xxx/xxx&flag=clash",
+            "path": "./proxy/2.yaml",
+            "download_interval": "24h",
+            "download_ua": "clash.meta",
+            "includes": [
+
+            ],
+            "excludes": "(?i)网站|地址|剩余|过期|时间|有效|套餐|到期",
+            "healthcheck_url": "https://www.gstatic.com/generate_204",
+            "healthcheck_interval": "10m"
         }
     ],
+    "routing": {
+        "rules": [
+            {
+                "ip_cidr": "192.168.0.0/16",
+                "outbound": "direct"
+            },
+            {
+                "ip_cidr": "10.0.0.0/8",
+                "outbound": "direct"
+            },
+            {
+                "ip_cidr": "0.0.0.0/0",
+                "outbound": "proxy"
+            }
+        ]
+    },
     "route": {
         "rules": [
             {
@@ -597,6 +661,13 @@
             },
             {
                 "rule_set": [
+                    "geoip-tiktok",
+                    "geosite-tiktok"
+                ],
+                "outbound": "🎵 TikTok"
+            },
+            {
+                "rule_set": [
                     "geoip-netflix",
                     "geosite-netflix"
                 ],
@@ -654,6 +725,20 @@
                 "format": "binary",
                 "path": "./rules/fakeip-filter.srs",
                 "url": "https://mirror.ghproxy.com/https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/fakeip-filter.srs"
+            },
+            {
+                "tag": "geosite-tiktok",
+                "type": "remote",
+                "format": "binary",
+                "path": "./rules/geosite/tiktok.srs",
+                "url": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/tiktok.srs"
+            },
+            {
+                "tag": "geoip-tiktok",
+                "type": "remote",
+                "format": "binary",
+                "path": "./rules/tiktok.srs",
+                "url": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo-lite/geosite/tiktok.srs"
             },
             {
                 "tag": "applications",
