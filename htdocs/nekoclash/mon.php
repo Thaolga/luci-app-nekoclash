@@ -193,6 +193,10 @@
             top: 20px; 
          }
 
+        .config-menu-button {
+            right: 50px; 
+        }
+
         .button-top-60 {
             top: 60px; 
 
