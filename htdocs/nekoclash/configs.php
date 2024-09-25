@@ -110,7 +110,6 @@ include './cfg.php';
                     </div>
                 </div>
             </form>
-        </div>
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
     <ul class="nav text-center justify-content-md-center">
         <li class="nav-item">
