@@ -39,7 +39,6 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
         </div>
     </div>
     <div class="container text-left p-3">
-       
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
     <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">运行状况</h2>
     <table class="table table-borderless mb-2">
@@ -688,9 +687,9 @@ $singboxLogContent = readLogFile($singBoxLogFile);
 $singboxStartLogContent = readLogFile($singboxStartLogFile); 
 ?>
 
-<div class="container container-bg border border-3 col-12 mb-4 p-1">
+<div class="container container-bg border  rounded-4 border-3 col-12 mb-4 p-1">
     <h2 class="text-center p-1">NekoClash 控制面板</h2>
-    <table class="table table-borderless mb-2">
+    <table class="table table-borderless  mb-2">
         <tbody>
             <tr>
     <style>
@@ -760,14 +759,10 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
                     <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $mode_placeholder; ?>" disabled>
                 </td>
             </tr>
-        </tbody>
+       </tbody>
     </table>
-</div>
-
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-    <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">系统信息</h2>
-    <table class="table table-borderless mb-2">
-
+    <h2 class="text-center p-2" >系统信息</h2>
+    <table class="table table-borderless rounded-4 mb-2">
         <tbody>
             <tr>
                 <td>型号</td>
@@ -795,8 +790,9 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             </tr>
         </tbody>
     </table>
-</div>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+  <br>
+<div class="container container-bg  rounded-4 col-12 mb-4">
+
     <table class="table table-borderless mb-0">
         <tbody>
             <tr class="text-center">
@@ -809,7 +805,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             </tr>
         </tbody>
     </table>
-</div>
+ </div>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -1002,7 +998,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         setInterval(fetchLogs, 5000);
     </script>
 <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
-   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
+   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: #ffcc00; position: absolute; top: 10px; left: 20px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
    onclick="speakAndNavigate('打开Mihomo 管理面板', '/nekoclash/mon.php'); return false;"
    onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
     <i class="fas fa-cog"></i>
