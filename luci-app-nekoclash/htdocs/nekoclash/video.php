@@ -509,7 +509,7 @@ date_default_timezone_set('Asia/Shanghai');
 <body>
   </div>
 
- <div id="player" onclick="toggleAnimation()">
+ <div id="player" style="display: none;"  onclick="toggleAnimation()">
         <p id="hidePlayer">Mihomo</p>
         <p id="timeDisplay">00:00</p>
         <audio id="audioPlayer" controls>
@@ -566,11 +566,6 @@ date_default_timezone_set('Asia/Shanghai');
                 localStorage.setItem('playerVisible', 'false');
             }
         });
-
-        window.onload = function() {
-            const playerVisible = localStorage.getItem('playerVisible') === 'true';
-            document.getElementById('player').style.display = playerVisible ? 'flex' : 'none';
-        };
 
         function applyGradient(text, elementId) {
             const element = document.getElementById(elementId);
