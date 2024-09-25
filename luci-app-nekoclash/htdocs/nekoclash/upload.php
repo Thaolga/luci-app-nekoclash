@@ -511,7 +511,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mihomo 文件管理</title>
     <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #87ceeb;
@@ -888,26 +887,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <form action="" method="post" class="d-inline">
                                         <input type="hidden" name="deleteFile" value="<?php echo htmlspecialchars($file); ?>">
                                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');">
-                                            <i class="fas fa-trash"></i> 删除
+                                            <i>🗑️</i> 删除
                                         </button>
                                     </form>
                                     
                                     <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>" data-filetype="proxy">
-                                        <i class="fas fa-edit"></i> 重命名
+                                        <i>✏️</i> 重命名
                                     </button>
                                     
                                     <form action="" method="post" class="d-inline">
                                         <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                                         <input type="hidden" name="fileType" value="proxy"> 
                                         <button type="submit" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-pen"></i> 编辑
+                                            <i>✏️</i> 编辑
                                         </button>
                                     </form>
 
                                     <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                                         <input type="file" name="fileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
                                         <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();">
-                                            <i class="fas fa-upload"></i> 上传
+                                            <i>⬆️</i> 上传
                                         </button>  
                                     </form>
                                 </div>
@@ -968,18 +967,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="btn-group">
                                     <form action="" method="post" class="d-inline">
                                         <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');"><i class="fas fa-trash"></i> 删除</button>                                     
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除这个文件吗？');"><i>🗑️</i> 删除</button>                                     
                                     </form>
-                                    <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>" data-filetype="config"><i class="fas fa-edit"></i> 重命名</button>
+                                    <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>" data-filetype="config"><i>✏️</i> 重命名</button>
                                    
                                     <form action="" method="post" class="d-inline">
                                         <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                                         <input type="hidden" name="fileType" value="config">
-                                        <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> 编辑</button>    
+                                        <button type="submit" class="btn btn-warning btn-sm"><i>✏️</i> 编辑</button>    
                                     </form>
                                     <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                                         <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                                        <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> 上传</button>                                  
+                                        <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i>⬆️</i> 上传</button>                                  
                                     </form>
                                 </div>
                             </td>
@@ -1017,7 +1016,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
                 <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> 保存内容</button>
+                <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i>💾</i> 保存内容</button>
             </form>
             <button id="closeEditorButton" class="close-fullscreen" onclick="closeEditor()">X</button>
             <div id="aceEditorError" class="error-popup d-none">
@@ -1027,13 +1026,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     <?php endif; ?>
 <?php endif; ?>
-
-<div class="navigation">
-    <a href="javascript:history.back()" class="btn btn-success">返回上一级菜单</a>
-    <a href="/nekoclash/mon.php?page=upload" class="btn btn-success">返回当前菜单</a>
-    <a href="/nekoclash/configs.php" class="btn btn-success">返回配置菜单</a>
-    <a href="/nekoclash" class="btn btn-success">返回主菜单</a>
-</div>
         <section id="subscription-management" class="section-gap">
             <h2 class="text-success"  style="margin-top: 20px; margin-bottom: 20px;">订阅管理</h2>
                 <p class="help-text" style="text-align: left; font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px;">
@@ -1060,7 +1052,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="subscription_url" id="subscription_url_<?php echo $i; ?>" value="<?php echo htmlspecialchars($subscriptions[$i]['url']); ?>" required class="form-control">
                         <input type="text" name="custom_file_name" id="custom_file_name_<?php echo $i; ?>" value="<?php echo htmlspecialchars($subscriptions[$i]['file_name']); ?>" class="form-control ml-2" placeholder="自定义文件名">
                         <input type="hidden" name="index" value="<?php echo $i; ?>">
-                        <button type="submit" name="update" class="btn btn-primary btn-custom ml-2"><i class="fas fa-sync-alt"></i>更新配置</button>
+                        <button type="submit" name="update" class="btn btn-primary btn-custom ml-2"><i>🔄</i> 更新配置</button>
                     </div>
                 </form>
             <?php endfor; ?>
@@ -1072,7 +1064,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <textarea name="base64_content" id="base64_content" rows="4" class="form-control" placeholder="粘贴 Base64 内容..." required></textarea>
                 </div>
-                <button type="submit" name="convert_base64" class="btn btn-primary btn-custom">生成节点信息</button>
+                <button type="submit" name="convert_base64" class="btn btn-primary btn-custom"><i>🔄</i> 生成节点信息</button>
             </form>
         </section>
 
@@ -1082,7 +1074,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <textarea name="input" rows="10" class="form-control" placeholder="粘贴 ss//vless//vmess//trojan//hysteria2 节点信息..."></textarea>
                 </div>
-                <button type="submit" name="convert" class="btn btn-primary">转换</button>
+                <button type="submit" name="convert" class="btn btn-primary"><i>🔄</i> 转换</button>
             </form>
         </section>
     </div>

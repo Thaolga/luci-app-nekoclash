@@ -118,8 +118,6 @@
                 </fieldset>
                 <div class="form-group text-center">
                     <input type="submit" name="generateConfig" class="btn btn-primary" value="生成配置文件">
-                    <button type="button" class="btn btn-danger" onclick="window.location.href='javascript:history.back()';">返回上一级</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/nekoclash';">返回主菜单</button>
                 </div>
             </form>
 
