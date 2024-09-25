@@ -59,6 +59,14 @@ wget -O /root/nekoclash.sh https://raw.githubusercontent.com/Thaolga/luci-app-ne
 git clone https://github.com/Thaolga/luci-app-nekoclash  package/luci-app-nekoclash
 
 ```
+## Switch to Chinese version :
+---
+
+```bash
+cd package/luci-app-nekoclash
+git checkout neko
+
+```
 
 ## Compile :
 ---
