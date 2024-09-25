@@ -118,8 +118,6 @@
                 </fieldset>
                 <div class="form-group text-center">
                     <input type="submit" name="generateConfig" class="btn btn-primary" value="Generate Configuration File">
-                    <button type="button" class="btn btn-danger" onclick="window.location.href='javascript:history.back()';">Return to Previous Level</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/nekoclash';">Return to Main Menu</button>
                 </div>
             </form>
 

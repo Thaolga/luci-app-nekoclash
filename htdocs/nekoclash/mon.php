@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         html, body {
             margin: 0;
@@ -204,7 +203,7 @@
 
 <nav>
     <a href="/nekoclash" class="config-menu-button button-top-60">
-        <i class="fas fa-home"></i>
+        <i> 🏠</i>
     </a>
     <ul>
         <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>

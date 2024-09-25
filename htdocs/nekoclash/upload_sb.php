@@ -273,7 +273,6 @@ if (isset($_POST['update_index'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sing-box File Manager</title>
     <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #87ceeb;
@@ -514,17 +513,17 @@ if (isset($_POST['update_index'])) {
                     <div class="btn-group">
                         <form action="" method="post" class="d-inline">
                             <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');"><i class="fas fa-trash"></i> Delete</button>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');"><i>🗑️</i> Delete</button>
                         </form>
-                        <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i class="fas fa-edit"></i> Rename</button>
+                        <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i>✏️</i>Rename</button>
                         <form action="" method="post" class="d-inline">
                             <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                             <input type="hidden" name="fileType" value="config">
-                            <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i>Edit</button>
+                            <button type="submit" class="btn btn-warning btn-sm"><i>✏️</i> Edit</button>
                         </form>
                         <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                             <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                            <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i class="fas fa-upload"></i> Upload</button>
+                            <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i>⬆️</i> Upload</button>
                         </form>
                     </div>
                 </td>
@@ -563,7 +562,7 @@ if (isset($_POST['update_index'])) {
 
                 <input type="hidden" name="fileName" value="<?php echo htmlspecialchars($_POST['editFile']); ?>">
                 <input type="hidden" name="fileType" value="<?php echo htmlspecialchars($_POST['fileType']); ?>">
-                <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i class="fas fa-save"></i> Save Content</button>
+                <button type="submit" class="btn btn-primary mt-2" onclick="syncEditorContent()"><i>💾</i> Save Content</button>
             </form>
             <button id="closeEditorButton" class="close-fullscreen" onclick="closeEditor()">X</button>
             <div id="aceEditorError" class="error-popup d-none">
@@ -573,13 +572,6 @@ if (isset($_POST['update_index'])) {
         </div>
     <?php endif; ?>
 <?php endif; ?>
-
-        <div class="nav-buttons mt-4">
-            <a href="javascript:history.back()" class="btn btn-success">Return to Previous Menu</a>
-            <a href="/nekoclash/mon.php?page=upload_sb" class="btn btn-success">Back to Current Menu</a>
-            <a href="/nekoclash" class="btn btn-success">Return to Main Menu</a>
-        </div>
-
         <h1 style="margin-top: 20px; margin-bottom: 20px;">Sing-box Subscription</h1>
         <?php if ($message): ?>
             <p><?php echo nl2br(htmlspecialchars($message)); ?></p>
@@ -598,7 +590,7 @@ if (isset($_POST['update_index'])) {
                                     <label for="custom_file_name_<?php echo $i; ?>">Custom File Name <?php echo ($i === 0) ? '(Fixed as config.json)' : ''; ?></label>
                                     <input type="text" name="custom_file_name_<?php echo $i; ?>" id="custom_file_name_<?php echo $i; ?>" class="form-control form-control-sm" value="<?php echo htmlspecialchars($subscriptionData['subscriptions'][$i]['file_name'] ?? ($i === 0 ? 'config.json' : '')); ?>" <?php echo ($i === 0) ? 'readonly' : ''; ?> >
                                 </div>
-                                <button type="submit" name="update_index" value="<?php echo $i; ?>" class="btn btn-info btn-sm"><i class="fas fa-sync-alt"></i>Update Subscription <?php echo $i + 1; ?></button>
+                                <button type="submit" name="update_index" value="<?php echo $i; ?>" class="btn btn-info btn-sm"><i>🔄</i>Update Subscription <?php echo $i + 1; ?></button>
                             </div>
                         </div>
                     </div>

@@ -914,9 +914,8 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
    style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: #ffcc00; position: absolute; top: 10px; left: 20px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
    onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;"
    onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-    <i class="fas fa-cog"></i>
+    <i>⚙️</i>
 </a>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
