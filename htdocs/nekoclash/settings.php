@@ -57,36 +57,6 @@ $singBoxVersion = getSingboxVersion();
     <script type="text/javascript" src="./assets/js/neko.js"></script>
   </head>
   <body>
-    <div class="container-sm text-center col-8">
-        <img src="./assets/img/neko.png" class="img-fluid mb-5" style="display: none;">
-    </div>
-
-    <script>
-        function toggleImage() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'none') {
-                img.style.display = 'block';
-                btn.innerText = 'Hide Icon';
-            } else {
-                img.style.display = 'none';
-                btn.innerText = 'Show Icon';
-            }
-        }
-
-        function hideIcon() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'block') {
-                img.style.display = 'none';
-                btn.innerText = 'Show Icon';
-            }
-        }
-
-        document.body.ondblclick = function() {
-            toggleImage();
-        };
-    </script>
 
 <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
     <div class="row">
