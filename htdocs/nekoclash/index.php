@@ -13,6 +13,7 @@ if(isset($_POST['neko'])){
 }
 $neko_status=exec("uci -q get neko.cfg.enabled");
 ?>
+
 <!doctype html>
 <html lang="en" data-bs-theme="<?php echo substr($neko_theme,0,-4) ?>">
   <head>
@@ -28,6 +29,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
     <script type="text/javascript" src="./assets/js/neko.js"></script>
   </head>
   <body>
+ 
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
             <a href="#" class="col btn btn-lg">Home</a>
@@ -37,8 +39,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
         </div>
     </div>
     <div class="container text-left p-3">
-       
-        <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+    <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
     <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">Running Status</h2>
     <table class="table table-borderless mb-2">
         <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
@@ -218,9 +219,10 @@ $lang = $_GET['lang'] ?? 'en';
 </script>
 </body>
 </html>
-  <tbody>
+<tbody>
     <tr>
 <?php
+date_default_timezone_set('Asia/Shanghai'); 
 $singbox_status = 0;
 
 $logDir = '/etc/neko/tmp/';
@@ -367,6 +369,35 @@ function createStartScript($configFile) {
     chmod('/etc/neko/core/start.sh', 0755);
 }
 
+function createRestartFirewallScript() {
+    $scriptPath = '/etc/neko/core/restart_firewall.sh';
+    $scriptContent = <<<EOF
+#!/bin/bash
+
+service firewall restart
+if [ \$? -eq 0 ]; then
+    echo "[\$(date '+%H:%M:%S')] Restarting Firewall." >> /etc/neko/tmp/log.txt
+else
+    echo "[\$(date '+%H:%M:%S')] Firewall restart failed." >> /etc/neko/tmp/log.txt
+fi
+EOF;
+
+    $result = file_put_contents($scriptPath, $scriptContent);
+    if ($result === false) {
+        error_log("Failed to create script at $scriptPath");
+    } else {
+        chmod($scriptPath, 0755);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['singbox'])) {
+        if ($_POST['singbox'] === 'start') {
+            createRestartFirewallScript(); 
+      }
+    }
+}
+
 function rotateLogFile($filePath) {
     $backupPath = $filePath . '-' . date('Y-m-d-H-i-s') . '.bak';
     rename($filePath, $backupPath);  
@@ -466,18 +497,19 @@ function stopSingbox() {
         if ($returnVar !== 0) {
             exec("kill -9 $pid", $output, $returnVar);
         }
-        exec("service firewall restart", $output, $returnVar);
+        exec('/etc/neko/core/restart_firewall.sh', $output, $returnVar);
 
         if ($returnVar === 0) {
-            logToFile('/etc/neko/tmp/log.txt', "Firewall restarted successfully.");
+            logToFile('/etc/neko/tmp/log.txt', "Restarting Firewall.");
             return true;
         } else {
-            logToFile('/etc/neko/tmp/log.txt', "Failed to restart firewall.");
+            logToFile('/etc/neko/tmp/log.txt', "Firewall restart failed.");
             error_log("Failed to stop Sing-box with PID $pid");
         }
     }
     return false;
 }
+
 
 function logToFile($filePath, $message) {
     $timestamp = date('H:i:s');
@@ -512,7 +544,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $currentTimestamp = date('H:i:s'); 
             $logMessage = $returnVar === 0 
                 ? "Sing-box started\n[$currentTimestamp] Core Detected : $version" 
-                : "Failed to start Sing-box\n[$currentTimestamp]";
+                 : "Failed to start Sing-box\n[$currentTimestamp]";
             logToFile($logFile, $logMessage); 
             $singbox_status = $returnVar === 0 ? 1 : 0;
         } elseif ($_POST['singbox'] === 'disable') {
@@ -527,6 +559,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 applyFirewallRules();
                 createStartScript($configFile);
                 exec("/etc/neko/core/start.sh > $singBoxLogFile 2>&1 &", $output, $returnVar);
+                exec('/etc/neko/core/restart_firewall.sh', $output, $returnVar); 
                 $version = getSingboxVersion();
                 $pid = getSingboxPID();
                 $logMessage = $returnVar === 0 
@@ -555,7 +588,7 @@ function readLogFile($filePath) {
     if (file_exists($filePath)) {
         return nl2br(htmlspecialchars(readRecentLogLines($filePath, 1000), ENT_NOQUOTES));
     } else {
-        return 'Log file does not exist.';
+         return 'Log file does not exist.';
     }
 }
 
@@ -641,10 +674,7 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     </tr>
 </tbody>
     </table>
-</div>
-
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-   <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">System Information</h2>
+   <h2 class="text-center p-2" >System Information</h2>
     <table class="table table-borderless mb-2">
         <tbody>
             <tr>
@@ -673,8 +703,9 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             </tr>
         </tbody>
     </table>
-</div>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+  <br>
+<div class="container container-bg  rounded-4 col-12 mb-4">
+
     <table class="table table-borderless mb-0">
         <tbody>
             <tr class="text-center">
@@ -687,15 +718,13 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             </tr>
         </tbody>
     </table>
-</div>
-
+ </div>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -881,13 +910,13 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
         fetchLogs();
         setInterval(fetchLogs, 5000);
     </script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
-   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: white; position: absolute; top: 20px; left: 20px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
+   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: #ffcc00; position: absolute; top: 10px; left: 20px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
    onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;"
    onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
     <i class="fas fa-cog"></i>
 </a>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
         function speakAndNavigate(message, url) {
             speakMessage(message);
@@ -902,4 +931,3 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     </footer>
 </body>
 </html>
-

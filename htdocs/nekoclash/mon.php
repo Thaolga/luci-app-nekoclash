@@ -181,7 +181,7 @@
             border-radius: 50%;
             background-color: transparent;
             border: 5px solid;
-            color: white;
+            color: #ffcc00;
             position: absolute;
             right: 20px; 
             text-align: center;
