@@ -112,25 +112,25 @@ include './cfg.php';
             </div>
         </div>
     </form>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
-    <ul class="nav text-center justify-content-md-center">
-        <li class="nav-item">
-            <a class="col btn btn-lg active" data-bs-toggle="tab" href="#info">配置</a>
+<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+    <ul class="nav d-flex justify-content-between w-100 text-center">
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100 active" data-bs-toggle="tab" href="#info">配置</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#proxy">代理</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#proxy">代理</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#rules">规则</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#rules">规则</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#converter">转换</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#converter">转换</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#upload">订阅</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#upload">订阅</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#tip">小提示</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#tip">提示</a>
         </li>
     </ul>
 </div>
