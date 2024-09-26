@@ -135,7 +135,7 @@ include './cfg.php';
     </ul>
 </div>
 
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+   <div class="container rounded-4 col-12 mb-4">
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active">
             <h2 class="text-center p-2">配置资讯</h2>
