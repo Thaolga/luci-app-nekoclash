@@ -41,6 +41,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
     <div class="container text-left p-3">
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
     <h2 class="text-center p-2" style="margin-top: -15px; margin-bottom: 5px;">NekoClash</h2>
+    <div style="border: 1px solid black; padding: 10px; ">
    <br>
 <?php
 $translate = [
@@ -682,82 +683,70 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
             width: 100%; 
         }
     </style>
-<table class="table">
-    <tbody>
-        <tr>
-<td class="align-middle">状态</td>
-<td>
-    <div class="d-flex flex-wrap gap-2">
-        <?php if($neko_status==1): ?>
-            <span class="badge bg-success" style="font-size: 16px; padding: 8px 12px;">Mihomo 运行中</span>
-        <?php else: ?>
-            <span class="badge bg-danger" style="font-size: 16px; padding: 8px 12px;">Mihomo 未运行</span>
-        <?php endif; ?>
-        <span class="badge bg-info " style="font-size: 16px; padding: 8px 12px;"><?php echo $str_cfg; ?></span>
-        <?php if ($singbox_status == 1): ?>
-            <span class="badge bg-success" style="font-size: 16px; padding: 8px 12px;">Sing-box 运行中</span>
-        <?php else: ?>
-            <span class="badge bg-danger" style="font-size: 16px; padding: 8px 12px;">Sing-box 未运行</span>
-        <?php endif; ?>
-                </div>
-            </td>
-        </tr>
-        <tr>
-       <tr>
-            <td class="align-middle">控制</td>
-            <td>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <form action="index.php" method="post">
-                            <div class="mb-2">
-                                <div style="height: 31px;">       <h5 class="text-center p-2">选择配置文件</h5></div>
-                            </div>
-                            <div class="d-grid gap-2">
-                    <button type="submit" name="neko" value="start" class="btn <?php echo $neko_status == 1 ? 'btn-outline-success' : 'btn-success'; ?>" style="font-size: 16px; <?php echo $neko_status == 1 ? 'opacity: 0.6;' : ''; ?>">启用 Mihomo</button>
-                    <button type="submit" name="neko" value="disable" class="btn <?php echo $neko_status == 0 ? 'btn-outline-danger' : 'btn-danger'; ?>" style="font-size: 16px; <?php echo $neko_status == 0 ? 'opacity: 0.6;' : ''; ?>">停用 Mihomo</button>
-                    <button type="submit" name="neko" value="restart" class="btn <?php echo $neko_status == 0 ? 'btn-outline-warning' : 'btn-warning'; ?>" style="font-size: 16px; <?php echo $neko_status == 0 ? 'opacity: 0.6;' : ''; ?>">重启 Mihomo</button>
-                            </div>
-                        </form>
+            <td>状态</td>
+                <td class="d-grid">
+                    <div class="btn-group" role="group" aria-label="ctrl">
+                        <?php
+                            if($neko_status==1) echo "<button type=\"button\" class=\"btn btn-success\">Mihomo 运行中</button>\n";
+
+                            else echo "<button type=\"button\" class=\"btn btn-outline-danger\">Mihomo 未运行</button>\n";
+
+                            echo "<button type=\"button\" class=\"btn btn-deepskyblue\">$str_cfg</button>\n";
+
+                            if ($singbox_status == 1) echo "<button type=\"button\" class=\"btn btn-success\">Sing-box 运行中</button>\n";
+
+                            else  echo "<button type=\"button\" class=\"btn btn-outline-danger\">Sing-box 未运行</button>\n";
+                        ?>
                     </div>
-                    <div class="col-md-6">
-                        <form action="index.php" method="post">
-                            <div class="mb-2">
-                                <select name="config_file" id="config_file" class="form-select form-select-sm">
-                                    <?php foreach ($availableConfigs as $config): ?>
-                                        <option value="<?= htmlspecialchars($config) ?>" <?= isset($_POST['config_file']) && $_POST['config_file'] === $config ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars(basename($config)) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="d-grid gap-2">
-                    <button type="submit" name="singbox" value="start" class="btn <?php echo $singbox_status == 1 ? 'btn-outline-info' : 'btn-success'; ?>" style="font-size: 16px; <?php echo $singbox_status == 1 ? 'opacity: 0.6;' : ''; ?>">启用 Sing-box</button>
-                    <button type="submit" name="singbox" value="disable" class="btn <?php echo $singbox_status == 0 ? 'btn-outline-danger' : 'btn-danger'; ?>" style="font-size: 16px; <?php echo $singbox_status == 0 ? 'opacity: 0.6;' : ''; ?>">停用 Sing-box</button>
-                    <button type="submit" name="singbox" value="restart" class="btn <?php echo $singbox_status == 0 ? 'btn-outline-warning' : 'btn-warning'; ?>" style="font-size: 16px; <?php echo $singbox_status == 0 ? 'opacity: 0.6;' : ''; ?>">重启 Sing-box</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="align-middle">运行模式</td>
-            <td>
-                <?php
-                $mode_placeholder = '';
-                if ($neko_status == 1) {
-                    $mode_placeholder = $neko_cfg['echanced'] . " | " . $neko_cfg['mode'];
-                } elseif ($singbox_status == 1) {
-                    $mode_placeholder = "Rule 模式";
-                } else {
-                    $mode_placeholder = "未运行";
-                }
-                ?>
-                <input class="form-control form-control-sm text-center" name="mode" type="text" value="<?php echo $mode_placeholder; ?>" readonly>
-            </td>
-        </tr>
-    </tbody>
-</table>
+                </td>
+            </tr>
+            <tr>
+            <td>控制</td>
+                <form action="index.php" method="post">
+                    <td class="d-grid">
+                        <div class="btn-group col" role="group" aria-label="ctrl">
+                            <button type="submit" name="neko" value="start" class="btn btn<?php if ($neko_status == 1) echo "-outline" ?>-success <?php if ($neko_status == 1) echo "disabled" ?> d-grid">启用 Mihomo</button>
+                            <button type="submit" name="neko" value="disable" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-danger <?php if ($neko_status == 0) echo "disabled" ?> d-grid">停用 Mihomo</button>
+                            <button type="submit" name="neko" value="restart" class="btn btn<?php if ($neko_status == 0) echo "-outline" ?>-warning <?php if ($neko_status == 0) echo "disabled" ?> d-grid">重启 Mihomo</button>
+                        </div>
+                    </td>
+                </form>
+
+                <form action="index.php" method="post">
+                    <td class="d-grid">   
+                        <select name="config_file" id="config_file" class="form-select">
+                            <?php foreach ($availableConfigs as $config): ?>
+                                <option value="<?= htmlspecialchars($config) ?>" <?= isset($_POST['config_file']) && $_POST['config_file'] === $config ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars(basename($config)) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="btn-group col" role="group" aria-label="ctrl">
+                            <button type="submit" name="singbox" value="start" class="btn btn<?php echo ($singbox_status == 1) ? "-outline" : "" ?>-success <?php echo ($singbox_status == 1) ? "disabled" : "" ?> d-grid">启用 Sing-box</button>
+                            <button type="submit" name="singbox" value="disable" class="btn btn<?php echo ($singbox_status == 0) ? "-outline" : "" ?>-danger <?php echo ($singbox_status == 0) ? "disabled" : "" ?> d-grid">停用 Sing-box</button>
+                            <button type="submit" name="singbox" value="restart" class="btn btn<?php echo ($singbox_status == 0) ? "-outline" : "" ?>-warning <?php echo ($singbox_status == 0) ? "disabled" : "" ?> d-grid">重启 Sing-box</button>
+                        </div>
+                    </td>
+                </form>
+            </tr>
+            <tr>
+                <td>运行模式</td>
+                <td class="d-grid">
+                    <?php
+                    $mode_placeholder = '';
+                    if ($neko_status == 1) {
+                        $mode_placeholder = $neko_cfg['echanced'] . " | " . $neko_cfg['mode'];
+                    } elseif ($singbox_status == 1) {
+                        $mode_placeholder = "Rule 模式";
+                    } else {
+                        $mode_placeholder = "未运行";
+                    }
+                    ?>
+                    <input class="form-control text-center" name="mode" type="text" placeholder="<?php echo $mode_placeholder; ?>" disabled>
+                </td>
+            </tr>
+       </tbody>
+    </table>
     <h2 class="text-center p-2" >系统信息</h2>
     <table class="table table-borderless rounded-4 mb-2">
         <tbody>
