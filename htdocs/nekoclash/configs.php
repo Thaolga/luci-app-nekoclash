@@ -110,30 +110,29 @@ include './cfg.php';
                     </div>
                 </div>
             </form>
-    <div class="container container-bg border border-3 rounded-4 col-12 mb-4"></br>
-    <ul class="nav text-center justify-content-md-center">
-        <li class="nav-item">
-            <a class="col btn btn-lg active" data-bs-toggle="tab" href="#info">Info</a>
+<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+    <ul class="nav d-flex justify-content-between w-100 text-center">
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100 active" data-bs-toggle="tab" href="#info">Info</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#proxy">Proxy</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#proxy">Proxy</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#rules">Rules</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#rules">Rules</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#converter">Converter</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#converter">Converter</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#upload">Subscription</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#upload">Subscription</a>
         </li>
-        <li class="nav-item">
-            <a class="col btn btn-lg" data-bs-toggle="tab" href="#tip">Tips</a>
+        <li class="nav-item flex-grow-1">
+            <a class="btn btn-lg w-100" data-bs-toggle="tab" href="#tip">Tips</a>
         </li>
     </ul>
 </div>
-
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+   <div class="container rounded-4 col-12 mb-4">
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active">
                     <h2 class="text-center p-2">Config Information</h2>
@@ -217,7 +216,6 @@ include './cfg.php';
         </div>
 
         <div id="upload" class="tab-pane fade">
-            <h2 class="text-center p-2 mb-5">Subscription</h2>
             <div class="container h-100">
                 <iframe class="rounded-4 w-100" scrolling="no" height="700" src="./mo.php" title="yacd" allowfullscreen></iframe>
             </div>
