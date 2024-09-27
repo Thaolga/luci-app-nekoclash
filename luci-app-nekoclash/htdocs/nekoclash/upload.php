@@ -899,14 +899,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                                         <input type="hidden" name="fileType" value="proxy"> 
                                         <button type="submit" class="btn btn-warning btn-sm">
-                                            <i>✏️</i> 编辑
+                                            <i>📝</i> 编辑
                                         </button>
                                     </form>
 
                                     <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                                         <input type="file" name="fileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
                                         <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();">
-                                            <i>⬆️</i> 上传
+                                            <i>📤</i> 上传
                                         </button>  
                                     </form>
                                 </div>
@@ -974,11 +974,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <form action="" method="post" class="d-inline">
                                         <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                                         <input type="hidden" name="fileType" value="config">
-                                        <button type="submit" class="btn btn-warning btn-sm"><i>✏️</i> 编辑</button>    
+                                        <button type="submit" class="btn btn-warning btn-sm"><i>📝</i> 编辑</button>    
                                     </form>
                                     <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                                         <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                                        <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i>⬆️</i> 上传</button>                                  
+                                        <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i>📤</i> 上传</button>                                  
                                     </form>
                                 </div>
                             </td>

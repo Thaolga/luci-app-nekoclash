@@ -68,7 +68,7 @@ if (isset($_POST['newproxycfg'])) {
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col input-group mb-3 justify-content-md-center">
-                        <input class="btn btn-info" type="submit" value="保存代理">
+                        <input class="btn btn-info" type="submit" value="💾 保存代理">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">

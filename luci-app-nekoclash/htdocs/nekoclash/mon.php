@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         html, body {
             margin: 0;
@@ -212,24 +211,25 @@
         <i> 🏠</i>
     </a>
     <ul>
-        <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>
-        <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
-        <li>
-            <a href="?page=box" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'box' || $_GET['page'] == 'personal')) ? 'active' : '' ?>">转换模板</a>
-            <ul class="submenu">
-                <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">Box</a></li>
-                <li><a href="?page=personal" class="<?= (isset($_GET['page']) && $_GET['page'] == 'personal') ? 'active' : '' ?>">Personal</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'neko_yacd' || $_GET['page'] == 'neko_meta')) ? 'active' : '' ?>">Meta 面板</a>
-            <ul class="submenu">
-                <li><a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_yacd') ? 'active' : '' ?>">Meta-Yacd</a></li>
-                <li><a href="?page=neko_meta" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_meta') ? 'active' : '' ?>">MetaCubeXD</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+    <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>
+            <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
+            <li>
+                <a href="#" class="<?= (isset($_GET['page']) && in_array($_GET['page'], ['box', 'personal', 'video'])) ? 'active' : '' ?>">转换模板</a>
+                <ul class="submenu">
+                    <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">Box</a></li>
+                    <li><a href="?page=personal" class="<?= (isset($_GET['page']) && $_GET['page'] == 'personal') ? 'active' : '' ?>">Personal</a></li>
+                    <li><a href="?page=video" class="<?= (isset($_GET['page']) && $_GET['page'] == 'video') ? 'active' : '' ?>">Video</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="<?= (isset($_GET['page']) && in_array($_GET['page'], ['neko_yacd', 'neko_meta'])) ? 'active' : '' ?>">Meta 面板</a>
+                <ul class="submenu">
+                    <li><a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_yacd') ? 'active' : '' ?>">Meta-Yacd</a></li>
+                    <li><a href="?page=neko_meta" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_meta') ? 'active' : '' ?>">MetaCubeXD</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
 
 <div class="content">
     <?php
@@ -251,6 +251,10 @@
 
             case 'personal':
                 include 'personal.php';
+                break;
+
+            case 'video':
+                include 'video.php';
                 break;
 
             case 'neko_yacd':

@@ -1,7 +1,6 @@
 <?php
 
 include './cfg.php';
-include './video.php';
 
 $themeDir = "$neko_www/assets/theme";
 $tmpPath = "$neko_www/lib/selected_config.txt";
@@ -60,14 +59,10 @@ $singBoxVersion = getSingboxVersion();
   <body>
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
-            <a href="./" class="col btn btn-lg">首页</a>
-            <a href="./dashboard.php" class="col btn btn-lg">面板</a>
-            <a href="./configs.php" class="col btn btn-lg">配置</a>
-            <a href="#" class="col btn btn-lg">设定</a>
-        </div>
-    </div>
-<div class="container text-left p-3">
-    <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+            <a href="./" class="col btn btn-lg">🏠 首页</a>
+            <a href="./dashboard.php" class="col btn btn-lg">📊 面板</a>
+            <a href="./configs.php" class="col btn btn-lg">⚙️ 配置</a>
+            <a href="#" class="col btn btn-lg">🛠️ 设定</a>
         <h2 class="text-center p-2 mb-3">主题设定</h2>
         <form action="settings.php" method="post">
             <div class="container text-center justify-content-md-center">
@@ -80,7 +75,7 @@ $singBoxVersion = getSingboxVersion();
                     </div>
                     <div class="row justify-content-md-center">
                         <div class="col justify-content-md-center mb-3">
-                            <input class="btn btn-info" type="submit" value="更改主题">
+                            <input class="btn btn-info" type="submit" value="🖫 更改主题">
                         </div>
                     </div>
                 </div>
@@ -110,7 +105,7 @@ $singBoxVersion = getSingboxVersion();
                                         <div id="cliver"></div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-primary" id="updateButton">更新到最新版本</button>
+                                        <button class="btn btn-primary" id="updateButton">🔄 更新到最新版本</button>
                                     </div>
                                 </div>
                             </div>
@@ -123,8 +118,8 @@ $singBoxVersion = getSingboxVersion();
                                         </div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-pink" id="updateSingboxButton">更新 Singbox 内核</button>
-                                        <button class="btn btn-info" id="updatePuernyaButton">切换 Puernya 内核</button>
+                                        <button class="btn btn-pink" id="updateSingboxButton">🔄 更新 Singbox 内核</button>
+                                        <button class="btn btn-info" id="updatePuernyaButton">🔄 切换 Puernya 内核</button>
                                     </div>
                                 </div>
                             </div>
@@ -135,7 +130,7 @@ $singBoxVersion = getSingboxVersion();
                                         <div id="corever">-</div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-success" id="updateCoreButton">更新 Mihomo 内核</button>
+                                        <button class="btn btn-success" id="updateCoreButton">🔄 更新 Mihomo 内核</button>
                                     </div>
                                 </div>
                             </div>
@@ -282,24 +277,7 @@ $singBoxVersion = getSingboxVersion();
                 xhr.send();
             });
         </script>
-     <div class="feature-box text-center">
-      <h2>语音播报系统</h2>
-        <tbody>
-            <tr>
-                <td>
-                    <div class="row mb-2" style="margin-bottom: 5px;">
-                        <div class="col">
-                            <input type="text" id="city-input" class="form-control" placeholder="如 Beijing" style="padding: 5px;">
-                        </div>
-                        <div class="col-auto">
-                            <button onclick="saveCity()" class="btn btn-success" style="padding: 5px 10px;">保存城市</button
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
- </div>
-     </div>
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>

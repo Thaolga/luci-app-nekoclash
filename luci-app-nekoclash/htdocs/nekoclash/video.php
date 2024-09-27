@@ -37,14 +37,17 @@ date_default_timezone_set('Asia/Shanghai');
         <input type="checkbox" id="weather-toggle">
 
         <label for="website-toggle">网站检查</label>
-        <input type="checkbox" id="website-toggle">
-        
+        <input type="checkbox" id="website-toggle">     
         <p>
             当前城市：
             <span id="current-city" style="font-weight: bold; color: #33FF57;">未设置</span>
         </p>
     </div>
-    
+  <div class="controls">
+     <label>城市设置</label>
+       <input type="text" id="city-input" class="form-control" placeholder="如 Beijing" style="padding: 5px;">
+       <button onclick="saveCity()" class="btn btn-success" style="padding: 3px 10px;">保存城市</button
+      </div>
     <script>
     let city = 'Beijing'; 
     const apiKey = 'fc8bd2637768c286c6f1ed5f1915eb22'; 
@@ -369,15 +372,13 @@ date_default_timezone_set('Asia/Shanghai');
         body {
             font-family: Arial, sans-serif;
             overflow: hidden;
-            background-color: #FFDEAD; 
+            background-color: #87ceeb; 
             transition: background-color 0.3s ease;
         }
-
         #container {
             text-align: center;
             margin-top: 50px;
         }
-
         #player {
             width: 320px;
             height: 320px;
@@ -395,21 +396,50 @@ date_default_timezone_set('Asia/Shanghai');
             position: relative;
             animation: rainbow 5s infinite, rotatePlayer 10s linear infinite;
         }
-
         #player:hover {
             transform: rotateY(360deg) rotateX(360deg);
         }
-
         #player h2 {
             margin-top: 0;
         }
-
-        #controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        #audio-container {
+           position: absolute;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 1); 
+            width: 100%;
+            height: 100%;
+        }
+        #audioPlayer {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
+        #audioPlayer::-webkit-media-controls-panel {
+            background-color: black;
+        }
+        #audioPlayer::-webkit-media-controls-current-time-display,
+        #audioPlayer::-webkit-media-controls-time-remaining-display {
+            color: #fff;
+        }
+        #audioPlayer::-webkit-media-controls-play-button,
+        #audioPlayer::-webkit-media-controls-volume-slider-container,
+        #audioPlayer::-webkit-media-controls-mute-button,
+        #audioPlayer::-webkit-media-controls-timeline {
+            filter: invert(1);
+        }
+        #controls {
+            position: absolute;
+            bottom: 80px; 
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
         button {
             background-color: #4CAF50;
             border: none;
@@ -424,17 +454,14 @@ date_default_timezone_set('Asia/Shanghai');
             box-shadow: 0 4px #666;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
         button:active {
             transform: translateY(4px);
             box-shadow: 0 2px #444;
         }
-
         @keyframes rotatePlayer {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
         #hidePlayer, #timeDisplay {
             font-size: 24px;
             font-weight: bold;
@@ -444,11 +471,9 @@ date_default_timezone_set('Asia/Shanghai');
             color: transparent;
             transition: background 1s ease;
         }
-
         .rounded-button {
             border-radius: 30px 15px;
         }
-
         #tooltip {
             position: absolute;
             background-color: green;
@@ -457,7 +482,6 @@ date_default_timezone_set('Asia/Shanghai');
             border-radius: 5px;
             display: none;
         }
-
         #mobile-controls {
             margin-top: 20px;
             position: relative;
@@ -465,7 +489,6 @@ date_default_timezone_set('Asia/Shanghai');
             transition: opacity 1s ease-in-out;
             opacity: 1;
         }
-
         #mobile-controls.hidden {
             opacity: 0;
             pointer-events: none;
@@ -478,7 +501,6 @@ date_default_timezone_set('Asia/Shanghai');
             flex-direction: column;
             align-items: center; 
         }
-
         #top-center-container {
             display: flex;
             align-items: center; 
@@ -487,18 +509,14 @@ date_default_timezone_set('Asia/Shanghai');
             top: 10px;
             width: 100%; 
         }
-
         #weather-toggle {
             margin-left: 10px; 
         }
-
-
         @media (min-width: 768px) {
             #mobile-controls {
                 display: none;
             }
         }
-
         @media (max-width: 767px) {
             #mobile-controls {
                 display: block;
@@ -509,7 +527,7 @@ date_default_timezone_set('Asia/Shanghai');
 <body>
   </div>
 
- <div id="player" style="display: none;"  onclick="toggleAnimation()">
+ <div id="player"  onclick="toggleAnimation()">
         <p id="hidePlayer">Mihomo</p>
         <p id="timeDisplay">00:00</p>
         <audio id="audioPlayer" controls>
