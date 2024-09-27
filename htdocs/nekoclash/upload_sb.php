@@ -266,6 +266,71 @@ if (isset($_POST['update_index'])) {
 }
 ?>
 
+<?php
+$url = "https://github.com/Thaolga/neko/releases/download/1.2.0/nekoclash.zip";
+$zipFile = "/tmp/nekoclash.zip";
+$extractPath = "/www/nekoclash";
+$logFile = "/tmp/update_log.txt";
+
+function logMessage($message) {
+    global $logFile;
+    $timestamp = date("Y-m-d H:i:s");
+    file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
+}
+
+function downloadFile($url, $path) {
+    $fp = fopen($path, 'w+');
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_exec($ch);
+    curl_close($ch);
+    fclose($fp);
+    logMessage("File downloaded successfully, saved to: $path");
+}
+
+function unzipFile($zipFile, $extractPath) {
+    $zip = new ZipArchive;
+    if ($zip->open($zipFile) === TRUE) {
+        if (!is_dir($extractPath)) {
+            mkdir($extractPath, 0755, true);
+        }
+
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filename = $zip->getNameIndex($i);
+            $filePath = $extractPath . '/' . preg_replace('/^nekoclash\//', '', $filename);
+
+            if (substr($filename, -1) == '/') {
+                if (!is_dir($filePath)) {
+                    mkdir($filePath, 0755, true);
+                }
+            } else {
+                copy("zip://".$zipFile."#".$filename, $filePath);
+            }
+        }
+
+        $zip->close();
+        logMessage("File extracted successfully");
+        return true;
+    } else {
+        return false;
+    }
+}
+
+if (isset($_POST['update'])) {
+    downloadFile($url, $zipFile);
+    
+    if (unzipFile($zipFile, $extractPath)) {
+        echo "Rules set updated successfully!";
+        logMessage("Rules set updated successfully");
+    } else {
+        echo "Extraction failed!";
+        logMessage("Extraction failed");
+    }
+}
+?>
+
  <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -519,11 +584,11 @@ if (isset($_POST['update_index'])) {
                         <form action="" method="post" class="d-inline">
                             <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                             <input type="hidden" name="fileType" value="config">
-                            <button type="submit" class="btn btn-warning btn-sm"><i>✏️</i> Edit</button>
+                            <button type="submit" class="btn btn-warning btn-sm"><i>📝</i> Edit</button>
                         </form>
                         <form action="" method="post" enctype="multipart/form-data" class="form-inline d-inline upload-btn">
                             <input type="file" name="configFileInput" class="form-control-file" required id="fileInput-<?php echo htmlspecialchars($file); ?>" onchange="this.form.submit()">
-                            <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i>⬆️</i> Upload</button>
+                            <button type="button" class="btn btn-info" onclick="document.getElementById('fileInput-<?php echo htmlspecialchars($file); ?>').click();"><i>📤</i> Upload</button>
                         </form>
                     </div>
                 </td>
@@ -590,13 +655,42 @@ if (isset($_POST['update_index'])) {
                                     <label for="custom_file_name_<?php echo $i; ?>">Custom File Name <?php echo ($i === 0) ? '(Fixed as config.json)' : ''; ?></label>
                                     <input type="text" name="custom_file_name_<?php echo $i; ?>" id="custom_file_name_<?php echo $i; ?>" class="form-control form-control-sm" value="<?php echo htmlspecialchars($subscriptionData['subscriptions'][$i]['file_name'] ?? ($i === 0 ? 'config.json' : '')); ?>" <?php echo ($i === 0) ? 'readonly' : ''; ?> >
                                 </div>
-                                <button type="submit" name="update_index" value="<?php echo $i; ?>" class="btn btn-info btn-sm"><i>🔄</i>Update Subscription <?php echo $i + 1; ?></button>
+                                <button type="submit" name="update_index" value="<?php echo $i; ?>" class="btn btn-info btn-sm"><i>🔄</i> Update Subscription <?php echo $i + 1; ?></button>
                             </div>
                         </div>
                     </div>
                 <?php endfor; ?>
             </div>
         </form>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<h2>Update Sing-box Rule Set "Puernya Core Rule"</h2>
+<form method="post">
+    <button type="submit" name="update">Update Rules</button>
+    </form>
+</body>
+</html>
 
 <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

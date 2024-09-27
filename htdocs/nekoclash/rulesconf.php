@@ -66,7 +66,7 @@ if(isset($_POST['newrulescfg'])){
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col input-group mb-3 justify-content-md-center">
-                        <input class="btn btn-info" type="submit" value="Save Rules">
+                        <input class="btn btn-info" type="submit" value="💾 Save Rules">
                     </div>
                 </div>
                 <div class="row justify-content-md-center">

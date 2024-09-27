@@ -1,7 +1,6 @@
 <?php
 
 include './cfg.php';
-include './video.php';
 $themeDir = "$neko_www/assets/theme";
 $tmpPath = "$neko_www/lib/selected_config.txt";
 $arrFiles = array();
@@ -60,14 +59,10 @@ $singBoxVersion = getSingboxVersion();
 
 <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
     <div class="row">
-        <a href="./" class="col btn btn-lg">Home</a>
-        <a href="./dashboard.php" class="col btn btn-lg">Dashboard</a>
-        <a href="./configs.php" class="col btn btn-lg">Configs</a>
-        <a href="#" class="col btn btn-lg">Settings</a>
-    </div>
-</div>
-<div class="container text-left p-3">
-    <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+        <a href="./" class="col btn btn-lg">🏠 Home</a>
+        <a href="./dashboard.php" class="col btn btn-lg">📊 Panel</a>
+        <a href="./configs.php" class="col btn btn-lg">⚙️ Configs</a>
+        <a href="#" class="col btn btn-lg">🛠️ Settings</a>
         <h2 class="text-center p-2 mb-3">Theme Settings</h2>
         <form action="settings.php" method="post">
             <div class="container text-center justify-content-md-center">
@@ -80,7 +75,7 @@ $singBoxVersion = getSingboxVersion();
                     </div>
                     <div class="row justify-content-md-center">
                         <div class="col justify-content-md-center mb-3">
-                            <input class="btn btn-info" type="submit" value="Change Theme">
+                            <input class="btn btn-info" type="submit" value="🖫 Change Theme">
                         </div>
                     </div>
                 </div>
@@ -111,7 +106,7 @@ $singBoxVersion = getSingboxVersion();
                                         <div id="cliver"></div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-primary" id="updateButton">Update to Latest Version</button>
+                                        <button class="btn btn-primary" id="updateButton">🔄 Update to Latest Version</button>
                                     </div>
                                 </div>
                             </div>
@@ -124,8 +119,8 @@ $singBoxVersion = getSingboxVersion();
                                         </div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-pink" id="updateSingboxButton">Update Singbox Core</button>
-                                         <button class="btn btn-info" id="updatePuernyaButton">Switch to Puernya Core</button>
+                                        <button class="btn btn-pink" id="updateSingboxButton">🔄 Update Singbox Core</button>
+                                         <button class="btn btn-info" id="updatePuernyaButton">🔄 Switch to Puernya Core</button>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +131,7 @@ $singBoxVersion = getSingboxVersion();
                                         <div id="corever">-</div>
                                     </div>
                                     <div class="text-center mt-2">
-                                        <button class="btn btn-success" id="updateCoreButton">Update Mihomo Core</button>
+                                        <button class="btn btn-success" id="updateCoreButton">🔄 Update Mihomo Core</button>
                                     </div>
                                 </div>
                             </div>

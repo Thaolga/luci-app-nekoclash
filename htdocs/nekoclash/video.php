@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="./assets/img/favicon.png">
     <style>
         body {
             font-family: Arial, sans-serif;
             overflow: hidden;
-            background-color: #FFDEAD; 
+            background-color: #87ceeb; 
             transition: background-color 0.3s ease;
         }
-
         #container {
             text-align: center;
             margin-top: 50px;
         }
-
         #player {
             width: 320px;
             height: 320px;
@@ -34,21 +31,50 @@
             position: relative;
             animation: rainbow 5s infinite, rotatePlayer 10s linear infinite;
         }
-
         #player:hover {
             transform: rotateY(360deg) rotateX(360deg);
         }
-
         #player h2 {
             margin-top: 0;
         }
-
-        #controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        #audio-container {
+           position: absolute;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 1); 
+            width: 100%;
+            height: 100%;
+        }
+        #audioPlayer {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
+        #audioPlayer::-webkit-media-controls-panel {
+            background-color: black;
+        }
+        #audioPlayer::-webkit-media-controls-current-time-display,
+        #audioPlayer::-webkit-media-controls-time-remaining-display {
+            color: #fff;
+        }
+        #audioPlayer::-webkit-media-controls-play-button,
+        #audioPlayer::-webkit-media-controls-volume-slider-container,
+        #audioPlayer::-webkit-media-controls-mute-button,
+        #audioPlayer::-webkit-media-controls-timeline {
+            filter: invert(1);
+        }
+        #controls {
+            position: absolute;
+            bottom: 80px; 
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
         button {
             background-color: #4CAF50;
             border: none;
@@ -63,17 +89,14 @@
             box-shadow: 0 4px #666;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
         button:active {
             transform: translateY(4px);
             box-shadow: 0 2px #444;
         }
-
         @keyframes rotatePlayer {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
         #hidePlayer, #timeDisplay {
             font-size: 24px;
             font-weight: bold;
@@ -83,11 +106,9 @@
             color: transparent;
             transition: background 1s ease;
         }
-
         .rounded-button {
             border-radius: 30px 15px;
         }
-
         #tooltip {
             position: absolute;
             background-color: green;
@@ -96,7 +117,6 @@
             border-radius: 5px;
             display: none;
         }
-
         #mobile-controls {
             margin-top: 20px;
             position: relative;
@@ -104,7 +124,6 @@
             transition: opacity 1s ease-in-out;
             opacity: 1;
         }
-
         #mobile-controls.hidden {
             opacity: 0;
             pointer-events: none;
@@ -117,7 +136,6 @@
             flex-direction: column;
             align-items: center; 
         }
-
         #top-center-container {
             display: flex;
             align-items: center; 
@@ -126,18 +144,14 @@
             top: 10px;
             width: 100%; 
         }
-
         #weather-toggle {
             margin-left: 10px; 
         }
-
-
         @media (min-width: 768px) {
             #mobile-controls {
                 display: none;
             }
         }
-
         @media (max-width: 767px) {
             #mobile-controls {
                 display: block;
@@ -204,11 +218,6 @@
                 localStorage.setItem('playerVisible', 'false');
             }
         });
-
-        window.onload = function() {
-            const playerVisible = localStorage.getItem('playerVisible') === 'true';
-            document.getElementById('player').style.display = playerVisible ? 'flex' : 'none';
-        };
 
         function applyGradient(text, elementId) {
             const element = document.getElementById(elementId);

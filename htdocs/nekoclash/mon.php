@@ -174,6 +174,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         .config-menu-button {
             height: 40px;
             width: 40px;
@@ -201,33 +202,34 @@
             top: 60px; 
 
          }
+
     </style>
 </head>
 <body>
-
 <nav>
     <a href="/nekoclash" class="config-menu-button button-top-60">
         <i> 🏠</i>
     </a>
     <ul>
-        <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>
-        <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
-        <li>
-            <a href="?page=box" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'box' || $_GET['page'] == 'personal')) ? 'active' : '' ?>">Template</a>
-            <ul class="submenu">
-                <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">Box</a></li>
-                <li><a href="?page=personal" class="<?= (isset($_GET['page']) && $_GET['page'] == 'personal') ? 'active' : '' ?>">Personal</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && ($_GET['page'] == 'neko_yacd' || $_GET['page'] == 'neko_meta')) ? 'active' : '' ?>">Neko Yacd</a>
-            <ul class="submenu">
-                <li><a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_yacd') ? 'active' : '' ?>">Meta-Yacd</a></li>
-                <li><a href="?page=neko_meta" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_meta') ? 'active' : '' ?>">MetaCubeXD</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+    <li><a href="?page=upload" class="<?= (!isset($_GET['page']) || $_GET['page'] == 'upload') ? 'active' : '' ?>">Mihomo</a></li>
+            <li><a href="?page=upload_sb" class="<?= (isset($_GET['page']) && $_GET['page'] == 'upload_sb') ? 'active' : '' ?>">Sing-box</a></li>
+            <li>
+                <a href="#" class="<?= (isset($_GET['page']) && in_array($_GET['page'], ['box', 'personal', 'video'])) ? 'active' : '' ?>">Template</a>
+                <ul class="submenu">
+                    <li><a href="?page=box" class="<?= (isset($_GET['page']) && $_GET['page'] == 'box') ? 'active' : '' ?>">Box</a></li>
+                    <li><a href="?page=personal" class="<?= (isset($_GET['page']) && $_GET['page'] == 'personal') ? 'active' : '' ?>">Personal</a></li>
+                    <li><a href="?page=video" class="<?= (isset($_GET['page']) && $_GET['page'] == 'video') ? 'active' : '' ?>">Video</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="<?= (isset($_GET['page']) && in_array($_GET['page'], ['neko_yacd', 'neko_meta'])) ? 'active' : '' ?>">Panel</a>
+                <ul class="submenu">
+                    <li><a href="?page=neko_yacd" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_yacd') ? 'active' : '' ?>">Meta-Yacd</a></li>
+                    <li><a href="?page=neko_meta" class="<?= (isset($_GET['page']) && $_GET['page'] == 'neko_meta') ? 'active' : '' ?>">MetaCubeXD</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
 
 <div class="content">
     <?php
@@ -249,6 +251,10 @@
 
             case 'personal':
                 include 'personal.php';
+                break;
+
+            case 'video':
+                include 'video.php';
                 break;
 
             case 'neko_yacd':

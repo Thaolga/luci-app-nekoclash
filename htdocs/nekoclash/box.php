@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Subscription Conversion Template</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/all.min.css">
     <style>
         body {
@@ -236,9 +236,9 @@ if (file_exists($dataFilePath)) {
 }
             ?>
 
-            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
+            <script src="./assets/bootstrap/popper.min.js"></script>
+            <script src="./assets/bootstrap/bootstrap.min.css"></script>
             <script>
                 function copyToClipboard() {
                     const copyText = document.getElementById("configContent");

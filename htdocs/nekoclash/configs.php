@@ -43,54 +43,12 @@ include './cfg.php';
     <script type="text/javascript" src="./assets/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <style>
-        .container-sm {
-            margin: 20px auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-sm text-center col-8">
-        <img src="./assets/img/neko.png" class="img-fluid mb-5 draggable" style="display: none;">
-    </div>
-
-    <script>
-        function toggleImage() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'none') {
-                img.style.display = 'block';
-                btn.innerText = 'Hide Icon';
-            } else {
-                img.style.display = 'none';
-                btn.innerText = 'Show Icon';
-            }
-        }
-
-        function hideIcon() {
-            var img = document.querySelector('.container-sm img');
-            var btn = document.getElementById('showHideButton');
-            if (img.style.display === 'block') {
-                img.style.display = 'none';
-                btn.innerText = 'Show Icon';
-            }
-        }
-
-        document.body.ondblclick = function() {
-            toggleImage();
-        };
-    </script>
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
-            <a href="./" class="col btn btn-lg">Home</a>
-            <a href="./dashboard.php" class="col btn btn-lg">Dashboard</a>
-            <a href="#" class="col btn btn-lg">Configs</a>
-            <a href="./settings.php" class="col btn btn-lg">Settings</a>
-        </div>
-    </div>
-    <div class="container text-left p-3">
-        
-        <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+            <a href="./" class="col btn btn-lg">🏠 Home</a>
+            <a href="./dashboard.php" class="col btn btn-lg">📊 Panel</a>
+            <a href="#" class="col btn btn-lg">⚙️ Configs</a>
+            <a href="./settings.php" class="col btn btn-lg">🛠️ Settings</a>
             <h2 class="text-center p-2">Configs</h2>
             <form action="configs.php" method="post">
                 <div class="container text-center justify-content-md-center">
@@ -110,7 +68,7 @@ include './cfg.php';
                     </div>
                 </div>
             </form>
-<div class="container container-bg border border-3 rounded-4 col-12 mb-4">
+<div class="container   rounded-4 col-12 mb-4">
     <ul class="nav d-flex justify-content-between w-100 text-center">
         <li class="nav-item flex-grow-1">
             <a class="btn btn-lg w-100 active" data-bs-toggle="tab" href="#info">Info</a>
