@@ -280,6 +280,58 @@ install_singbox() {
     rm -rf "$temp_dir"
 }
 
+install_puernya() {
+    local install_path="/usr/bin/sing-box"  
+    local temp_file="/tmp/sing-box.tar.gz"   
+    local temp_dir="/tmp/singbox_temp"       
+
+    local current_arch=$(uname -m)
+    local download_url=""
+
+    case "$current_arch" in
+        aarch64)
+            download_url="https://github.com/Thaolga/luci-app-nekoclash/releases/download/sing-box/sing-box-puernya-linux-armv8.tar.gz"
+            ;;
+        x86_64)
+            download_url="https://github.com/Thaolga/luci-app-nekoclash/releases/download/sing-box/sing-box-puernya-linux-amd64.tar.gz"
+            ;;
+        *)
+            echo "Unsupported architecture: $current_arch"
+            exit 1
+            ;;
+    esac
+
+    echo "Downloading puernya core from $download_url..."
+    wget -O "$temp_file" "$download_url"
+    if [ $? -ne 0 ]; then
+        echo "Download failed!"
+        exit 1
+    fi
+
+    echo "Extracting files..."
+    mkdir -p "$temp_dir"
+    tar -xzf "$temp_file" -C "$temp_dir"
+    if [ $? -ne 0 ]; then
+        echo "Extraction failed!"
+        exit 1
+    fi
+
+    local extracted_file="$temp_dir/CrashCore"  
+    if [ -f "$extracted_file" ]; then
+        cp -f "$extracted_file" "$install_path"
+        chmod 0755 "$install_path"
+        echo "更新完成！当前版本: $(basename "$download_url")" 
+    else
+        echo "解压后的文件 'CrashCore' 不存在。"
+        exit 1
+    fi
+
+    rm -f "$temp_file"
+    rm -rf "$temp_dir"
+
+    echo "Puernya core installation completed successfully."
+}
+
 install_ui() {
     GREEN='\033[0;32m'
     RED='\033[0;31m'
@@ -338,7 +390,6 @@ install_ui() {
     rm -rf "$temp_extract_path"
 }
 
-
 install_php() {
     GREEN="\033[32m"
     RED="\033[31m"
@@ -395,6 +446,33 @@ reboot_router() {
     reboot
 }
 
+install_core_menu() {
+    while true; do
+        echo -e "${YELLOW}===================================${NC}"
+        echo -e "${YELLOW}|   1. 安装 Sing-box 核心         |${NC}"
+        echo -e "${YELLOW}|   2. 安装 puernya 核心          |${NC}"
+        echo -e "${YELLOW}|   3. 返回主菜单                 |${NC}"
+        echo -e "${YELLOW}===================================${NC}"
+
+        read -p "请选择要安装的核心: " core_choice
+
+        case $core_choice in
+            1)
+                install_singbox
+                ;;
+            2)
+                install_puernya
+                ;;
+            3)
+                return
+                ;;
+            *)
+                echo -e "${RED}无效的选项，请重试。${NC}"
+                ;;
+        esac
+    done
+}
+
 while true; do
     echo -e "${YELLOW}===================================${NC}"
     echo -e "${YELLOW}|   1. 安装 NeKoClash 中文版      |${NC}"
@@ -422,7 +500,7 @@ while true; do
             install_core
             ;;
         4)
-            install_singbox
+            install_core_menu
             ;;
         5)
             install_ui
