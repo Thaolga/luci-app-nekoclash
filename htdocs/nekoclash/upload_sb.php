@@ -672,7 +672,6 @@ if (isset($_POST['update'])) {
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -687,7 +686,7 @@ if (isset($_POST['update'])) {
 <body>
 <h2>Update Sing-box Rule Set "Puernya Core Rule"</h2>
 <form method="post">
-    <button type="submit" name="update">Update Rules</button>
+    <button type="submit" name="update">🔄 Update Rules</button>
     </form>
 </body>
 </html>
