@@ -614,8 +614,28 @@ if (isset($_POST['update'])) {
         </div>
     <?php endif; ?>
 <?php endif; ?>
-
         <h1 style="margin-top: 20px; margin-bottom: 20px;">Sing-box 订阅</h1>
+    <style>
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+        <button type="submit" name="update">🔄 更新规则集</button>
+    </form>
+</body>
+     </br>
         <?php if ($message): ?>
             <p><?php echo nl2br(htmlspecialchars($message)); ?></p>
         <?php endif; ?>
@@ -640,34 +660,6 @@ if (isset($_POST['update'])) {
                 <?php endfor; ?>
             </div>
         </form>
-
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <h2>更新 Sing-box 规则集《Puernya 内核规则集》</h2>
-    <form method="post">
-        <button type="submit" name="update">🔄 更新规则集</button>
-    </form>
-</body>
-</html>
 <div class="modal fade" id="renameModal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
