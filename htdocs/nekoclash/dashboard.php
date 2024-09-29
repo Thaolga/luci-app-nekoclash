@@ -37,6 +37,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
             <a href="./" class="col btn btn-lg">🏠 Home</a>
             <a href="#" class="col btn btn-lg">📊 Panel</a>
             <a href="./configs.php" class="col btn btn-lg">⚙️ Configs</a>
+            <a href="/nekoclash/mon.php" class="col btn btn-lg d-flex align-items-center justify-content-center"></i>📦 Document</a> 
             <a href="./settings.php" class="col btn btn-lg">🛠️ Settings</a>
 <!DOCTYPE html>
 <html lang="zh">

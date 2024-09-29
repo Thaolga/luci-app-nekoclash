@@ -5,7 +5,7 @@ body {
 }
 
 .container-bg {
-  filter: drop-shadow(0.5px 2px 4px black);
+  /* filter: drop-shadow(0.5px 2px 4px black); */
 }
 
 .col-8 {

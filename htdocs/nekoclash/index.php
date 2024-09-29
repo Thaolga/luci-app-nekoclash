@@ -34,6 +34,7 @@ $neko_status=exec("uci -q get neko.cfg.enabled");
             <a href="#" class="col btn btn-lg">🏠 Home</a>
             <a href="./dashboard.php" class="col btn btn-lg">📊 Panel</a>
             <a href="./configs.php" class="col btn btn-lg">⚙️ Configs</a>
+            <a href="/nekoclash/mon.php" class="col btn btn-lg d-flex align-items-center justify-content-center"></i>📦 Document</a> 
             <a href="./settings.php" class="col btn btn-lg">🛠️ Settings</a>
 <h2 class="text-center p-2">NekoClash</h2>
  <div style="border: 1px solid black; padding: 10px; ">
@@ -792,20 +793,6 @@ $singboxStartLogContent = readLogFile($singboxStartLogFile);
     </script>
 </body>
 </html>
-<a href="/nekoclash/mon.php" class="config-menu-button d-flex justify-content-center align-items-center" 
-   style="height: 40px; width: 40px; line-height: 40px; border-radius: 50%; background-color: transparent; border: 5px solid; color: #ffcc00; position: absolute; top: 57px; left: 5px; text-align: center; text-decoration: none; transition: opacity 0.3s; animation: borderAnimation 3s linear infinite;" 
-   onclick="speakAndNavigate('Open Mihomo Management Panel', '/nekoclash/mon.php'); return false;"
-   onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-    <i>🖥️</i>
-</a>
-    <script>
-        function speakAndNavigate(message, url) {
-            speakMessage(message);
-            setTimeout(function() {
-                window.location.href = url;
-            }, 500); 
-        }
-    </script>
     <footer class="text-center">
         <p><?php echo isset($message) ? $message : ''; ?></p>
         <p><?php echo $footer; ?></p>

@@ -1,13 +1,18 @@
+<?php
+ob_start();
+include './cfg.php';
+?>
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
 <head>
     <meta charset="UTF-8">
-    <title>Subscription Conversion Template</title>
-    <link rel="stylesheet" href="./assets/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/bootstrap/bulma.min.css">
+    <link rel="icon" href="./assets/img/favicon.png">
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/theme/<?php echo $neko_theme ?>" rel="stylesheet">
+    <link href="./assets/css/custom.css" rel="stylesheet"> 
     <style>
         body {
-            background-color: #87ceeb;
             margin: 0;
             padding: 0;
         }
@@ -50,14 +55,21 @@
             overflow-y: auto;
             word-wrap: break-word;
         }
+        .input {
+            background-color: #fff; 
+            color: #000; 
+            border: 1px solid #ccc;
+            border-radius: 4px; 
+            padding: 10px; 
+        }
     </style>
 </head>
 <body>
   <div class="outer-container">
         <div class="container">
-            <h1 class="text-center text-primary">Sing-box Subscription Conversion Template</h1>
-            <div class="alert alert-info" role="alert">
-                <h4 class="alert-heading">Help Information</h4>
+            <h1 class="title is-1 has-text-centered">Sing-box Subscription Conversion Template</h1>
+            <div class="notification is-info">
+                <h4 class="heading">Help Information</h4>
                 <p>Please select a template to generate the configuration file: choose the corresponding template based on the subscription node information, otherwise, it will not start.</p>
                 <ul>
                     <li><strong>Default Template 1</strong>：Hong Kong, Taiwan, Singapore, Japan, United States, South Korea.</li>
@@ -68,59 +80,52 @@
                 </ul>
             </div>
             <form method="post" action="">
-                <div class="form-group">
-                    <label for="subscribeUrl">Subscription Link Address:</label>
-                    <input type="text" class="form-control" id="subscribeUrl" name="subscribeUrl" required>
+                <div class="field">
+                    <label for="subscribeUrl" class="label">Subscription Link Address:</label>
+                    <div class="control">
+                        <input type="text" class="input" id="subscribeUrl" name="subscribeUrl" required>
+                    </div>
                 </div>
-                <fieldset class="form-group">
-                    <legend>Select a template</legend>
+                <fieldset class="field">
+                    <legend class="label">Select a template</legend>
                     <div class="form-check">
                         <input type="radio" class="form-check-input" id="useDefaultTemplate" name="templateOption" value="default" checked>
                         <label class="form-check-label" for="useDefaultTemplate">Use default template</label>
                     </div>
-                    <div class="form-row">
-                        <div class="col-sm">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="useDefaultTemplate1" name="defaultTemplate" value="mixed" checked>
-                                <label class="form-check-label" for="useDefaultTemplate1">Default template 1</label>
-                            </div>
+                    <div class="columns">
+                        <div class="column">
+                            <input type="radio" class="form-check-input" id="useDefaultTemplate1" name="defaultTemplate" value="mixed" checked>
+                            <label class="form-check-label" for="useDefaultTemplate1">Default template 1</label>
                         </div>
-                        <div class="col-sm">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="useDefaultTemplate2" name="defaultTemplate" value="second">
-                                <label class="form-check-label" for="useDefaultTemplate2">Default template 2</label>
-                            </div>
+                        <div class="column">
+                            <input type="radio" class="form-check-input" id="useDefaultTemplate2" name="defaultTemplate" value="second">
+                            <label class="form-check-label" for="useDefaultTemplate2">Default template 2</label>
                         </div>
-                        <div class="col-sm">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="useDefaultTemplate3" name="defaultTemplate" value="fakeip">
-                                <label class="form-check-label" for="useDefaultTemplate3">Default template 3</label>
-                            </div>
+                        <div class="column">
+                            <input type="radio" class="form-check-input" id="useDefaultTemplate3" name="defaultTemplate" value="fakeip">
+                            <label class="form-check-label" for="useDefaultTemplate3">Default template 3</label>
                         </div>
-                        <div class="col-sm">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="useDefaultTemplate4" name="defaultTemplate" value="tun">
-                                <label class="form-check-label" for="useDefaultTemplate4">Default template 4</label>
-                            </div>
+                        <div class="column">
+                            <input type="radio" class="form-check-input" id="useDefaultTemplate4" name="defaultTemplate" value="tun">
+                            <label class="form-check-label" for="useDefaultTemplate4">Default template 4</label>
                         </div>
-                        <div class="col-sm">
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="useDefaultTemplate5" name="defaultTemplate" value="ip">
-                                <label class="form-check-label" for="useDefaultTemplate5">Default template 5</label>
-                            </div>
+                        <div class="column">
+                            <input type="radio" class="form-check-input" id="useDefaultTemplate5" name="defaultTemplate" value="ip">
+                            <label class="form-check-label" for="useDefaultTemplate5">Default template 5</label>
                         </div>
                     </div>
-                    <div class="form-check">
+                    <div class="field">
                         <input type="radio" class="form-check-input" id="useCustomTemplate" name="templateOption" value="custom">
                         <label class="form-check-label" for="useCustomTemplate">Use Custom Template URL:</label>
-                        <input type="text" class="form-control" id="customTemplateUrl" name="customTemplateUrl" placeholder="Enter Custom Template URL">
+                        <input type="text" class="input" id="customTemplateUrl" name="customTemplateUrl" placeholder="Enter Custom Template URL">
                     </div>
                 </fieldset>
-                <div class="form-group text-center">
-                    <input type="submit" name="generateConfig" class="btn btn-primary" value="Generate Configuration File">
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button type="submit" name="generateConfig" class="button is-info">Generate Configuration File</button>
+                    </div>
                 </div>
             </form>
-
             <?php
 
 $dataFilePath = '/tmp/subscription_data.txt';
@@ -138,6 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['generateConfig'])) {
     if ($_POST['templateOption'] === 'custom' && !empty($customTemplateUrl)) {
         $templateUrlEncoded = urlencode($customTemplateUrl);
     } elseif ($_POST['templateOption'] === 'default') {
+        switch ($_POST['defaultTemplate']) {
             case 'mixed':
                 $templateUrlEncoded = urlencode("https://raw.githubusercontent.com/Thaolga/Rules/main/Clash/json/config_1.json");
                 break;
@@ -235,19 +241,16 @@ if (file_exists($dataFilePath)) {
 }
             ?>
 
-            <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
-            <script src="./assets/bootstrap/popper.min.js"></script>
-            <script src="./assets/bootstrap/bootstrap.min.css"></script>
-            <script>
-                function copyToClipboard() {
-                    const copyText = document.getElementById("configContent");
-                    copyText.select();
-                    document.execCommand("copy");
-                    alert("Copied to clipboard");
-                }
-            </script>
         </div>
     </div>
+    <script src="./assets/bootstrap/jquery.min.js"></script>
+    <script>
+        function copyToClipboard() {
+            const copyText = document.getElementById("configContent");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard");
+        }
+    </script>
 </body>
-
 </html>

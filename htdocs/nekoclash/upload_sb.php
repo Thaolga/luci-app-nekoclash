@@ -1,4 +1,6 @@
 <?php
+ob_start();
+include './cfg.php';
 $configDir = '/etc/neko/config/';
 
 ini_set('memory_limit', '256M');
@@ -332,15 +334,17 @@ if (isset($_POST['update'])) {
 ?>
 
  <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sing-box File Manager</title>
-    <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="./assets/img/favicon.png">
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/theme/<?php echo $neko_theme ?>" rel="stylesheet">
+    <link href="./assets/css/custom.css" rel="stylesheet"> 
     <style>
         body {
-            background-color: #87ceeb;
             background-size: cover;
             color: #E0E0E0;
         }
@@ -476,7 +480,7 @@ if (isset($_POST['update'])) {
         }
 
         .btn-group .btn-rename {
-            max-width: 80px;
+            max-width: 100px;
             padding: 2px 6px;
             font-size: 0.875rem;
             width: auto;
@@ -580,7 +584,7 @@ if (isset($_POST['update'])) {
                             <input type="hidden" name="deleteConfigFile" value="<?php echo htmlspecialchars($file); ?>">
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');"><i>🗑️</i> Delete</button>
                         </form>
-                        <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i>✏️</i>Rename</button>
+                        <button type="button" class="btn btn-success btn-sm btn-rename" data-toggle="modal" data-target="#renameModal" data-filename="<?php echo htmlspecialchars($file); ?>"><i>✏️</i> Rename</button>
                         <form action="" method="post" class="d-inline">
                             <input type="hidden" name="editFile" value="<?php echo htmlspecialchars($file); ?>">
                             <input type="hidden" name="fileType" value="config">
@@ -647,9 +651,9 @@ if (isset($_POST['update'])) {
                     <div class="col-md-4 mb-3">
                         <div class="card subscription-card p-2">
                             <div class="card-body p-2">
-                                <h6 class="card-title">Subscription Link <?php echo $i + 1; ?></h6>
+                                <h6 class="card-title text-white">Subscription Link <?php echo $i + 1; ?></h6>
                                 <div class="form-group mb-2">
-                                    <input type="text" name="subscription_url_<?php echo $i; ?>" id="subscription_url_<?php echo $i; ?>" class="form-control form-control-sm" placeholder="Subscription Link" value="<?php echo htmlspecialchars($subscriptionData['subscriptions'][$i]['url'] ?? ''); ?>">
+                                    <input type="text" name="subscription_url_<?php echo $i; ?>" id="subscription_url_<?php echo $i; ?>" class="form-control form-control-sm white-text" placeholder="Subscription Link" value="<?php echo htmlspecialchars($subscriptionData['subscriptions'][$i]['url'] ?? ''); ?>">
                                 </div>
                                 <div class="form-group mb-2">
                                     <label for="custom_file_name_<?php echo $i; ?>">Custom File Name <?php echo ($i === 0) ? '(Fixed as config.json)' : ''; ?></label>
@@ -662,7 +666,15 @@ if (isset($_POST['update'])) {
                 <?php endfor; ?>
             </div>
         </form>
-
+<style>
+    .white-text {
+        color: white !important; 
+        background-color: #333; 
+    }
+    .white-text::placeholder {
+        color: white !important; 
+    }
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>

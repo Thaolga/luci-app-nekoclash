@@ -8,9 +8,9 @@
   --bs-success-bg: #1b0516; 
   --bs-info-bg: #300328; 
   --bs-warning-bg: #332701; 
-  --bs-danger-bg: linear-gradient(135deg, #FFB6C1, #FF69B4);
-  --bs-light-bg: linear-gradient(135deg, #FFB6C1, #FF69B4);
-  --bs-dark-bg: linear-gradient(135deg, #FFB6C1, #FF69B4); 
+  --bs-danger-bg: linear-gradient(135deg, #FFB6C1, #FF69B4); 
+  --bs-light-bg: linear-gradient(135deg, #FFB6C1, #FF69B4); 
+  --bs-dark-bg: linear-gradient(135deg, #FFB6C1, #FF69B4);
 
   --bs-primary-border: #084298;
   --bs-secondary-border: #41464b;
@@ -22,10 +22,6 @@
   --bs-dark-border: #b34187;
 
   --bs-heading-color: #000;
-  --bs-body-font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-  --bs-body-font-weight: 700;
-  --bs-heading-font-family: "Georgia", serif;
-  --bs-heading-font-weight: 600;
 
   --bs-shadow-light: 0 4px 8px rgba(0, 0, 0, 0.2);
   --bs-shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -53,13 +49,9 @@ textarea.form-control {
   resize: none; 
 }
 
-
-
 body {
   color: var(--bs-body-color);
   background: var(--bs-body-bg);
-  font-family: var(--bs-body-font-family);
-  font-weight: var(--bs-body-font-weight);
   transition: background 0.5s ease; 
 }
 
@@ -69,8 +61,6 @@ body:hover {
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--bs-heading-color);
-  font-family: var(--bs-heading-font-family);
-  font-weight: var(--bs-heading-font-weight);
 }
 
 .container-bg {
@@ -83,7 +73,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .form-control {
-  font-family: Andale Mono, monospace;
   background-color: var(--bs-light-bg);
   border: 1px solid var(--bs-dark-border);
   color: var(--bs-body-color);
@@ -141,6 +130,3 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(1px) scale(0.98);
   box-shadow: var(--bs-shadow-light);
 }
-
-
-

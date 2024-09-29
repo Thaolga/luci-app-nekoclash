@@ -26,19 +26,6 @@
   --bs-dark-border: #b34187;
 
   --bs-heading-color: #000;
-  --bs-primary-text-emphasis: #000;
-  --bs-secondary-text-emphasis: #000;
-  --bs-success-text-emphasis: #000;
-  --bs-info-text-emphasis: #000;
-  --bs-warning-text-emphasis: #000;
-  --bs-danger-text-emphasis: #000;
-  --bs-light-text-emphasis: #000;
-  --bs-dark-text-emphasis: #000;
-
-  --bs-body-font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-  --bs-body-font-weight: 700;
-  --bs-heading-font-family: "Georgia", serif;
-  --bs-heading-font-weight: 600;
 
   --bs-shadow-light: 0 4px 8px rgba(0, 0, 0, 0.2);
   --bs-shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -61,14 +48,6 @@
 body {
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
-  font-family: var(--bs-body-font-family);
-  font-weight: var(--bs-body-font-weight);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--bs-heading-color);
-  font-family: var(--bs-heading-font-family);
-  font-weight: var(--bs-heading-font-weight);
 }
 
 .container-bg {
@@ -81,7 +60,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .form-control {
-  font-family: Andale Mono, monospace;
   background-color: var(--bs-light-bg);
   border: 1px solid var(--bs-dark-border);
   color: var(--bs-body-color);

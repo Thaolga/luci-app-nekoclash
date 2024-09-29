@@ -1,4 +1,6 @@
 <?php
+ob_start();
+include './cfg.php';
 $subscription_file = '/etc/neko/config/subscription.txt'; 
 $download_path = '/etc/neko/config/'; 
 $php_script_path = '/www/nekoclash/personal.php'; 
@@ -161,6 +163,7 @@ function saveSubscriptionContentToYaml($url, $filename) {
         return $message;
     }
 
+
     if (!is_dir($download_path)) {
         if (!mkdir($download_path, 0755, true)) {
             $message = "Unable to create directory: $download_path";
@@ -314,16 +317,16 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mihomo Subscription Program</title>
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/theme/<?php echo $neko_theme ?>" rel="stylesheet">
+    <link href="./assets/css/custom.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="./assets/bootstrap/bulma.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #87ceeb;
-            margin: 0;
             padding: 20px;
         }
 
@@ -332,8 +335,8 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 1300px; 
+            margin: 20px auto; 
             box-sizing: border-box;
         }
 
@@ -342,77 +345,21 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
             color: #333;
         }
 
-        label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 6px;
-            color: #333;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
+        .button.is-primary {
+            background-color: #3273dc; 
             color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 15px;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .button.is-primary:hover {
+            background-color: #205ab7; 
         }
 
-        .back-button {
+        .button.is-secondary {
             background-color: #6c757d;
         }
 
-        .back-button:hover {
+        .button.is-secondary:hover {
             background-color: #5a6268;
-        }
-
-        .form-section {
-            margin-bottom: 20px;
-        }
-
-        .help {
-            margin-top: 30px;
-        }
-
-        .help h2 {
-            text-align: center;
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .help p {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .help ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-
-        .help ul li {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 10px;
         }
 
         .result {
@@ -424,50 +371,64 @@ $current_subscription_url = getSubscriptionUrlFromFile($subscription_file);
             color: #333;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 20px;
-            }
+        .help {
+            color: #004085; 
+        }
 
-            input[type="text"], button {
-                font-size: 14px;
-                padding: 8px;
-            }
+        .help h2 {
+            color: #0056b3; 
+        }
 
-            .help ul li {
-                font-size: 13px;
-            }
+        .help p {
+            color: #28a745; 
+        }
+
+        .help ul li {
+            color: #17a2b8; 
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Mihomo Subscription Program (Personal Edition)</h1>
+        <h1 class="title">Mihomo Subscription Program (Personal Edition)</h1>
 
         <div class="form-section">
-            <form method="post" action="">
-                <label for="subscription_url">Enter Subscription URL:</label>
-                <input type="text" id="subscription_url" name="subscription_url" 
-                       value="<?php echo htmlspecialchars($current_subscription_url); ?>" 
-                       required>
-
-                <label for="filename">Enter Save Filename (Default: config.yaml):</label>
-                <input type="text" id="filename" name="filename" 
-                       value="<?php echo htmlspecialchars(isset($_POST['filename']) ? $_POST['filename'] : ''); ?>" 
-                       placeholder="config.yaml">
-
-                <button type="submit" name="action" value="update_subscription">Update Subscription</button>
+            <form method="post">
+                <div class="field">
+                    <label for="subscription_url" class="label">Enter Subscription URL:</label>
+                    <div class="control">
+                        <input type="text" class="input" id="subscription_url" name="subscription_url" 
+                               value="<?php echo htmlspecialchars($current_subscription_url); ?>" 
+                               required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="filename" class="label">Enter Save Filename (Default: config.yaml):</label>
+                    <div class="control">
+                        <input type="text" class="input" id="filename" name="filename" 
+                               value="<?php echo htmlspecialchars(isset($_POST['filename']) ? $_POST['filename'] : ''); ?>" 
+                               placeholder="config.yaml">
+                    </div>
+                </div>
+                <div class="control">
+                    <button type="submit" class="button is-primary" name="action" value="update_subscription">Update Subscription</button>
+                </div>
             </form>
         </div>
 
         <div class="form-section">
-            <form method="post" action="">
-                <label for="cron_time">Set Cron Time (e.g., 0 3 * * *):</label>
-                <input type="text" id="cron_time" name="cron_time" 
-                       value="<?php echo htmlspecialchars(isset($_POST['cron_time']) ? $_POST['cron_time'] : '0 3 * * *'); ?>" 
-                       placeholder="0 3 * * *">
-                
-                <button type="submit" name="action" value="update_cron">Update Cron Job</button>
+            <form method="post">
+                <div class="field">
+                    <label for="cron_time" class="label">Set Cron Time (e.g., 0 3 * * *):</label>
+                    <div class="control">
+                        <input type="text" class="input" id="cron_time" name="cron_time" 
+                               value="<?php echo htmlspecialchars(isset($_POST['cron_time']) ? $_POST['cron_time'] : '0 3 * * *'); ?>" 
+                               placeholder="0 3 * * *">
+                    </div>
+                </div>
+                <div class="control">
+                    <button type="submit" class="button is-primary" name="action" value="update_cron">Update Cron Job</button>
+                </div>
             </form>
         </div>
 

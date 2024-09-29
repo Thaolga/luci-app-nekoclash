@@ -1,4 +1,6 @@
 <?php
+ob_start();
+include './cfg.php';
 $uploadDir = '/etc/neko/proxy_provider/';
 $configDir = '/etc/neko/config/';
 
@@ -504,15 +506,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" data-bs-theme="<?php echo substr($neko_theme, 0, -4) ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mihomo File Manager</title>
-    <link href="./assets/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <title>Sing-box File Manager</title>
+    <link rel="icon" href="./assets/img/favicon.png">
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/theme/<?php echo $neko_theme ?>" rel="stylesheet">
+    <link href="./assets/css/custom.css" rel="stylesheet"> 
     <style>
         body {
-            background-color: #87ceeb;
             background-size: cover;
             color: #E0E0E0;
         }
@@ -715,7 +719,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-group .btn-rename {
-            max-width: 80px;
+            max-width: 85px;
             padding: 2px 6px;
             font-size: 0.875rem;
             width: auto;
@@ -1102,6 +1106,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </section>
     </div>
+<style>
+    textarea::placeholder {
+        color: white !important; 
+        opacity: 1 !important; 
+    }
+    textarea {
+        background-color: #333; 
+        color: white; 
+    }
+</style>
 
 <script src="./assets/bootstrap/jquery-3.5.1.slim.min.js"></script>
 <script src="./assets/bootstrap/popper.min.js"></script>

@@ -62,6 +62,7 @@ $singBoxVersion = getSingboxVersion();
         <a href="./" class="col btn btn-lg">🏠 Home</a>
         <a href="./dashboard.php" class="col btn btn-lg">📊 Panel</a>
         <a href="./configs.php" class="col btn btn-lg">⚙️ Configs</a>
+        <a href="/nekoclash/mon.php" class="col btn btn-lg d-flex align-items-center justify-content-center"></i>📦 Document</a> 
         <a href="#" class="col btn btn-lg">🛠️ Settings</a>
         <h2 class="text-center p-2 mb-3">Theme Settings</h2>
         <form action="settings.php" method="post">
