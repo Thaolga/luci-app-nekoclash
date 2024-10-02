@@ -1,3 +1,8 @@
+## This project has stopped updating. New repository address. [openwrt-nekobox](https://github.com/Thaolga/openwrt-nekobox)
+
+
+
+
 <h1 align="center">
   <img src="https://raw.githubusercontent.com/Thaolga/neko/main/img/neko.png" alt="neko" width="500">
 </h1>
